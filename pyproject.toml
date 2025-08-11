@@ -1,0 +1,181 @@
+[build-system]
+requires = ["setuptools>=42.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "virtualdj-mcp"
+version = "1.0.0"
+description = "FastMCP server for VirtualDJ automation - Professional DJ control with Austrian efficiency"
+readme = "README.md"
+authors = [
+    {name = "Sandra Schilling (sandraschi)", email = "sandra@example.com"},
+]
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows :: Windows 10",
+    "Operating System :: Microsoft :: Windows :: Windows 11",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Multimedia :: Sound/Audio :: Mixers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = [
+    # Core dependencies
+    "fastmcp>=2.10.0,<3.0.0",
+    "fastapi>=0.95.0",
+    "uvicorn[standard]>=0.22.0",
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.0.0,<3.0.0",
+    
+    # HTTP client for VirtualDJ REST API
+    "aiohttp>=3.8.0",
+    "httpx>=0.24.0",
+    
+    # Audio processing and analysis
+    "librosa>=0.10.0",
+    "soundfile>=0.12.0",
+    "numpy>=1.24.0",
+    
+    # Utilities
+    "typing-extensions>=4.5.0",
+    "python-dateutil>=2.8.2",
+    "rich>=13.0.0",
+    "pathlib>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/sandraschi/virtualdj-mcp"
+Documentation = "https://github.com/sandraschi/virtualdj-mcp#readme"
+Issues = "https://github.com/sandraschi/virtualdj-mcp/issues"
+Source = "https://github.com/sandraschi/virtualdj-mcp"
+
+[project.scripts]
+virtualdj-mcp = "virtualdj_mcp.__main__:main"
+
+[project.optional-dependencies]
+dev = [
+    # Testing
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-mock>=3.11.0",
+    
+    # Code quality
+    "black>=23.7.0",
+    "isort>=5.12.0",
+    "mypy>=1.4.0",
+    "ruff>=0.0.280",
+    
+    # Audio analysis (optional, for advanced features)
+    "mutagen>=1.47.0",
+    "pyaudio>=0.2.11; platform_system=='Windows'",
+    "scipy>=1.10.0",
+]
+
+docs = [
+    "mkdocs>=1.4.3",
+    "mkdocs-material>=9.1.15",
+]
+
+[project.entry-points]
+"fastmcp.plugins" = { virtualdj = "virtualdj_mcp.plugins:setup_plugin" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+line-length = 100
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+strict_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+
+# DXT Configuration for Anthropic packaging
+[tool.dxt]
+name = "virtualdj-mcp"
+display_name = "VirtualDJ MCP"
+version = "1.0.0"
+description = "MCP server for VirtualDJ automation - Professional DJ control"
+entry_point = "virtualdj_mcp.app:mcp"
+
+# Deck Control Tools
+[[tool.dxt.tools]]
+name = "show_help"
+description = "Get detailed help about VirtualDJ-MCP capabilities and limitations"
+category = "help"
+
+[[tool.dxt.tools]]
+name = "play_pause_deck"
+description = "Control playback on a specific deck (play, pause, toggle)"
+category = "deck_control"
+
+[[tool.dxt.tools]]
+name = "load_track_to_deck"
+description = "Load a track to a specific deck"
+category = "deck_control"
+
+[[tool.dxt.tools]]
+name = "seek_deck"
+description = "Seek to a specific position on a deck"
+category = "deck_control"
+
+[[tool.dxt.tools]]
+name = "set_deck_volume"
+description = "Set volume for a specific deck"
+category = "deck_control"
+
+[[tool.dxt.tools]]
+name = "get_deck_status"
+description = "Get current status of a specific deck"
+category = "deck_control"
+
+# Mixing Tools  
+[[tool.dxt.tools]]
+name = "set_crossfader_position"
+description = "Set crossfader position (-100 to +100)"
+category = "mixing"
+
+[[tool.dxt.tools]]
+name = "auto_sync_decks"
+description = "Automatically sync BPM between two decks"
+category = "mixing"
+
+# Library Tools (TODO)
+[[tool.dxt.tools]]
+name = "search_tracks"
+description = "Search music library with filters"
+category = "library"
+
+# Automation Tools (TODO)
+[[tool.dxt.tools]]
+name = "auto_dj_mode"
+description = "Enable auto-DJ mode with genre filtering"
+category = "automation"
+
+[tool.dxt.config]
+log_level = "INFO"
+max_workers = 4
+request_timeout = 30.0
+virtualdj_path = "C:/Program Files/VirtualDJ/virtualdj.exe"
+api_port = 8080
