@@ -70,3 +70,6 @@ logs/
 *.tmp
 *.temp
 .tmp/
+
+# Allow test audio fixtures
+!tests/fixtures/audio/*.mp3
