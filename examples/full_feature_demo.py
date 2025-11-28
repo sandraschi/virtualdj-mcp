@@ -112,6 +112,103 @@ async def smooth_volume(vdj: VirtualDJClient, deck: int, start: int, end: int, d
     print()
 
 
+# ═══════════════════════════════════════════════════════════
+# DJ TRICKS - Fast Artistic Moves!
+# ═══════════════════════════════════════════════════════════
+
+def flash(text: str):
+    """Print flashy trick name."""
+    print(f"{Colors.BOLD}{Colors.YELLOW}  ★ {text} ★{Colors.END}")
+
+
+async def transformer_scratch(vdj: VirtualDJClient, deck: int, cuts: int = 8):
+    """Transformer scratch - rapid crossfader cuts."""
+    flash("TRANSFORMER SCRATCH")
+    print("    ", end="")
+    pos = -100 if deck == 1 else 100
+    for _ in range(cuts):
+        await vdj.set_crossfader(pos)
+        print("▓", end="", flush=True)
+        await asyncio.sleep(0.08)
+        await vdj.set_crossfader(0)
+        print("░", end="", flush=True)
+        await asyncio.sleep(0.08)
+    await vdj.set_crossfader(pos)
+    print(" CHKA-CHKA!")
+
+
+async def baby_scratch(vdj: VirtualDJClient, reps: int = 3):
+    """Baby scratch - quick back and forth."""
+    flash("BABY SCRATCH")
+    print("    ", end="")
+    for _ in range(reps):
+        for pos in [-100, 100, -100, 0]:
+            await vdj.set_crossfader(pos)
+            print("◄" if pos < 0 else ("►" if pos > 0 else "●"), end="", flush=True)
+            await asyncio.sleep(0.1)
+    print(" WIKKI-WIKKI!")
+
+
+async def ping_pong(vdj: VirtualDJClient, bounces: int = 6):
+    """Ping pong between decks."""
+    flash("PING PONG")
+    print("    ", end="")
+    for _ in range(bounces):
+        await vdj.set_crossfader(-100)
+        print("◄─", end="", flush=True)
+        await asyncio.sleep(0.12)
+        await vdj.set_crossfader(100)
+        print("─►", end="", flush=True)
+        await asyncio.sleep(0.12)
+    await vdj.set_crossfader(0)
+    print(" BOING!")
+
+
+async def volume_pump(vdj: VirtualDJClient, deck: int, pumps: int = 6):
+    """Volume pumping - EDM buildup style."""
+    flash("VOLUME PUMP")
+    print("    ", end="")
+    for _ in range(pumps):
+        await vdj.set_volume(deck, 100)
+        print("▲", end="", flush=True)
+        await asyncio.sleep(0.12)
+        await vdj.set_volume(deck, 30)
+        print("▼", end="", flush=True)
+        await asyncio.sleep(0.12)
+    await vdj.set_volume(deck, 80)
+    print(" UNTZ-UNTZ!")
+
+
+async def stutter_cut(vdj: VirtualDJClient, deck: int, stutters: int = 10):
+    """Stutter effect - rapid play/pause."""
+    flash("STUTTER CUT")
+    print("    ", end="")
+    for _ in range(stutters):
+        await vdj.play(deck)
+        print("►", end="", flush=True)
+        await asyncio.sleep(0.05)
+        await vdj.pause(deck)
+        print("║", end="", flush=True)
+        await asyncio.sleep(0.05)
+    await vdj.play(deck)
+    print(" T-T-T-T!")
+
+
+async def crab_scratch(vdj: VirtualDJClient, deck: int):
+    """Crab scratch - ultra fast crossfader clicks."""
+    flash("CRAB SCRATCH")
+    print("    ", end="")
+    pos = -100 if deck == 1 else 100
+    for _ in range(12):
+        await vdj.set_crossfader(pos)
+        await asyncio.sleep(0.03)
+        await vdj.set_crossfader(0)
+        await asyncio.sleep(0.03)
+        print(".", end="", flush=True)
+    await vdj.set_crossfader(pos)
+    print(" 🦀 SKRRT!")
+
+
 async def main():
     banner("🎵 VirtualDJ-MCP Full Feature Demo 🎵")
     print(f"  Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -260,7 +357,42 @@ async def main():
         status("Crossfader: Center position")
         
         # ═══════════════════════════════════════════════════════════
-        # SECTION 7: Load Different Track (The Funny Ones!)
+        # SECTION 7: DJ TRICKS!
+        # ═══════════════════════════════════════════════════════════
+        announce("🎧 DJ TRICKS!", "Fast artistic moves - watch the crossfader!")
+        
+        # Make sure both decks are playing
+        await vdj.play(1)
+        await vdj.play(2)
+        await asyncio.sleep(0.5)
+        
+        await transformer_scratch(vdj, 1, cuts=8)
+        await asyncio.sleep(0.8)
+        
+        await baby_scratch(vdj, reps=3)
+        await asyncio.sleep(0.8)
+        
+        await ping_pong(vdj, bounces=5)
+        await asyncio.sleep(0.8)
+        
+        await volume_pump(vdj, 1, pumps=6)
+        await asyncio.sleep(0.8)
+        
+        await stutter_cut(vdj, 1, stutters=8)
+        await asyncio.sleep(0.8)
+        
+        await crab_scratch(vdj, 1)
+        await asyncio.sleep(0.5)
+        
+        status("DJ tricks complete! 🔥")
+        
+        # Reset for next section
+        await vdj.set_crossfader(-100)
+        await vdj.set_volume(1, 80)
+        await vdj.set_volume(2, 80)
+        
+        # ═══════════════════════════════════════════════════════════
+        # SECTION 8: Load Different Track (The Funny Ones!)
         # ═══════════════════════════════════════════════════════════
         if len(tracks) >= 3:
             announce("BONUS TRACKS", "Loading the whimsical test tracks! 💨")
@@ -281,7 +413,7 @@ async def main():
                 await asyncio.sleep(0.5)
         
         # ═══════════════════════════════════════════════════════════
-        # SECTION 8: Deck Status Query
+        # SECTION 9: Deck Status Query
         # ═══════════════════════════════════════════════════════════
         announce("STATUS QUERY", "Getting detailed deck information")
         
