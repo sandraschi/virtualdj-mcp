@@ -70,10 +70,16 @@ try:
     from .tools.skin.tools import setup_skin_tools
     setup_skin_tools(mcp)
 
+    from .tools.stems.tools import setup_stem_tools
+    setup_stem_tools(mcp)
+
+    from .tools.beatgrid.tools import setup_beatgrid_tools
+    setup_beatgrid_tools(mcp)
+
     # Initialize system status
     from .tools.shared.dependencies import update_system_status
     update_system_status("server_started", True)
-    update_system_status("tools_loaded", 31)  # Updated count with skin tools
+    update_system_status("tools_loaded", 49)  # Updated count with stem and beatgrid tools
 
     console.print("[green]All VirtualDJ-MCP tools registered successfully[/green]")
 
