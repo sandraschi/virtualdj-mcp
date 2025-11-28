@@ -1,52 +1,191 @@
 # VirtualDJ-MCP Help Content
 
-🎵 **VirtualDJ-MCP Server v1.0.0 - Professional DJ Automation**
+🎵 **VirtualDJ-MCP Server v1.2.0 - Professional DJ Automation**
 
-Austrian efficiency for Sandra's music mixing and DJ automation needs.
+Austrian efficiency for professional DJ automation and music mixing needs.
 
-## 📋 CAPABILITIES (20+ Tools Planned)
+## ⚙️ PREREQUISITES
 
-### ✅ **CURRENT TOOLS (9 implemented)**
+VirtualDJ-MCP requires the **Network Control Plugin** for HTTP communication:
 
-#### **SHOW HELP**
-• `show_help()` - Get detailed help about capabilities, strengths, and limitations
+1. **VirtualDJ 2023+** with Pro license
+2. Install Network Control Plugin: Config → Extensions → Effects → Other
+3. Enable in Master panel → Master Effect → Auto-Start
 
-#### **DECK CONTROL SUITE** (6 tools)
-• `play_pause_deck(deck_id, action)` - Control playback on specific deck
-  - deck_id: Deck number (1-8)
-  - action: "play", "pause", or "toggle"
+📖 **[Full Setup Guide](NETWORK_CONTROL_SETUP.md)**
 
-• `load_track_to_deck(deck_id, track_path)` - Load track to deck
-  - deck_id: Target deck number
-  - track_path: Full path to audio file
+### Quick Connection Test
+```bash
+curl -X POST http://127.0.0.1:80/execute -H "Content-Type: text/plain" -d "nop"
+```
+Expected: `true`
 
-• `seek_deck(deck_id, position)` - Seek to position
-  - deck_id: Deck number
-  - position: Seconds (float) or percentage ("50%")
+---
 
-• `set_deck_volume(deck_id, volume)` - Set deck volume
-  - deck_id: Deck number
-  - volume: Volume level (0-100)
+## 📋 TOOL REFERENCE
 
-• `get_deck_status(deck_id)` - Get current deck status
-  - Returns: DeckStatus with track info, position, BPM, key, etc.
+### 🔄 **DECK CONTROL**
 
-#### **MIXING & CROSSFADER SUITE** (2 tools)
-• `set_crossfader_position(position)` - Control crossfader
-  - position: -100 (full left) to +100 (full right), 0 = center
+#### `play_pause_deck(deck_id, action)`
+Control playback on a specific deck.
+- **Parameters:**
+  - `deck_id` (int): Deck number (1-8)
+  - `action` (str): "play", "pause", or "toggle"
+- **Returns:** Updated deck status
 
-• `auto_sync_decks(deck_a, deck_b)` - Sync BPM between decks
-  - deck_a: Source deck number
-  - deck_b: Target deck number
+#### `load_track_to_deck(deck_id, track_path)`
+Load a track to the specified deck.
+- **Parameters:**
+  - `deck_id` (int): Target deck number (1-8)
+  - `track_path` (str): Full path to audio file
+- **Returns:** Deck status with loaded track info
 
-### 🚧 **COMING SOON (Phase 2-4)**
+#### `seek_deck(deck_id, position)`
+Seek to a specific position in the current track.
+- **Parameters:**
+  - `deck_id` (int): Deck number (1-8)
+  - `position` (float/str): Position in seconds or percentage (e.g., 120.5 or "50%")
+- **Returns:** Updated deck status
 
-#### **LIBRARY MANAGEMENT SUITE** (5 tools planned)
-• `search_tracks(query, filters)` - Search music library
-• `scan_music_library(path)` - Scan and import music files
-• `get_track_analysis(track_path)` - BPM, key, energy analysis
-• `create_playlist(name, tracks)` - Create/manage playlists
-• `get_library_stats()` - Library statistics and health
+#### `set_deck_volume(deck_id, volume)`
+Adjust the volume of a specific deck.
+- **Parameters:**
+  - `deck_id` (int): Deck number (1-8)
+  - `volume` (int): Volume level (0-100)
+- **Returns:** Updated deck status
+
+#### `get_deck_status(deck_id)`
+Retrieve the current status of a deck.
+- **Parameters:**
+  - `deck_id` (int): Deck number (1-8)
+- **Returns:** DeckStatus object with track info, position, BPM, key, etc.
+
+### 🎚️ **MIXING TOOLS**
+
+#### `set_crossfader_position(position)`
+Control the crossfader position.
+- **Parameters:**
+  - `position` (float): -100 (full left) to +100 (full right), 0 = center
+- **Returns:** Current mixer status
+
+#### `auto_sync_decks(deck_a, deck_b)`
+Synchronize BPM between two decks.
+- **Parameters:**
+  - `deck_a` (int): Source deck number
+  - `deck_b` (int): Target deck number
+- **Returns:** Sync operation result
+
+#### `set_eq_band(deck_id, band, value, kill=False)`
+Adjust EQ settings for a specific deck.
+- **Parameters:**
+  - `deck_id` (int): Deck number (1-8)
+  - `band` (str): EQ band ("low", "mid", or "high")
+  - `value` (float): Gain value (-24 to +12 dB)
+  - `kill` (bool): Whether to kill the band
+- **Returns:** Operation status
+
+#### `set_effect(deck_id, effect_slot, effect_type, enabled=True, wet_dry=50.0, param1=0.0, param2=0.0)`
+Apply effects to a deck.
+- **Parameters:**
+  - `deck_id` (int): Deck number (1-8)
+  - `effect_slot` (int): Effect slot (0-2)
+  - `effect_type` (str): Effect type ("filter", "flanger", "echo", etc.)
+  - `enabled` (bool): Whether the effect is active
+  - `wet_dry` (float): Wet/dry mix (0-100)
+  - `param1`, `param2` (float): Effect-specific parameters
+- **Returns:** Operation status
+
+### 🤖 **AUTO-DJ TOOLS**
+
+#### `auto_dj_mode(duration_minutes, genre_filter, **prefs)`
+Start or configure the Auto-DJ system.
+- **Parameters:**
+  - `duration_minutes` (int): Duration in minutes (0 for indefinite)
+  - `genre_filter` (str, optional): Filter tracks by genre
+  - `prefs`: Additional preferences (fade_time, energy_matching, etc.)
+- **Returns:** Auto-DJ status
+
+#### `stop_auto_dj()`
+Stop the Auto-DJ system.
+- **Returns:** Operation status
+
+#### `get_auto_dj_status()`
+Get the current status of the Auto-DJ system.
+- **Returns:** Auto-DJ status information
+
+#### `suggest_next_track(style, current_track_id, limit=5)`
+Get track suggestions based on current playback.
+- **Parameters:**
+  - `style` (str): Suggestion style ("similar", "energy_up", "energy_down", "genre_switch")
+  - `current_track_id` (str): ID of current track
+  - `limit` (int): Maximum number of suggestions
+- **Returns:** List of suggested tracks
+
+### ⏺️ **RECORDING TOOLS**
+
+#### `start_recording(name, format="wav")`
+Start recording the current mix.
+- **Parameters:**
+  - `name` (str, optional): Name for the recording
+  - `format` (str): Output format ("wav", "mp3", "ogg", "flac")
+- **Returns:** Recording information
+
+#### `stop_recording()`
+Stop the current recording.
+- **Returns:** Recording information
+
+#### `get_recording_status(recording_id)`
+Get the status of a recording.
+- **Parameters:**
+  - `recording_id` (str, optional): ID of specific recording
+- **Returns:** Recording status and metadata
+
+#### `list_recordings(limit=10, offset=0)`
+List available recordings.
+- **Parameters:**
+  - `limit` (int): Maximum number of recordings to return
+  - `offset` (int): Offset for pagination
+- **Returns:** List of recordings with metadata
+
+#### `export_mix_history(format="json", include_tracklist=True)`
+Export mix history in specified format.
+- **Parameters:**
+  - `format` (str): Output format ("json", "csv", "txt")
+  - `include_tracklist` (bool): Whether to include tracklist
+- **Returns:** Export information
+
+### 🔍 **SEARCH & LIBRARY**
+
+#### `search_tracks(query, **filters)`
+Search the music library.
+- **Parameters:**
+  - `query` (str): Search query
+  - `filters`: Additional filters (genre, bpm, key, etc.)
+- **Returns:** List of matching tracks
+
+#### `analyze_track_audio(track_path)`
+Analyze audio features of a track.
+- **Parameters:**
+  - `track_path` (str): Path to audio file
+- **Returns:** Audio analysis results
+
+## 🚀 **FEATURES & CAPABILITIES**
+
+### **Professional DJ Features**
+- **Multi-deck control** (up to 8 decks)
+- **Advanced mixing** with EQ and effects
+- **Auto-DJ** with intelligent track selection
+- **High-quality recording** in multiple formats
+- **BPM and key detection**
+- **Harmonic mixing**
+- **Track analysis** and metadata extraction
+
+### **Integration & Automation**
+- **REST API** for remote control
+- **CLI interface** for scripting
+- **Real-time status updates**
+- **Event-based architecture**
+- **Extensible plugin system**
 
 #### **AUTOMATION & AI SUITE** (4 tools planned)
 • `auto_dj_mode(duration, genre_filter)` - Automated DJ set
@@ -136,18 +275,96 @@ Austrian efficiency for Sandra's music mixing and DJ automation needs.
 ## 🚀 GETTING STARTED
 
 ### **Prerequisites**
-1. **VirtualDJ installed** (free version works for basic features)
-2. **Music library** with some tracks for testing
+1. **VirtualDJ installed** and configured
+2. **Music library** with tracks for testing
 3. **Audio configuration** set up in VirtualDJ
-4. **MCP server** added to Claude Desktop configuration
+4. **Python 3.8+** with required dependencies
 
-### **First Steps**
+### **Installation**
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/virtualdj-mcp.git
+cd virtualdj-mcp
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure environment variables
+cp .env.example .env
+# Edit .env with your VirtualDJ paths and settings
+```
+
+### **Quick Start**
+1. Start the MCP server:
+   ```bash
+   python -m virtualdj_mcp
+   ```
+
+2. Use the API to control VirtualDJ:
+   ```python
+   # Example: Start playing a track
+   response = await play_pause_deck(deck_id=1, action="play")
+   ```
+
+## 📚 **EXAMPLES**
+
+### Basic Playback
+```python
+# Load and play a track
+await load_track_to_deck(1, "/path/to/track.mp3")
+await play_pause_deck(1, "play")
+
+# Set volume and crossfader
+await set_deck_volume(1, 80)
+await set_crossfader_position(0)  # Center position
+```
+
+### Auto-DJ Session
+```python
+# Start Auto-DJ for 60 minutes
+await auto_dj_mode(
+    duration_minutes=60,
+    genre_filter="House",
+    energy_matching=True,
+    harmonic_mixing=True
+)
+
+# Get status
+status = await get_auto_dj_status()
+print(f"Auto-DJ status: {status}")
+```
+
+### Recording a Mix
+```python
+# Start recording
+recording = await start_recording("MyLiveSet", "mp3")
+print(f"Recording started: {recording['filepath']}")
+
+# ... perform your mix ...
+
+# Stop recording
+result = await stop_recording()
+print(f"Recording saved: {result['filepath']}")
+```
+
+## 📖 **ADDITIONAL RESOURCES**
+
+### **Documentation**
+- [API Reference](https://github.com/yourusername/virtualdj-mcp/docs/API.md)
+- [Configuration Guide](https://github.com/yourusername/virtualdj-mcp/docs/CONFIGURATION.md)
+- [Troubleshooting](https://github.com/yourusername/virtualdj-mcp/docs/TROUBLESHOOTING.md)
+
+### **Support**
+For issues and feature requests, please [open an issue](https://github.com/yourusername/virtualdj-mcp/issues).
+
+---
+*VirtualDJ-MCP - Professional DJ Automation with Austrian Efficiency* 🇦🇹
+
 1. Check server connection: `show_help()`
 2. Test basic deck: `get_deck_status(1)`
 3. Load a track: `load_track_to_deck(1, "C:/Music/song.mp3")`
 4. Start playback: `play_pause_deck(1, "play")`
 5. Try mixing: `set_crossfader_position(0)`
-
 ### **Configuration**
 • **VirtualDJ Path**: Usually `C:/Program Files/VirtualDJ/virtualdj.exe`
 • **API Port**: Default 8080 (configurable)

@@ -1,0 +1,99 @@
+# VirtualDJ-MCP Development Environment Setup
+# PowerShell script to create and configure Python virtual environment
+
+param(
+    [string]$PythonVersion = "3.10",
+    [string]$VenvName = "vdj-mcp-env",
+    [switch]$Force
+)
+
+Write-Host "🎵 VirtualDJ-MCP Environment Setup" -ForegroundColor Green
+Write-Host "=" * 50 -ForegroundColor Yellow
+
+# Check Python version
+try {
+    $pythonVersion = python --version 2>&1
+    Write-Host "✅ Python found: $pythonVersion" -ForegroundColor Green
+} catch {
+    Write-Host "❌ Python not found. Please install Python $PythonVersion or later." -ForegroundColor Red
+    exit 1
+}
+
+# Check if virtual environment already exists
+if ((Test-Path $VenvName) -and -not $Force) {
+    Write-Host "⚠️  Virtual environment '$VenvName' already exists." -ForegroundColor Yellow
+    Write-Host "   Use -Force to recreate it." -ForegroundColor Yellow
+    exit 0
+}
+
+# Remove existing environment if forcing
+if ((Test-Path $VenvName) -and $Force) {
+    Write-Host "🗑️  Removing existing environment..." -ForegroundColor Yellow
+    Remove-Item -Recurse -Force $VenvName
+}
+
+# Create virtual environment
+Write-Host "🏗️  Creating virtual environment '$VenvName'..." -ForegroundColor Blue
+try {
+    python -m venv $VenvName
+    Write-Host "✅ Virtual environment created successfully" -ForegroundColor Green
+} catch {
+    Write-Host "❌ Failed to create virtual environment: $($_.Exception.Message)" -ForegroundColor Red
+    exit 1
+}
+
+# Activate virtual environment
+Write-Host "🔄 Activating virtual environment..." -ForegroundColor Blue
+try {
+    & "$VenvName/Scripts/Activate.ps1"
+    Write-Host "✅ Virtual environment activated" -ForegroundColor Green
+} catch {
+    Write-Host "❌ Failed to activate virtual environment" -ForegroundColor Red
+    Write-Host "   You may need to run: & '$VenvName/Scripts/Activate.ps1'" -ForegroundColor Yellow
+}
+
+# Upgrade pip
+Write-Host "⬆️  Upgrading pip..." -ForegroundColor Blue
+try {
+    python -m pip install --upgrade pip
+    Write-Host "✅ Pip upgraded successfully" -ForegroundColor Green
+} catch {
+    Write-Host "⚠️  Pip upgrade failed, continuing..." -ForegroundColor Yellow
+}
+
+# Install dependencies
+Write-Host "📦 Installing dependencies..." -ForegroundColor Blue
+try {
+    pip install -r requirements.txt
+    Write-Host "✅ Dependencies installed successfully" -ForegroundColor Green
+} catch {
+    Write-Host "❌ Failed to install dependencies: $($_.Exception.Message)" -ForegroundColor Red
+    exit 1
+}
+
+# Install development dependencies
+Write-Host "🔧 Installing development dependencies..." -ForegroundColor Blue
+try {
+    pip install -e ".[dev]"
+    Write-Host "✅ Development dependencies installed" -ForegroundColor Green
+} catch {
+    Write-Host "⚠️  Development dependencies installation failed, continuing..." -ForegroundColor Yellow
+}
+
+Write-Host "" -ForegroundColor White
+Write-Host "🎉 Setup Complete!" -ForegroundColor Green
+Write-Host "" -ForegroundColor White
+Write-Host "To activate the environment in future sessions:" -ForegroundColor Cyan
+Write-Host "  & '$VenvName/Scripts/Activate.ps1'" -ForegroundColor White
+Write-Host "" -ForegroundColor White
+Write-Host "To run the MCP server:" -ForegroundColor Cyan
+Write-Host "  python -m mcp.server" -ForegroundColor White
+Write-Host "" -ForegroundColor White
+Write-Host "To run the FastAPI server:" -ForegroundColor Cyan
+Write-Host "  `$env:RUN_FASTAPI='true'; python -m mcp.server" -ForegroundColor White
+Write-Host "" -ForegroundColor White
+Write-Host "To run tests:" -ForegroundColor Cyan
+Write-Host "  python -m pytest tests/" -ForegroundColor White
+Write-Host "" -ForegroundColor White
+
+

@@ -1,0 +1,80 @@
+{
+  "info": {
+    "name": "VirtualDJ-MCP API",
+    "description": "REST API endpoints for VirtualDJ automation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Deck Status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/deck/1/status",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "deck",
+            "1",
+            "status"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Search Library",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"query\": \"house\", \"limit\": 10}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/library/search",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "library",
+            "search"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "manifest_version": "0.2",
+  "name": "virtualdj-mcp",
+  "version": "1.0.0",
+  "description": "Professional DJ automation MCP server with VirtualDJ integration for mixing, library management, and performance control",
+  "author": {
+    "name": "Sandra",
+    "email": "sandra@sandraschi.dev"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/sandraschi/virtualdj-mcp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sandraschi/virtualdj-mcp"
+  },
+  "server": {
+    "type": "python",
+    "entry_point": "server/server.py",
+    "mcp_config": {
+      "command": "python",
+      "args": ["-m", "virtualdj_mcp.server"],
+      "env": {
+        "PYTHONPATH": "${PWD}/../src",
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  },
+  "prompts": [
+    {
+      "name": "system",
+      "description": "System prompt for VirtualDJ automation",
+      "text": "You are an expert DJ automation assistant with deep knowledge of VirtualDJ and professional mixing techniques. You have access to VirtualDJ-MCP tools for deck control, mixing, library management, automation, and performance monitoring."
+    },
+    {
+      "name": "dj_performance",
+      "description": "DJ performance guidance",
+      "text": "Guide for DJ performance including deck control (play, pause, stop, seek, volume), mixing (crossfader, sync, beatmatching, EQ), and multi-deck monitoring."
+    },
+    {
+      "name": "mixing_guide",
+      "description": "Mixing techniques guide",
+      "text": "Mixing techniques including crossfader control, BPM synchronization, beatmatching, and smooth transitions between tracks."
+    },
+    {
+      "name": "library_management",
+      "description": "Music library management",
+      "text": "Library management including browsing folders, searching tracks by name/artist/genre/BPM, and playlist organization."
+    },
+    {
+      "name": "automation",
+      "description": "DJ automation workflows",
+      "text": "Automation features including Auto-DJ mode, recording sessions, and session state management."
+    },
+    {
+      "name": "troubleshooting",
+      "description": "Troubleshooting guide",
+      "text": "Troubleshooting common issues including VirtualDJ connection, deck status, and error handling."
+    }
+  ],
+  "tools": [
+    {"name": "show_help", "description": "Get detailed help about VirtualDJ-MCP capabilities"},
+    {"name": "play_pause_deck", "description": "Control playback on a specific deck"},
+    {"name": "load_track_to_deck", "description": "Load a track to a specific deck"},
+    {"name": "seek_deck", "description": "Seek to a specific position on a deck"},
+    {"name": "set_deck_volume", "description": "Set volume for a specific deck"},
+    {"name": "get_deck_status", "description": "Get current status of a specific deck"},
+    {"name": "set_crossfader_position", "description": "Set crossfader position (-100 to +100)"},
+    {"name": "auto_sync_decks", "description": "Automatically sync BPM between two decks"},
+    {"name": "search_tracks", "description": "Search music library with filters"},
+    {"name": "auto_dj_mode", "description": "Enable auto-DJ mode with genre filtering"}
+  ],
+  "keywords": [
+    "dj",
+    "virtualdj",
+    "mixing",
+    "automation",
+    "music",
+    "audio",
+    "performance"
+  ]
+}

@@ -1,8 +1,7 @@
 """
-VirtualDJ-MCP API package
+VirtualDJ-MCP FastAPI interface
 """
 
-# API endpoints will be implemented in future phases
-# Following pywinauto-mcp structure for REST API endpoints
+from .app import create_app
 
-__all__ = []
+__all__ = ['create_app']

@@ -1,10 +1,13 @@
 """
 VirtualDJ-MCP Configuration Management
+
+Supports HTTP Network Control Plugin (recommended) and legacy CLI.
 """
 
 import os
 from pathlib import Path
 from typing import Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -17,13 +20,14 @@ class VDJConfig(BaseModel):
         description="Path to VirtualDJ executable"
     )
     
-    # API Settings
-    rest_api_host: str = Field(default="localhost", description="VirtualDJ REST API host")
-    rest_api_port: int = Field(default=8080, description="VirtualDJ REST API port")
-    rest_api_enabled: bool = Field(default=True, description="Enable REST API communication")
+    # HTTP Network Control Plugin Settings
+    http_host: str = Field(default="127.0.0.1", description="Network Control Plugin host")
+    http_port: int = Field(default=80, description="Network Control Plugin port")
+    http_password: Optional[str] = Field(default=None, description="Network Control Plugin password")
+    http_timeout: float = Field(default=10.0, description="HTTP request timeout in seconds")
     
-    # CLI Settings
-    cli_enabled: bool = Field(default=True, description="Enable CLI command execution")
+    # Legacy CLI Settings (deprecated - use HTTP instead)
+    cli_enabled: bool = Field(default=False, description="Enable CLI command execution (deprecated)")
     cli_timeout: int = Field(default=30, description="CLI command timeout in seconds")
     
     # Library Settings
@@ -60,8 +64,10 @@ class VDJConfig(BaseModel):
         """Create configuration from environment variables"""
         return cls(
             virtualdj_path=os.getenv("VDJ_PATH", cls.model_fields["virtualdj_path"].default),
-            rest_api_host=os.getenv("VDJ_API_HOST", cls.model_fields["rest_api_host"].default),
-            rest_api_port=int(os.getenv("VDJ_API_PORT", cls.model_fields["rest_api_port"].default)),
+            http_host=os.getenv("VDJ_HTTP_HOST", cls.model_fields["http_host"].default),
+            http_port=int(os.getenv("VDJ_HTTP_PORT", cls.model_fields["http_port"].default)),
+            http_password=os.getenv("VDJ_HTTP_PASSWORD"),
+            http_timeout=float(os.getenv("VDJ_HTTP_TIMEOUT", cls.model_fields["http_timeout"].default)),
             music_library_path=os.getenv("VDJ_LIBRARY_PATH"),
             default_volume=int(os.getenv("VDJ_DEFAULT_VOLUME", cls.model_fields["default_volume"].default)),
             max_decks=int(os.getenv("VDJ_MAX_DECKS", cls.model_fields["max_decks"].default)),
@@ -81,7 +87,3 @@ class VDJConfig(BaseModel):
         
         return True
     
-    @property
-    def rest_api_url(self) -> str:
-        """Get the full REST API URL"""
-        return f"http://{self.rest_api_host}:{self.rest_api_port}"

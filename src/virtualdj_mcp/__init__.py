@@ -8,7 +8,7 @@ __version__ = "1.0.0"
 __author__ = "Sandra (sandraschi)"
 __description__ = "FastMCP server for VirtualDJ automation and control"
 
-from .app import mcp
 from .config import VDJConfig
+from .server import mcp
 
 __all__ = ["mcp", "VDJConfig"]
