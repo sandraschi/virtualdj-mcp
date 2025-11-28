@@ -76,10 +76,13 @@ try:
     from .tools.beatgrid.tools import setup_beatgrid_tools
     setup_beatgrid_tools(mcp)
 
+    from .tools.video.tools import setup_video_tools
+    setup_video_tools(mcp)
+
     # Initialize system status
     from .tools.shared.dependencies import update_system_status
     update_system_status("server_started", True)
-    update_system_status("tools_loaded", 49)  # Updated count with stem and beatgrid tools
+    update_system_status("tools_loaded", 61)  # Updated: +12 video tools
 
     console.print("[green]All VirtualDJ-MCP tools registered successfully[/green]")
 
