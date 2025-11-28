@@ -9,12 +9,18 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
-import aubio
 import librosa
 import numpy as np
 import soundfile as sf
+
+# Try to import aubio - optional dependency
+try:
+    import aubio
+    AUBIO_AVAILABLE = True
+except ImportError:
+    AUBIO_AVAILABLE = False
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -47,7 +53,7 @@ class KeyResult:
 class AudioFeatures:
     """Container for audio analysis features."""
     bpm: float = 0.0
-    key: KeyResult = KeyResult()
+    key: KeyResult = None
     energy: float = 0.0
     danceability: float = 0.0
     loudness: float = 0.0
@@ -58,6 +64,8 @@ class AudioFeatures:
     segments: List[Dict] = None
     
     def __post_init__(self):
+        if self.key is None:
+            self.key = KeyResult()
         if self.beats is None:
             self.beats = []
         if self.segments is None:
@@ -114,13 +122,23 @@ class AudioAnalyzer:
         self.sample_rate = sample_rate
         self.hop_size = hop_size
         
-        # Initialize aubio objects
-        self.tempo = aubio.tempo("default", 2048, hop_size, sample_rate)
-        self.pitch = aubio.pitch("yin", 4096, hop_size, sample_rate)
-        self.pitch.set_unit("midi")
-        self.pitch.set_silence(-40)
+        # Initialize aubio objects if available
+        self._tempo = None
+        self._pitch = None
         
-        logger.info(f"Initialized AudioAnalyzer with sample_rate={sample_rate}, hop_size={hop_size}")
+        if AUBIO_AVAILABLE:
+            try:
+                self._tempo = aubio.tempo("default", 2048, hop_size, sample_rate)
+                self._pitch = aubio.pitch("yin", 4096, hop_size, sample_rate)
+                self._pitch.set_unit("midi")
+                self._pitch.set_silence(-40)
+                logger.info(f"Initialized AudioAnalyzer with aubio (sample_rate={sample_rate})")
+            except Exception as e:
+                logger.warning(f"Failed to initialize aubio: {e}. Using librosa fallback.")
+                self._tempo = None
+                self._pitch = None
+        else:
+            logger.info(f"Initialized AudioAnalyzer with librosa-only (aubio not available)")
     
     async def analyze_file(self, file_path: Union[str, Path]) -> AudioFeatures:
         """
@@ -152,7 +170,7 @@ class AudioAnalyzer:
                 y = librosa.resample(y, orig_sr=sr, target_sr=self.sample_rate)
                 sr = self.sample_rate
             
-            # Convert to float32 for aubio
+            # Convert to float32
             y = y.astype(np.float32)
             
         except Exception as e:
@@ -210,23 +228,22 @@ class AudioAnalyzer:
     async def _detect_bpm(self, y: np.ndarray, sr: int) -> Tuple[str, float]:
         """Detect BPM of the audio."""
         try:
-            # Use aubio for tempo detection
-            self.tempo.reset()
+            bpm = 0.0
             
-            # Process audio in chunks
-            frames = range(0, len(y), self.hop_size)
-            for i in frames:
-                samples = y[i:i+self.hop_size]
-                if len(samples) < self.hop_size:
-                    break
-                self.tempo(samples)
+            # Try aubio first if available
+            if self._tempo is not None:
+                self._tempo.reset()
+                frames = range(0, len(y), self.hop_size)
+                for i in frames:
+                    samples = y[i:i+self.hop_size]
+                    if len(samples) < self.hop_size:
+                        break
+                    self._tempo(samples)
+                bpm = float(self._tempo.get_bpm())
             
-            # Get BPM
-            bpm = float(self.tempo.get_bpm())
-            
-            # Fallback to librosa if aubio fails
-            if bpm <= 0 or bpm > 250:  # Unlikely BPM values
-                logger.debug("Falling back to librosa for BPM detection")
+            # Fallback to librosa if aubio fails or unavailable
+            if bpm <= 0 or bpm > 250:
+                logger.debug("Using librosa for BPM detection")
                 onset_env = librosa.onset.onset_strength(y=y, sr=sr)
                 bpm = float(librosa.beat.tempo(onset_envelope=onset_env, sr=sr)[0])
             
@@ -237,45 +254,38 @@ class AudioAnalyzer:
             return 'bpm', 120.0  # Default BPM
     
     async def _detect_key(self, y: np.ndarray, sr: int) -> KeyResult:
-        """Detect the musical key of the audio."""
+        """Detect the musical key of the audio using chroma features."""
         try:
-            # Use aubio for pitch detection
-            self.pitch.reset()
+            # Use librosa chroma for key detection (more reliable than aubio pitch)
+            chroma = librosa.feature.chroma_cqt(y=y, sr=sr)
             
-            # Process audio in chunks
-            pitches = []
-            confidences = []
+            # Sum chroma bins across time
+            chroma_sum = np.sum(chroma, axis=1)
             
-            frames = range(0, len(y), self.hop_size)
-            for i in frames:
-                samples = y[i:i+self.hop_size]
-                if len(samples) < self.hop_size:
-                    break
-                
-                pitch = self.pitch(samples)[0]
-                confidence = self.pitch.get_confidence()
-                
-                if confidence > 0.8 and 20 <= pitch <= 100:  # Filter out invalid pitches
-                    pitches.append(pitch)
-                    confidences.append(confidence)
+            # Find dominant pitch class
+            dominant_pitch = int(np.argmax(chroma_sum))
+            note_name = self.NOTES[dominant_pitch]
             
-            if not pitches:
-                return KeyResult()
+            # Simple major/minor detection using chroma correlation
+            # Major template: root, major third, fifth
+            # Minor template: root, minor third, fifth
+            major_template = np.zeros(12)
+            minor_template = np.zeros(12)
+            major_template[[0, 4, 7]] = 1  # C, E, G for major
+            minor_template[[0, 3, 7]] = 1  # C, Eb, G for minor
             
-            # Calculate weighted average pitch
-            weighted_pitches = np.array(pitches) * np.array(confidences)
-            avg_pitch = np.sum(weighted_pitches) / np.sum(confidences)
+            # Roll templates to match detected root
+            major_rolled = np.roll(major_template, dominant_pitch)
+            minor_rolled = np.roll(minor_template, dominant_pitch)
             
-            # Convert MIDI note to note name
-            note_num = int(round(avg_pitch)) % 12
-            note_name = self.NOTES[note_num]
+            # Correlate with chroma
+            major_corr = np.corrcoef(chroma_sum, major_rolled)[0, 1]
+            minor_corr = np.corrcoef(chroma_sum, minor_rolled)[0, 1]
             
-            # Simple major/minor detection (very basic)
-            # This could be improved with more sophisticated key detection
-            mode = KeyMode.MAJOR if np.random.random() > 0.5 else KeyMode.MINOR
-            confidence = float(np.mean(confidences)) if confidences else 0.0
+            mode = KeyMode.MAJOR if major_corr > minor_corr else KeyMode.MINOR
+            confidence = float(max(major_corr, minor_corr))
             
-            return KeyResult(note_name, mode, confidence)
+            return KeyResult(note_name, mode, max(0.0, min(1.0, confidence)))
             
         except Exception as e:
             logger.warning(f"Key detection failed: {str(e)}")
@@ -287,7 +297,7 @@ class AudioAnalyzer:
             # Calculate RMS energy
             energy = np.sqrt(np.mean(y**2))
             # Convert to dB
-            energy_db = 10 * np.log10(energy + 1e-10)  # Add small value to avoid log(0)
+            energy_db = 10 * np.log10(energy + 1e-10)
             return 'energy', float(energy_db)
         except Exception as e:
             logger.warning(f"Energy calculation failed: {str(e)}")
