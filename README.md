@@ -32,7 +32,7 @@ VirtualDJ-MCP provides seamless integration between Claude and VirtualDJ, enabli
 
 - **VirtualDJ 2023 or later**
 - **VirtualDJ Pro license** (required for Network Control Plugin)
-- Python 3.11+
+- **Python 3.10 or 3.11** (3.12+ not supported - aubio dependency)
 - Network Control Plugin installed and enabled
 
 ## 🚀 Quick Start
@@ -193,7 +193,7 @@ python -m virtualdj_mcp.server
 | Tool | Description |
 |------|-------------|
 | `search_tracks(query, ...)` | Search music library |
-| `analyze_track_audio(track_path)` | Analyze BPM, key, energy |
+| `analyze_track_audio(track_path)` | Analyze BPM, key, energy (aubio-powered) |
 
 ### Automation
 | Tool | Description |

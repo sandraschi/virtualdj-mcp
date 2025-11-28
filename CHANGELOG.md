@@ -5,6 +5,23 @@ All notable changes to VirtualDJ-MCP will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2025-11-28
+
+### Fixed
+- **VDJError Import**: Fixed missing `VDJError` export in `tools/shared/exceptions.py`
+- **aubio Integration**: Added aubio for DJ-grade BPM/pitch detection (with librosa fallback)
+- **Dependencies**: Moved `mutagen` from dev to main dependencies
+
+### Changed
+- **Python Version**: Pinned to `>=3.10,<3.12` (aubio lacks wheels for 3.12+)
+- **Audio Analysis**: Now uses aubio for real-time accurate BPM detection, librosa as fallback
+- **Key Detection**: Improved using librosa chroma features when aubio unavailable
+
+### Technical Details
+- aubio provides DJ-grade BPM accuracy (critical for beatmatching)
+- Python 3.11 is the recommended version (fast, stable, wide library support)
+- Audio analyzer auto-detects aubio availability and falls back gracefully
+
 ## [1.0.0] - 2025-01-24
 
 ### Added
