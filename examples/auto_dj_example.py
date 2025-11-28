@@ -48,7 +48,7 @@ async def main():
                 print("❌ Failed to start VirtualDJ. Please start it manually.")
                 return
 
-        print("🎧 VirtualDJ is running - starting Auto-DJ session")
+        print("[headphones] VirtualDJ is running - starting Auto-DJ session")
 
         # Example track paths - in a real implementation, you'd scan a music library
         example_tracks = [
@@ -64,10 +64,10 @@ async def main():
             print("❌ Need at least 2 tracks for Auto-DJ. Please add tracks to the example_tracks list.")
             return
 
-        print(f"📀 Found {len(available_tracks)} tracks for Auto-DJ")
+        print(f"[disc] Found {len(available_tracks)} tracks for Auto-DJ")
 
         # Configure Auto-DJ using VirtualDJ's built-in features
-        print("🎛️  Configuring Auto-DJ...")
+        print("[mixer]️  Configuring Auto-DJ...")
 
         # Enable auto-mix mode with crossfader
         await vdj.send_command("automix_enable")
@@ -88,7 +88,7 @@ async def main():
         session_duration = args.duration * 60  # Convert to seconds
         elapsed = 0
 
-        print(f"🎶 Auto-DJ session started for {args.duration} minutes")
+        print(f"[music] Auto-DJ session started for {args.duration} minutes")
         print("Press Ctrl+C to stop early")
 
         try:
@@ -111,13 +111,13 @@ async def main():
                 if elapsed % 60 == 0:  # Every minute
                     if len(available_tracks) > 2:
                         next_track = random.choice(available_tracks[2:])
-                        print(f"📀 Adding track to queue: {Path(next_track).name}")
+                        print(f"[disc] Adding track to queue: {Path(next_track).name}")
 
         except KeyboardInterrupt:
-            print("\n⏹️  Auto-DJ session interrupted by user")
+            print("\n[stop]️  Auto-DJ session interrupted by user")
 
         # Clean up
-        print("🧹 Cleaning up Auto-DJ session...")
+        print("[clean] Cleaning up Auto-DJ session...")
         await vdj.send_command("automix_disable")
         await vdj.send_command("deck 1 stop")
         await vdj.send_command("deck 2 stop")

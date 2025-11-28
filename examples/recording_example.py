@@ -16,7 +16,7 @@ from virtualdj_mcp.core.vdj_client import VirtualDJClient
 from virtualdj_mcp.config import VDJConfig
 
 async def main():
-    print("🎙️  VirtualDJ-MCP Recording Example")
+    print("[mic]️  VirtualDJ-MCP Recording Example")
     print("=" * 50)
 
     # Parse command line arguments
@@ -46,7 +46,7 @@ async def main():
                 print("❌ Failed to start VirtualDJ. Please start it manually.")
                 return
 
-        print("🎧 VirtualDJ is running")
+        print("[headphones] VirtualDJ is running")
 
         # Generate recording name if not provided
         if not args.name:
@@ -54,21 +54,21 @@ async def main():
             args.name = f"vdj_mix_{timestamp}"
 
         print(f"🎵 Starting recording: {args.name}.{args.format}")
-        print(f"⏱️  Duration: {args.duration} seconds")
+        print(f"[timer]️  Duration: {args.duration} seconds")
 
         # Configure recording format and filename
         await vdj.send_command(f"rec_format {args.format}")
         await vdj.send_command(f"rec_filename '{args.name}'")
 
         # Start recording
-        print("🔴 RECORDING STARTED")
+        print("[red] RECORDING STARTED")
         await vdj.send_command("rec")
 
         # Wait for the specified duration
         await asyncio.sleep(args.duration)
 
         # Stop recording
-        print("⏹️  RECORDING STOPPED")
+        print("[stop]️  RECORDING STOPPED")
         await vdj.send_command("rec_stop")
 
         # Get recording status
@@ -79,7 +79,7 @@ async def main():
             print(f"Recording status: {e}")
 
         print("✅ Recording session completed!")
-        print(f"💾 Check your VirtualDJ recordings folder for: {args.name}.{args.format}")
+        print(f"[save] Check your VirtualDJ recordings folder for: {args.name}.{args.format}")
         print("\n💡 Tips:")
         print("- VirtualDJ saves recordings to its default recording directory")
         print("- Use 'rec' to start, 'rec_stop' to stop recording")

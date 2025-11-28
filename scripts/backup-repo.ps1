@@ -135,7 +135,7 @@ if (-not $IncludeBuild) {
     $exclusions += @("dist", "build", "*.whl", "*.tar.gz")
 }
 
-Write-Host "🚫 Excluding:" -ForegroundColor Yellow
+Write-Host "[prohibited] Excluding:" -ForegroundColor Yellow
 foreach ($excl in $exclusions) {
     Write-Host "  - $excl" -ForegroundColor Gray
 }
@@ -177,7 +177,7 @@ Write-Host "  Backup size:   $([math]::Round($backupSize, 2)) MB" -ForegroundCol
 Write-Host "  Reduction:     $([math]::Round(($excludedSize / $totalSize) * 100, 1))%`n" -ForegroundColor Cyan
 
 # Create backup
-Write-Host "🔄 Creating backups..." -ForegroundColor Cyan
+Write-Host "[sync] Creating backups..." -ForegroundColor Cyan
 
 try {
     # CRITICAL FIX: Use .NET ZIP to preserve folder structure

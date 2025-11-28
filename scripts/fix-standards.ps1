@@ -6,7 +6,7 @@
 param([switch]$DryRun = $false)
 
 Write-Host '🔧 Fixing Repository Standards...' -ForegroundColor Cyan
-if ($DryRun) { Write-Host '🔍 DRY RUN MODE' -ForegroundColor Yellow }
+if ($DryRun) { Write-Host '[search] DRY RUN MODE' -ForegroundColor Yellow }
 
 $centralDocs = 'D:\Dev\repos\mcp-central-docs'
 

@@ -34,7 +34,7 @@ class TestResult:
 
     def skip(self, msg: str):
         self.skipped += 1
-        print(f"  ⏭️  {msg}")
+        print(f"  [skip]️  {msg}")
 
     def summary(self):
         total = self.passed + self.failed + self.skipped

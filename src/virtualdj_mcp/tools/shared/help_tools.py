@@ -138,14 +138,14 @@ def _get_categories_list() -> str:
     return """
 🔧 **VirtualDJ-MCP Tool Categories**
 
-**1. 🎛️ Deck Control**
+**1. [mixer]️ Deck Control**
    Basic deck operations: playback, loading, volume, seeking
    • `play_pause_deck()` - Control deck playback
    • `load_track_to_deck()` - Load tracks to decks
    • `set_deck_volume()` - Adjust deck volume
    • `get_deck_status()` - Get deck information
 
-**2. 🎚️ Mixing Tools**
+**2. [fader]️ Mixing Tools**
    Crossfader, EQ, synchronization, effects
    • `set_crossfader_position()` - Move crossfader
    • `auto_sync_decks()` - BPM synchronization
@@ -185,7 +185,7 @@ def _get_category_help(category: str) -> str:
     """Get detailed help for a specific category"""
     category_helps = {
         "deck_control": """
-🎛️ **Deck Control Tools**
+[mixer]️ **Deck Control Tools**
 
 **Core Functions:**
 • `play_pause_deck(deck_id: int, action: str)` - Control playback
@@ -212,7 +212,7 @@ def _get_category_help(category: str) -> str:
 """,
 
         "mixing": """
-🎚️ **Mixing Tools**
+[fader]️ **Mixing Tools**
 
 **Crossfader Control:**
 • `set_crossfader_position(position: int)` - Move crossfader

@@ -28,7 +28,7 @@ if ((Test-Path $VenvName) -and -not $Force) {
 
 # Remove existing environment if forcing
 if ((Test-Path $VenvName) -and $Force) {
-    Write-Host "🗑️  Removing existing environment..." -ForegroundColor Yellow
+    Write-Host "[delete]️  Removing existing environment..." -ForegroundColor Yellow
     Remove-Item -Recurse -Force $VenvName
 }
 
@@ -43,7 +43,7 @@ try {
 }
 
 # Activate virtual environment
-Write-Host "🔄 Activating virtual environment..." -ForegroundColor Blue
+Write-Host "[sync] Activating virtual environment..." -ForegroundColor Blue
 try {
     & "$VenvName/Scripts/Activate.ps1"
     Write-Host "✅ Virtual environment activated" -ForegroundColor Green

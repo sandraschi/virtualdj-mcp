@@ -207,14 +207,14 @@ async def show_help() -> str:
 
 📋 TOOL CATEGORIES:
 
-1. 🔄 DECK CONTROL:
+1. [sync] DECK CONTROL:
    • play_pause_deck(deck_id, action) - Control deck playback
    • load_track_to_deck(deck_id, track_path) - Load track to deck
    • seek_deck(deck_id, position) - Seek to position
    • set_deck_volume(deck_id, volume) - Set deck volume (0-100)
    • get_deck_status(deck_id) - Get deck status and track info
 
-2. 🎚️ MIXING TOOLS:
+2. [fader]️ MIXING TOOLS:
    • set_crossfader_position(position) - Set crossfader (-100 to 100)
    • auto_sync_decks(deck_a, deck_b) - Sync BPM between decks
    • set_eq_band(deck_id, band, value, kill) - Control EQ bands
@@ -227,7 +227,7 @@ async def show_help() -> str:
    • suggest_next_track(style, current_track_id, limit) - Get track suggestions
    • set_auto_dj_preferences(fade_time, energy_matching, ...) - Configure Auto-DJ
 
-4. ⏺️ RECORDING TOOLS:
+4. [record]️ RECORDING TOOLS:
    • start_recording(name, format) - Start recording mix
    • stop_recording() - Stop recording
    • get_recording_status(recording_id) - Get recording status
@@ -246,9 +246,9 @@ async def show_help() -> str:
 • Recordings are saved in the configured recordings directory
 • Check the README for detailed parameter documentation
 
-🔍 For detailed documentation, visit the project's GitHub repository.
+[search] For detailed documentation, visit the project's GitHub repository.
 
-Perfect for Sandra's professional DJ automation needs in Vienna! 🇦🇹
+Perfect for Sandra's professional DJ automation needs in Vienna! 
 """
         return help_text.strip()
         

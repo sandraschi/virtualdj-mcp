@@ -38,7 +38,7 @@ async def main():
                 print("❌ Failed to start VirtualDJ. Please start it manually.")
                 return
 
-        print("🎧 VirtualDJ is running")
+        print("[headphones] VirtualDJ is running")
 
         # Example track paths - update these to your music library
         track1 = r"C:\Users\sandr\Music\track1.mp3"  # Update this path!
@@ -66,20 +66,20 @@ async def main():
         await vdj.send_command("deck 2 play")
 
         # Set initial volumes (0-100)
-        print("🔊 Setting volumes to 70%")
+        print("[speaker] Setting volumes to 70%")
         await vdj.send_command("deck 1 volume 70%")
         await vdj.send_command("deck 2 volume 70%")
 
         # Demonstrate crossfader (using VDJScript for smooth transitions)
-        print("🎛️  Moving crossfader to center")
+        print("[mixer]️  Moving crossfader to center")
         await vdj.send_command("crossfader 0%")
         await asyncio.sleep(2)
 
-        print("🎛️  Crossfading to deck 1")
+        print("[mixer]️  Crossfading to deck 1")
         await vdj.send_command("crossfader -100%")  # Full left (deck 1)
         await asyncio.sleep(2)
 
-        print("🎛️  Crossfading to deck 2")
+        print("[mixer]️  Crossfading to deck 2")
         await vdj.send_command("crossfader 100%")   # Full right (deck 2)
         await asyncio.sleep(2)
 
@@ -96,7 +96,7 @@ async def main():
         await asyncio.sleep(1)
 
         # Stop both decks
-        print("⏹️  Stopping both decks")
+        print("[stop]️  Stopping both decks")
         await vdj.send_command("deck 1 stop")
         await vdj.send_command("deck 2 stop")
 

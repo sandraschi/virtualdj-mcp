@@ -51,8 +51,8 @@ async def main():
                 print("❌ Failed to start VirtualDJ. Please start it manually.")
                 return
 
-        print("🎧 VirtualDJ is running - starting performance monitoring")
-        print(f"⏱️  Monitoring for {args.duration} seconds (updates every {args.interval}s)")
+        print("[headphones] VirtualDJ is running - starting performance monitoring")
+        print(f"[timer]️  Monitoring for {args.duration} seconds (updates every {args.interval}s)")
         print("Press Ctrl+C to stop early\n")
 
         # Metrics storage
@@ -76,7 +76,7 @@ async def main():
                 elapsed = (datetime.now() - start_time).total_seconds()
 
         except KeyboardInterrupt:
-            print("\n⏹️  Monitoring stopped by user")
+            print("\n[stop]️  Monitoring stopped by user")
 
         # Save metrics if output file specified
         if args.output:
@@ -86,7 +86,7 @@ async def main():
             print(f"📊 Metrics saved to: {output_file}")
 
         print("✅ Performance monitoring completed!")
-        print(f"📈 Collected {len(metrics_history)} data points")
+        print(f"[up] Collected {len(metrics_history)} data points")
 
 async def collect_metrics(vdj: VirtualDJClient) -> dict:
     """Collect performance metrics from VirtualDJ."""
@@ -149,7 +149,7 @@ def display_metrics(metrics: dict):
     console.print("=" * 60)
 
     # Decks table
-    deck_table = Table(title="🎛️  Deck Status")
+    deck_table = Table(title="[mixer]️  Deck Status")
     deck_table.add_column("Deck", style="cyan", no_wrap=True)
     deck_table.add_column("Track", style="white", max_width=30)
     deck_table.add_column("Artist", style="white", max_width=20)
@@ -167,7 +167,7 @@ def display_metrics(metrics: dict):
                 "-", "-", "-", "❌"
             )
         else:
-            status = "▶️" if deck_data.get('playing', False) else "⏸️"
+            status = "▶️" if deck_data.get('playing', False) else "[pause]️"
             deck_table.add_row(
                 deck_name.replace('deck_', '').upper(),
                 deck_data.get('title', 'No track')[:30],
@@ -184,8 +184,8 @@ def display_metrics(metrics: dict):
     mixer_data = metrics.get('mixer', {})
     system_data = metrics.get('system', {})
 
-    console.print(f"\n🎚️  [bold]Mixer:[/bold] Crossfader: {mixer_data.get('crossfader', '0')}% | Master: {mixer_data.get('master_volume', '0')}%")
-    console.print(f"🖥️  [bold]System:[/bold] CPU: {system_data.get('cpu_usage', '0')}% | Sample Rate: {system_data.get('sample_rate', '44100')}Hz")
+    console.print(f"\n[fader]️  [bold]Mixer:[/bold] Crossfader: {mixer_data.get('crossfader', '0')}% | Master: {mixer_data.get('master_volume', '0')}%")
+    console.print(f"[screen]️  [bold]System:[/bold] CPU: {system_data.get('cpu_usage', '0')}% | Sample Rate: {system_data.get('sample_rate', '44100')}Hz")
 
     if 'error' in metrics:
         console.print(f"\n[red]❌ Error: {metrics['error']}[/red]")
