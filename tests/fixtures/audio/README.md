@@ -11,6 +11,7 @@ Small MP3 files for testing and demos.
 | `test_track_fart.mp3` | Synthetic fart 💨 | 1.5 sec | ~12 KB |
 | `test_track_holdmusic.mp3` | Elevator muzak from hell 🎵 | 2.4 sec | ~20 KB |
 | `test_track_buzzer.mp3` | Game show wrong answer 📢 | 1.5 sec | ~12 KB |
+| `test_track_dissonance.mp3` | Dental nightmare cluster 😬 | 3 sec | ~24 KB |
 
 ## Generation Recipes
 
@@ -32,6 +33,13 @@ ffmpeg -f lavfi -i "aevalsrc=sin(523*2*PI*t)*exp(-3*t):d=0.4" ... \
 ffmpeg -f lavfi -i "aevalsrc=sin(200*2*PI*t)+sin(250*2*PI*t)+sin(300*2*PI*t):d=1.5" \
   -af "volume=0.3,afade=t=out:st=1:d=0.5" \
   -c:a libmp3lame -b:a 64k test_track_buzzer.mp3
+
+# Dental nightmare (tritones + minor 2nds + cluster + high overtones + tremolo)
+ffmpeg -f lavfi -i "aevalsrc='sin(440*2*PI*t)+sin(466*2*PI*t)+sin(493*2*PI*t)+
+  sin(622*2*PI*t)+sin(659*2*PI*t)+sin(698*2*PI*t)+
+  0.3*sin(1397*2*PI*t)+0.2*sin(2093*2*PI*t)':d=3" \
+  -af "volume=0.15,tremolo=f=6:d=0.4,vibrato=f=4:d=0.3" \
+  -c:a libmp3lame -b:a 64k test_track_dissonance.mp3
 ```
 
 All sounds are 100% synthetic - no copyright issues, just pure audio engineering whimsy! 🎉
