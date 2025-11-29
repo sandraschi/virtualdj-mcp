@@ -70,44 +70,15 @@ try:
         console.print("[green]  vdj_skin, vdj_video, vdj_plex, vdj_system[/green]")
         
     else:
-        # INDIVIDUAL MODE: 62+ individual tools
-        # For backward compatibility or fine-grained control
-        console.print("[blue]Using INDIVIDUAL tool mode (62+ tools)[/blue]")
+        # INDIVIDUAL MODE: Legacy tools (archived in _legacy/)
+        # Use portmanteau mode for new development
+        console.print("[yellow]INDIVIDUAL mode deprecated - using PORTMANTEAU instead[/yellow]")
+        console.print("[yellow]Legacy tools archived in tools/_legacy/[/yellow]")
         
-        from .tools.deck_control.tools import setup_deck_control_tools
-        setup_deck_control_tools(mcp)
-
-        from .tools.mixing.tools import setup_mixing_tools
-        setup_mixing_tools(mcp)
-
-        from .tools.library.tools import setup_library_tools
-        setup_library_tools(mcp)
-
-        from .tools.automation.tools import setup_auto_dj_tools
-        setup_auto_dj_tools(mcp)
-
-        from .tools.recording.tools import setup_recording_tools
-        setup_recording_tools(mcp)
-
-        from .tools.performance.tools import setup_performance_tools
-        setup_performance_tools(mcp)
-
-        from .tools.shared.help_tools import setup_help_tools
-        setup_help_tools(mcp)
-
-        from .tools.skin.tools import setup_skin_tools
-        setup_skin_tools(mcp)
-
-        from .tools.stems.tools import setup_stem_tools
-        setup_stem_tools(mcp)
-
-        from .tools.beatgrid.tools import setup_beatgrid_tools
-        setup_beatgrid_tools(mcp)
-
-        from .tools.video.tools import setup_video_tools
-        setup_video_tools(mcp)
+        from .tools.portmanteau import setup_all_portmanteau_tools
+        setup_all_portmanteau_tools(mcp)
         
-        tools_loaded = 62
+        tools_loaded = 12
 
     # Initialize system status
     from .tools.shared.dependencies import update_system_status
