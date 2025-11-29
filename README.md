@@ -2,6 +2,7 @@
 
 [![Production Ready](https://img.shields.io/badge/status-production%20ready-brightgreen.svg)](docs/MCP_PRODUCTION_CHECKLIST.md)
 [![FastMCP](https://img.shields.io/badge/FastMCP-2.13.1-blue.svg)](https://gofastmcp.com)
+[![Portmanteau](https://img.shields.io/badge/Tools-12%20Portmanteau-purple.svg)](#-portmanteau-tools-default)
 
 Professional DJ automation MCP server with Austrian efficiency for Sandra's music mixing needs.
 
@@ -9,24 +10,21 @@ Professional DJ automation MCP server with Austrian efficiency for Sandra's musi
 
 VirtualDJ-MCP provides seamless integration between Claude and VirtualDJ, enabling professional DJ automation, mixing, and library management through natural language commands.
 
-### 📋 Capabilities (25+ Tools)
+### ✨ What's New (v2.0)
 
-- **Deck Control**: Play/pause/stop, load tracks, seek, volume, status monitoring
-- **Mixing Tools**: Crossfader control, auto-sync, beatmatching, EQ controls
-- **Library Tools**: Browse library, search tracks, get track info
-- **Automation**: VirtualDJ Auto-DJ, recording controls, session management
-- **Performance**: Real-time monitoring, variable access, status reporting
+- **Portmanteau Tools**: 62+ tools consolidated into 12 clean interfaces (81% reduction!)
+- **Plex Integration**: Search and load tracks directly from Plex Media Server
+- **Stem Separation**: Real-time vocal/instrumental isolation and mashups
+- **Video Mixing**: Full video DJ support with effects and transitions
 
 ### 💪 Strengths
 
 - Professional DJ software integration (20+ years of VirtualDJ development)
 - **HTTP API Integration**: Real-time control via Network Control Plugin
 - Real-time deck control and mixing automation
-- VirtualDJ's built-in Auto-DJ and recording features
 - Multi-deck support (up to 8 decks simultaneously)
-- Hardware controller integration through VirtualDJ
+- **NEW: Plex Media Server integration**
 - **Production-Ready**: FastMCP 2.13.1 implementation
-- **Dual Interface**: MCP (Claude Desktop/Cursor) + FastAPI (Web API)
 
 ### ⚠️ Requirements
 
@@ -39,8 +37,6 @@ VirtualDJ-MCP provides seamless integration between Claude and VirtualDJ, enabli
 
 ### Step 1: Install VirtualDJ Network Control Plugin
 
-This is **required** for VirtualDJ-MCP to communicate with VirtualDJ.
-
 1. Open **VirtualDJ**
 2. Go to **Config** → **Extensions** → **Effects** → **Other**
 3. Install **"Network Control"** plugin
@@ -51,26 +47,17 @@ This is **required** for VirtualDJ-MCP to communicate with VirtualDJ.
 ### Step 2: Install VirtualDJ-MCP
 
 ```powershell
-# Clone repository
 git clone https://github.com/sandraschi/virtualdj-mcp.git
 cd virtualdj-mcp
-
-# Create virtual environment
 python -m venv vdj-mcp-env
-
-# Activate environment (Windows PowerShell)
 .\vdj-mcp-env\Scripts\Activate.ps1
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Install package in development mode
 pip install -e .
 ```
 
-### Step 3: Configure MCP Client
+### Step 3: Configure Claude Desktop
 
-**For Claude Desktop** - Add to `claude_desktop_config.json`:
+Add to `claude_desktop_config.json`:
 
 ```json
 {
@@ -88,133 +75,156 @@ pip install -e .
 }
 ```
 
-**For Cursor** - Add to `~/.cursor/mcp.json`:
+## 🎛️ Portmanteau Tools (Default)
+
+VirtualDJ-MCP uses **12 consolidated portmanteau tools** for a cleaner AI interface:
+
+| Tool | Operations | Description |
+|------|------------|-------------|
+| `vdj_deck` | play, pause, toggle, stop, load, seek, volume, status | Deck playback control |
+| `vdj_mixer` | crossfader, sync, eq_high, eq_mid, eq_low, gain, filter | Mixing and EQ |
+| `vdj_library` | search, analyze | Library search and audio analysis |
+| `vdj_automation` | start, stop, status, suggest, preferences | Auto-DJ control |
+| `vdj_recording` | start, stop, status, list, export, delete | Mix recording |
+| `vdj_performance` | metrics, stats, trends, recommendations | Performance analytics |
+| `vdj_stems` | kill, unkill, volume, acapella, instrumental, swap, reset | Stem separation |
+| `vdj_beatgrid` | set_bpm, tap, adjust, anchor, pitch_bend, loop, loop_roll | BPM and loops |
+| `vdj_skin` | info, load, variation, panel, window | Skin control |
+| `vdj_video` | crossfader, transition, fx, text, output, karaoke, loop | Video mixing |
+| **`vdj_plex`** | **search, get_path, load_from_plex, list_libraries** | **Plex integration** |
+| `vdj_system` | status, help, connection_test | System status |
+
+### Tool Mode
+
+Set `VDJ_TOOL_MODE` environment variable:
+- `portmanteau` (default) - 12 consolidated tools
+- `individual` - 62+ individual tools (backward compatibility)
+
+## 🎵 Usage Examples
+
+### Natural Language (via Claude)
+
+```
+"Load Dancing Queen by ABBA to deck 1 and play it"
+"Search my Plex library for Pink Floyd and load to deck 2"
+"Sync the decks and crossfade to 50/50"
+"Put deck 1 in acapella mode - I want just the vocals"
+"Create a mashup: ABBA vocals over Pink Floyd instrumental"
+```
+
+### Portmanteau Tool Examples
+
+```python
+# Basic playback
+vdj_deck("load", deck_id=1, track_path="C:/Music/track.mp3")
+vdj_deck("play", deck_id=1)
+
+# Load from Plex
+vdj_plex("search", query="ABBA", limit=10)
+vdj_plex("load_from_plex", query="Dancing Queen", deck_id=1)
+vdj_plex("load_from_plex", artist="Pink Floyd", deck_id=2)
+
+# Mixing
+vdj_mixer("sync", deck_a=1, deck_b=2)
+vdj_mixer("crossfader", position=0)  # Center
+
+# Stem mashup!
+vdj_stems("swap", deck_a=1, deck_b=2, stem="vocal")  # ABBA vocals over Pink Floyd!
+
+# Quick acapella/instrumental
+vdj_stems("acapella", deck_id=1)      # Vocals only
+vdj_stems("instrumental", deck_id=2)   # No vocals
+
+# Video mixing
+vdj_video("transition", transition_type="cube", duration=2.0)
+vdj_video("text", text="DJ Sandra", text_position="bottom")
+
+# Recording
+vdj_recording("start", name="Friday Night Mix", format="mp3")
+vdj_recording("stop")
+```
+
+## 🎬 Plex Integration
+
+Load tracks directly from your Plex Media Server!
+
+### Setup
+
+Add Plex token to your environment:
 
 ```json
 {
   "virtualdj-mcp": {
-    "command": "python",
-    "args": ["-m", "virtualdj_mcp.server"],
-    "cwd": "D:/Dev/repos/virtualdj-mcp",
     "env": {
-      "PYTHONPATH": "D:/Dev/repos/virtualdj-mcp/src",
-      "PYTHONUNBUFFERED": "1"
+      "PLEX_SERVER_URL": "http://localhost:32400",
+      "PLEX_TOKEN": "your_plex_token_here"
     }
   }
 }
 ```
 
-### Step 4: Test Connection
+### Usage
 
-```powershell
-# Test HTTP API directly
-python -c "import httpx; r=httpx.post('http://127.0.0.1:80/execute', content='deck 1 play', headers={'Content-Type': 'text/plain'}); print(r.status_code, r.text)"
+```python
+# List your music libraries
+vdj_plex("list_libraries")
+
+# Search for tracks
+vdj_plex("search", query="ABBA", limit=10)
+vdj_plex("search", artist="Pink Floyd")
+
+# Load directly to deck
+vdj_plex("load_from_plex", query="Dancing Queen", deck_id=1)
 ```
 
-Expected output: `200 true`
+## 🎤 Stem Separation
+
+VirtualDJ's Stems 2.0 enables real-time isolation:
+
+| Stem | Description |
+|------|-------------|
+| `vocal` | Vocals |
+| `instru` | Instrumental (everything except vocals) |
+| `bass` | Bass frequencies |
+| `drums` | Full drum kit |
+| `hihat` | Hi-hats |
+| `kick` | Kick drum |
+| `snare` | Snare drum |
+| `melody` | Melody/synths |
+
+### Quick Modes
+
+```python
+vdj_stems("acapella", deck_id=1)       # Vocals only
+vdj_stems("instrumental", deck_id=1)   # No vocals
+vdj_stems("isolate_drums", deck_id=1)  # Drums only
+
+# Mashup: vocals from deck 1, instrumental from deck 2
+vdj_stems("swap", deck_a=1, deck_b=2, stem="vocal")
+```
 
 ## Configuration
 
 ### Environment Variables
 
 ```env
-# Network Control Plugin (HTTP API)
-VDJ_HTTP_HOST=127.0.0.1      # Plugin host (default: 127.0.0.1)
-VDJ_HTTP_PORT=80             # Plugin port (default: 80)
-VDJ_HTTP_PASSWORD=           # Optional authentication password
-VDJ_HTTP_TIMEOUT=10.0        # Request timeout in seconds
+# Network Control Plugin
+VDJ_HTTP_HOST=127.0.0.1
+VDJ_HTTP_PORT=80
+VDJ_HTTP_PASSWORD=
+VDJ_HTTP_TIMEOUT=10.0
+
+# Tool mode
+VDJ_TOOL_MODE=portmanteau  # or "individual"
+
+# Plex integration
+PLEX_SERVER_URL=http://localhost:32400
+PLEX_TOKEN=your_token_here
 
 # VirtualDJ paths
 VDJ_PATH=C:/Program Files/VirtualDJ/virtualdj.exe
 VDJ_LIBRARY_PATH=C:/Music
-
-# General settings
-VDJ_DEFAULT_VOLUME=75
-VDJ_MAX_DECKS=4
 ```
-
-## Usage Examples
-
-### Natural Language (via Claude/Cursor)
-
-```
-"Load the Albinoni Adagio to deck 1 and start playing"
-"Set crossfader to favor deck 2"
-"Auto-sync decks 1 and 2"
-"Show current deck status"
-"Search for techno tracks around 140 BPM"
-```
-
-### MCP Tools
-
-```python
-# Control playback
-play_pause_deck(deck_id=1, action="play")
-
-# Load tracks
-load_track_to_deck(deck_id=1, track_path="E:/Music/track.mp3")
-
-# Get status
-get_deck_status(deck_id=1)
-
-# Mixing
-set_crossfader_position(position=50)  # Center
-auto_sync_decks(deck_a=1, deck_b=2)
-```
-
-### FastAPI Server (Web API)
-
-```powershell
-# Start FastAPI server
-$env:RUN_FASTAPI="true"
-python -m virtualdj_mcp.server
-
-# Access API documentation at: http://localhost:8000/api/docs
-```
-
-## 🎛️ Available Tools
-
-### Deck Control
-| Tool | Description |
-|------|-------------|
-| `play_pause_deck(deck_id, action)` | Control playback (play/pause/toggle) |
-| `load_track_to_deck(deck_id, track_path)` | Load track to deck |
-| `seek_deck(deck_id, position)` | Seek to position |
-| `set_deck_volume(deck_id, volume)` | Set deck volume (0-100) |
-| `get_deck_status(deck_id)` | Get deck status and track info |
-
-### Mixing
-| Tool | Description |
-|------|-------------|
-| `set_crossfader_position(position)` | Set crossfader (-100 to +100) |
-| `auto_sync_decks(deck_a, deck_b)` | Sync BPM between decks |
-
-### Library
-| Tool | Description |
-|------|-------------|
-| `search_tracks(query, ...)` | Search music library |
-| `analyze_track_audio(track_path)` | Analyze BPM, key, energy (aubio-powered) |
-
-### Automation
-| Tool | Description |
-|------|-------------|
-| `auto_dj_mode(...)` | Enable Auto-DJ |
-| `stop_auto_dj()` | Stop Auto-DJ |
-| `suggest_next_track(style)` | Get track suggestions |
-
-### Recording
-| Tool | Description |
-|------|-------------|
-| `start_recording(name, format)` | Start recording mix |
-| `stop_recording()` | Stop recording |
-| `list_recordings()` | List saved recordings |
-
-### Performance
-| Tool | Description |
-|------|-------------|
-| `get_performance_metrics()` | Get DJ performance metrics |
-| `get_session_statistics()` | Get session analytics |
-| `show_help()` | Show help documentation |
 
 ## Architecture
 
@@ -228,82 +238,52 @@ python -m virtualdj_mcp.server
 ┌─────────────────────────────────────────────────────────────────┐
 │                      VirtualDJ-MCP Server                       │
 │                       (FastMCP 2.13.1)                          │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
-│  │ Deck Tools  │  │ Mixer Tools │  │ Library/Auto/Recording  │  │
-│  └──────┬──────┘  └──────┬──────┘  └────────────┬────────────┘  │
-│         └────────────────┼──────────────────────┘               │
-│                          ▼                                      │
-│              ┌─────────────────────┐                            │
-│              │   VirtualDJ Client  │                            │
-│              │    (HTTP/httpx)     │                            │
-│              └──────────┬──────────┘                            │
-└─────────────────────────┼───────────────────────────────────────┘
-                          │ HTTP POST (localhost:80)
-                          ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    VirtualDJ Application                        │
-│  ┌───────────────────────────────────────────────────────────┐  │
-│  │              Network Control Plugin                        │  │
-│  │         /execute  │  /query                               │  │
-│  └───────────────────┴───────────────────────────────────────┘  │
-│                          │                                      │
-│  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌─────────────┐  │
-│  │  Deck 1   │  │  Deck 2   │  │  Library  │  │   Mixer     │  │
-│  └───────────┘  └───────────┘  └───────────┘  └─────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │              12 Portmanteau Tools                         │   │
+│  │  vdj_deck │ vdj_mixer │ vdj_stems │ vdj_plex │ ...       │   │
+│  └──────────────────────────┬───────────────────────────────┘   │
+│                             ▼                                    │
+│  ┌──────────────┐    ┌──────────────┐                           │
+│  │ VDJ Client   │    │ Plex Client  │                           │
+│  │ (HTTP/httpx) │    │ (HTTP/httpx) │                           │
+│  └──────┬───────┘    └──────┬───────┘                           │
+└─────────┼───────────────────┼───────────────────────────────────┘
+          │                   │
+          ▼                   ▼
+┌─────────────────┐    ┌─────────────────┐
+│   VirtualDJ     │    │  Plex Server    │
+│ Network Control │    │  (port 32400)   │
+│   (port 80)     │    │                 │
+└─────────────────┘    └─────────────────┘
 ```
 
 ## Troubleshooting
 
-### "Cannot connect to VirtualDJ Network Control Plugin"
+### "Cannot connect to VirtualDJ"
 
 1. Ensure VirtualDJ is running
 2. Verify Network Control Plugin is installed and enabled
-3. Check the port (default: 80) isn't blocked
-4. Test directly: `curl http://127.0.0.1:80/execute -d "nop"`
+3. Test: `curl http://127.0.0.1:80/execute -d "nop"`
 
-### Commands return "false"
+### "Plex connection failed"
 
-- Check VDJScript syntax
-- Verify file paths exist (use forward slashes)
-- Ensure deck number is valid (1-8)
-
-### Track won't load
-
-- Verify file path is correct and accessible
-- Use forward slashes: `E:/Music/track.mp3`
-- Check file format is supported by VirtualDJ
+1. Verify `PLEX_TOKEN` is set correctly
+2. Test: `curl "http://localhost:32400/?X-Plex-Token=YOUR_TOKEN"`
 
 📖 **[Full Troubleshooting Guide](docs/NETWORK_CONTROL_SETUP.md#troubleshooting)**
 
-## 🇦🇹 Austrian Efficiency
-
-This project embodies Austrian efficiency principles:
-- **Practical solutions** over theoretical complexity
-- **Cultural awareness** for Vienna music scene
-- **No decision paralysis** - exactly what you need, when you need it
-- **Professional quality** without overwhelming options
-
-Perfect for Sandra's DJ automation needs in Vienna!
-
-## 📄 License
-
-MIT License - See LICENSE file for details.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
 ## 📚 Documentation
 
-- **[Network Control Setup](docs/NETWORK_CONTROL_SETUP.md)** - Plugin installation and HTTP API
+- **[Network Control Setup](docs/NETWORK_CONTROL_SETUP.md)** - Plugin installation
 - **[VirtualDJ Reference](docs/VIRTUALDJ_REFERENCE.md)** - VDJScript commands
-- **[FastMCP 2.13 Migration](docs/FASTMCP_2.13_MIGRATION.md)** - Migration guide
 - **[MCP Production Checklist](docs/MCP_PRODUCTION_CHECKLIST.md)** - Production readiness
+
+## 🇦🇹 Austrian Efficiency
+
+- **Practical solutions** over theoretical complexity
+- **12 tools** instead of 62+ (81% reduction!)
+- **No decision paralysis** - exactly what you need
+- **Plex integration** - your music library, your way
 
 ---
 
