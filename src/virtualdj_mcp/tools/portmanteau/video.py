@@ -11,7 +11,6 @@ from fastmcp import FastMCP
 from rich.console import Console
 
 from ..shared.dependencies import get_vdj_client
-from ..shared.exceptions import VDJError
 
 console = Console(file=__import__('sys').stderr)
 

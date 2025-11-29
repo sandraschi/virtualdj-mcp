@@ -7,7 +7,7 @@ Operations: search, get_path, load_from_plex
 
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Dict, Literal, Optional
 
 from fastmcp import FastMCP
 from rich.console import Console

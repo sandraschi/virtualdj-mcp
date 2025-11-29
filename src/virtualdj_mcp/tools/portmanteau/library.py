@@ -5,7 +5,7 @@ Consolidates library operations into a single interface.
 Operations: search, analyze
 """
 
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Dict, Literal, Optional
 
 from fastmcp import FastMCP
 from rich.console import Console
