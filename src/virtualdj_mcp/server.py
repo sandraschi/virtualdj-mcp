@@ -3,8 +3,15 @@ VirtualDJ-MCP Server - FastMCP 2.13+ Implementation
 
 Thin server file that imports and registers all tools.
 Supports both MCP and FastAPI interfaces as required.
+
+TOOL MODES:
+- PORTMANTEAU (default): 13 consolidated tools for cleaner AI interface
+- INDIVIDUAL: 62+ individual tools for fine-grained control
+
+Set VDJ_TOOL_MODE=individual to use individual tools instead of portmanteau.
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -21,6 +28,9 @@ from rich.console import Console
 
 # Initialize console for logging (redirect to stderr for MCP compatibility)
 console = Console(file=sys.stderr)
+
+# Tool mode: "portmanteau" (default) or "individual"
+TOOL_MODE = os.getenv("VDJ_TOOL_MODE", "portmanteau").lower()
 
 # Initialize FastMCP server
 mcp = FastMCP("VirtualDJ-MCP 🎵")
@@ -46,45 +56,66 @@ fastapi_app.add_middleware(
 
 # Import and setup all tool categories
 try:
-    from .tools.deck_control.tools import setup_deck_control_tools
-    setup_deck_control_tools(mcp)
+    if TOOL_MODE == "portmanteau":
+        # PORTMANTEAU MODE (default): 13 consolidated tools
+        # Better for AI assistants - fewer tools, cleaner interface
+        console.print("[blue]Using PORTMANTEAU tool mode (13 tools)[/blue]")
+        
+        from .tools.portmanteau import setup_all_portmanteau_tools
+        setup_all_portmanteau_tools(mcp)
+        
+        tools_loaded = 13
+        console.print("[green]Portmanteau tools: vdj_deck, vdj_mixer, vdj_library, vdj_automation,[/green]")
+        console.print("[green]  vdj_recording, vdj_performance, vdj_stems, vdj_beatgrid,[/green]")
+        console.print("[green]  vdj_skin, vdj_video, vdj_plex, vdj_system[/green]")
+        
+    else:
+        # INDIVIDUAL MODE: 62+ individual tools
+        # For backward compatibility or fine-grained control
+        console.print("[blue]Using INDIVIDUAL tool mode (62+ tools)[/blue]")
+        
+        from .tools.deck_control.tools import setup_deck_control_tools
+        setup_deck_control_tools(mcp)
 
-    from .tools.mixing.tools import setup_mixing_tools
-    setup_mixing_tools(mcp)
+        from .tools.mixing.tools import setup_mixing_tools
+        setup_mixing_tools(mcp)
 
-    from .tools.library.tools import setup_library_tools
-    setup_library_tools(mcp)
+        from .tools.library.tools import setup_library_tools
+        setup_library_tools(mcp)
 
-    from .tools.automation.tools import setup_auto_dj_tools
-    setup_auto_dj_tools(mcp)
+        from .tools.automation.tools import setup_auto_dj_tools
+        setup_auto_dj_tools(mcp)
 
-    from .tools.recording.tools import setup_recording_tools
-    setup_recording_tools(mcp)
+        from .tools.recording.tools import setup_recording_tools
+        setup_recording_tools(mcp)
 
-    from .tools.performance.tools import setup_performance_tools
-    setup_performance_tools(mcp)
+        from .tools.performance.tools import setup_performance_tools
+        setup_performance_tools(mcp)
 
-    from .tools.shared.help_tools import setup_help_tools
-    setup_help_tools(mcp)
+        from .tools.shared.help_tools import setup_help_tools
+        setup_help_tools(mcp)
 
-    from .tools.skin.tools import setup_skin_tools
-    setup_skin_tools(mcp)
+        from .tools.skin.tools import setup_skin_tools
+        setup_skin_tools(mcp)
 
-    from .tools.stems.tools import setup_stem_tools
-    setup_stem_tools(mcp)
+        from .tools.stems.tools import setup_stem_tools
+        setup_stem_tools(mcp)
 
-    from .tools.beatgrid.tools import setup_beatgrid_tools
-    setup_beatgrid_tools(mcp)
+        from .tools.beatgrid.tools import setup_beatgrid_tools
+        setup_beatgrid_tools(mcp)
 
-    from .tools.video.tools import setup_video_tools
-    setup_video_tools(mcp)
+        from .tools.video.tools import setup_video_tools
+        setup_video_tools(mcp)
+        
+        tools_loaded = 62
 
     # Initialize system status
     from .tools.shared.dependencies import update_system_status
     update_system_status("server_started", True)
-    update_system_status("tools_loaded", 61)  # Updated: +12 video tools
+    update_system_status("tools_loaded", tools_loaded)
+    update_system_status("tool_mode", TOOL_MODE)
 
-    console.print("[green]All VirtualDJ-MCP tools registered successfully[/green]")
+    console.print(f"[green]VirtualDJ-MCP: {tools_loaded} tools registered successfully[/green]")
 
 except Exception as e:
     console.print(f"[red]Error registering tools: {e}[/red]")
