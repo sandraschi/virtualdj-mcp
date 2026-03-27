@@ -16,6 +16,7 @@ VirtualDJ-MCP provides seamless integration between Claude and VirtualDJ, enabli
 - **Plex Integration**: Search and load tracks directly from Plex Media Server
 - **Stem Separation**: Real-time vocal/instrumental isolation and mashups
 - **Video Mixing**: Full video DJ support with effects and transitions
+- **Cross-MCP deck API**: standard REST endpoints for load/play/sync/cue handoff from other MCP servers
 
 ### 💪 Strengths
 
@@ -49,13 +50,28 @@ VirtualDJ-MCP provides seamless integration between Claude and VirtualDJ, enabli
 ```powershell
 git clone https://github.com/sandraschi/virtualdj-mcp.git
 cd virtualdj-mcp
-python -m venv vdj-mcp-env
+uv venv-mcp-env
 .\vdj-mcp-env\Scripts\Activate.ps1
-pip install -r requirements.txt
-pip install -e .
+uv pip install -r requirements.txt
+uv pip install -e .
 ```
 
-### Step 3: Configure Claude Desktop
+### Step 3: Configure Claude Desktop / Cursor IDE
+
+#### For Cursor IDE
+
+**Important:** Cursor uses system Python. Install dependencies in the Python that Cursor uses:
+
+```powershell
+# Find system Python path (check Cursor error logs if needed)
+# Example: C:\Users\sandr\AppData\Local\Programs\Python\Python310\python.exe
+python -m uv pip install -r requirements.txt
+python -m uv pip install -e .
+```
+
+See `CURSOR_SETUP.md` for detailed Cursor configuration instructions.
+
+#### For Claude Desktop
 
 Add to `claude_desktop_config.json`:
 
@@ -64,16 +80,20 @@ Add to `claude_desktop_config.json`:
   "mcpServers": {
     "virtualdj-mcp": {
       "command": "python",
-      "args": ["-m", "virtualdj_mcp.server"],
-      "cwd": "D:/Dev/repos/virtualdj-mcp",
+      "args": ["-m", "virtualdj_mcp.__main__"],
       "env": {
         "PYTHONPATH": "D:/Dev/repos/virtualdj-mcp/src",
-        "PYTHONUNBUFFERED": "1"
+        "PYTHONUNBUFFERED": "1",
+        "VDJ_HTTP_HOST": "127.0.0.1",
+        "VDJ_HTTP_PORT": "80",
+        "VDJ_TOOL_MODE": "portmanteau"
       }
     }
   }
 }
 ```
+
+**Note:** Some JSON linters object to `cwd` parameter. Using `-m` module execution with `PYTHONPATH` avoids this issue.
 
 ## 🎛️ Portmanteau Tools (Default)
 
@@ -100,7 +120,42 @@ Set `VDJ_TOOL_MODE` environment variable:
 - `portmanteau` (default) - 12 consolidated tools
 - `individual` - 62+ individual tools (backward compatibility)
 
-## 🎵 Usage Examples
+## Cross-MCP REST deck handoff
+
+VirtualDJ-MCP exposes stable REST endpoints so other MCP servers can hand off tracks without MCP tool coupling:
+
+- `POST /api/v1/deck/{deck_id}/load` (`track_path`)
+- `POST /api/v1/deck/{deck_id}/play_pause` (`action=play|pause|toggle`)
+- `POST /api/v1/deck/{deck_id}/sync`
+- `POST /api/v1/deck/{deck_id}/cue` (`mode=start|cue|set_cue`)
+
+These are used by `songgeneration-mcp` Listen exports for direct deck preparation before live mixing/scratching.
+
+
+## 🚀 Installation
+
+### Prerequisites
+- [uv](https://docs.astral.sh/uv/) installed (RECOMMENDED)
+- Python 3.12+
+
+### 📦 Quick Start
+Run immediately via `uvx`:
+```bash
+uvx virtualdj-mcp
+```
+
+### 🎯 Claude Desktop Integration
+Add to your `claude_desktop_config.json`:
+```json
+"mcpServers": {
+  "virtualdj-mcp": {
+    "command": "uv",
+    "args": ["--directory", "D:/Dev/repos/virtualdj-mcp", "run", "virtualdj-mcp"]
+  }
+}
+```
+
+## Usage Examples
 
 ### Natural Language (via Claude)
 
@@ -163,7 +218,31 @@ Add Plex token to your environment:
 }
 ```
 
-### Usage
+
+## 🚀 Installation
+
+### Prerequisites
+- [uv](https://docs.astral.sh/uv/) installed (RECOMMENDED)
+- Python 3.12+
+
+### 📦 Quick Start
+Run immediately via `uvx`:
+```bash
+uvx virtualdj-mcp
+```
+
+### 🎯 Claude Desktop Integration
+Add to your `claude_desktop_config.json`:
+```json
+"mcpServers": {
+  "virtualdj-mcp": {
+    "command": "uv",
+    "args": ["--directory", "D:/Dev/repos/virtualdj-mcp", "run", "virtualdj-mcp"]
+  }
+}
+```
+
+## Usage
 
 ```python
 # List your music libraries

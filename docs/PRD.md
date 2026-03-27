@@ -1,3 +1,32 @@
+# PRD — virtualdj-mcp
+
+## Purpose
+
+`virtualdj-mcp` provides a reliable control plane for VirtualDJ automation via MCP tools and REST endpoints, with a focus on live DJ workflows and cross-server interoperability.
+
+## Goals
+
+1. Provide low-latency deck and mixer control for professional DJ tasks.
+2. Maintain a stable REST API surface for cross-MCP orchestration.
+3. Support predictable handoff actions from external systems (load, play, sync, cue).
+4. Preserve portability across local fleet deployments with clear port and settings conventions.
+
+## Cross-MCP Interop Requirement
+
+The backend must keep the following deck handoff endpoints stable:
+
+- `POST /api/v1/deck/{deck_id}/load`
+- `POST /api/v1/deck/{deck_id}/play_pause`
+- `POST /api/v1/deck/{deck_id}/sync`
+- `POST /api/v1/deck/{deck_id}/cue`
+
+These endpoints are consumed by other MCP servers (for example `songgeneration-mcp`) to hand tracks into live decks with explicit pre-mix behavior.
+
+## Non-Goals
+
+- Replacing VirtualDJ internal DSP/features.
+- Forcing all clients to use MCP-only transport (REST interop remains first-class).
+- Broad API churn that breaks established deck handoff flows.
 # VirtualDJ-MCP Product Requirements Document (PRD)
 
 ## 1. Product Overview
