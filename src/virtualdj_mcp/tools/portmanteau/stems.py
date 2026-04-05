@@ -5,7 +5,7 @@ Consolidates stem separation operations into a single interface.
 Operations: kill, unkill, volume, acapella, instrumental, isolate_drums, swap, reset
 """
 
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -23,12 +23,12 @@ def setup_stems_portmanteau(mcp: FastMCP):
     async def vdj_stems(
         operation: Literal["kill", "unkill", "volume", "acapella", "instrumental", "isolate_drums", "swap", "reset"],
         deck_id: int = 1,
-        stem: Optional[str] = None,
-        volume: Optional[int] = None,
+        stem: str | None = None,
+        volume: int | None = None,
         enable: bool = True,
-        deck_a: Optional[int] = None,
-        deck_b: Optional[int] = None
-    ) -> Dict[str, Any]:
+        deck_a: int | None = None,
+        deck_b: int | None = None
+    ) -> dict[str, Any]:
         """
         Stem separation control for VirtualDJ.
 
@@ -82,7 +82,7 @@ def setup_stems_portmanteau(mcp: FastMCP):
             if operation == "kill":
                 if not stem:
                     return {"success": False, "error": "stem required for kill operation"}
-                
+
                 async with client:
                     result = await client.send_command(f"deck {deck_id} stem_kill '{stem}'")
                     if result["status"] == "success":
@@ -94,7 +94,7 @@ def setup_stems_portmanteau(mcp: FastMCP):
             elif operation == "unkill":
                 if not stem:
                     return {"success": False, "error": "stem required for unkill operation"}
-                
+
                 async with client:
                     result = await client.send_command(f"deck {deck_id} stem_unkill '{stem}'")
                     if result["status"] == "success":
@@ -106,7 +106,7 @@ def setup_stems_portmanteau(mcp: FastMCP):
             elif operation == "volume":
                 if not stem or volume is None:
                     return {"success": False, "error": "stem and volume required for volume operation"}
-                
+
                 vol = max(0, min(100, volume))
                 async with client:
                     result = await client.send_command(f"deck {deck_id} stem_volume '{stem}' {vol}%")
@@ -124,7 +124,7 @@ def setup_stems_portmanteau(mcp: FastMCP):
                     else:
                         await client.send_command(f"deck {deck_id} stem_unkill 'instru'")
                         console.print(f"[green]Deck {deck_id}: Acapella mode OFF[/green]")
-                    
+
                     return {"success": True, "operation": "acapella", "deck_id": deck_id, "enabled": enable}
 
             elif operation == "instrumental":
@@ -135,7 +135,7 @@ def setup_stems_portmanteau(mcp: FastMCP):
                     else:
                         await client.send_command(f"deck {deck_id} stem_unkill 'vocal'")
                         console.print(f"[green]Deck {deck_id}: Instrumental mode OFF[/green]")
-                    
+
                     return {"success": True, "operation": "instrumental", "deck_id": deck_id, "enabled": enable}
 
             elif operation == "isolate_drums":
@@ -150,13 +150,13 @@ def setup_stems_portmanteau(mcp: FastMCP):
                         await client.send_command(f"deck {deck_id} stem_unkill 'melody'")
                         await client.send_command(f"deck {deck_id} stem_unkill 'bass'")
                         console.print(f"[green]Deck {deck_id}: Full track restored[/green]")
-                    
+
                     return {"success": True, "operation": "isolate_drums", "deck_id": deck_id, "enabled": enable}
 
             elif operation == "swap":
                 if not stem or not deck_a or not deck_b:
                     return {"success": False, "error": "stem, deck_a, and deck_b required for swap operation"}
-                
+
                 async with client:
                     if stem == "vocal":
                         await client.send_command(f"deck {deck_a} stem_kill 'instru'")

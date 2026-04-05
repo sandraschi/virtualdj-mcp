@@ -5,7 +5,7 @@ This module provides MCP tools for Auto-DJ functionality.
 """
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -36,16 +36,16 @@ def setup_auto_dj_tools(mcp: FastMCP):
     Args:
         mcp: FastMCP instance to register tools with
     """
-    
+
     @mcp.tool()
     async def auto_dj_mode(
-        duration_minutes: int = 60, 
-        genre_filter: Optional[str] = None,
-        fade_time: Optional[int] = None,
-        energy_matching: Optional[bool] = None,
-        harmonic_mixing: Optional[bool] = None,
-        genre_sticking: Optional[bool] = None
-    ) -> Dict[str, Any]:
+        duration_minutes: int = 60,
+        genre_filter: str | None = None,
+        fade_time: int | None = None,
+        energy_matching: bool | None = None,
+        harmonic_mixing: bool | None = None,
+        genre_sticking: bool | None = None
+    ) -> dict[str, Any]:
         """
         Start or configure the Auto-DJ mode.
         
@@ -71,7 +71,7 @@ def setup_auto_dj_tools(mcp: FastMCP):
                 prefs['harmonic_mixing'] = harmonic_mixing
             if genre_sticking is not None:
                 prefs['genre_sticking'] = genre_sticking
-                
+
             if prefs:
                 engine = await get_automation_engine()
                 engine.set_auto_dj_preferences(**prefs)
@@ -82,22 +82,22 @@ def setup_auto_dj_tools(mcp: FastMCP):
                 duration_minutes=duration_minutes,
                 genre_filter=genre_filter
             )
-            
+
             if not success:
                 return {"status": "error", "message": "Failed to start Auto-DJ"}
-                
+
             return {
                 "status": "success",
                 "message": f"Auto-DJ started for {duration_minutes} minutes",
                 **await engine.get_auto_dj_status()
             }
-            
+
         except Exception as e:
             logger.error(f"Error in auto_dj_mode: {e}", exc_info=True)
             return {"status": "error", "message": str(e)}
 
     @mcp.tool()
-    async def stop_auto_dj() -> Dict[str, Any]:
+    async def stop_auto_dj() -> dict[str, Any]:
         """
         Stop the Auto-DJ mode.
         
@@ -116,7 +116,7 @@ def setup_auto_dj_tools(mcp: FastMCP):
             return {"status": "error", "message": str(e)}
 
     @mcp.tool()
-    async def get_auto_dj_status() -> Dict[str, Any]:
+    async def get_auto_dj_status() -> dict[str, Any]:
         """
         Get the current status of the Auto-DJ system.
         
@@ -136,9 +136,9 @@ def setup_auto_dj_tools(mcp: FastMCP):
     @mcp.tool()
     async def suggest_next_track(
         style: str = "similar",
-        current_track_id: Optional[str] = None,
+        current_track_id: str | None = None,
         limit: int = 5
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get track suggestions based on current playback or specified track.
         
@@ -168,10 +168,10 @@ def setup_auto_dj_tools(mcp: FastMCP):
                 current_track=current_track,
                 style=style
             )
-            
+
             # Limit results
             suggestions = suggestions[:limit]
-            
+
             return {
                 "status": "success",
                 "current_track": {
@@ -196,19 +196,19 @@ def setup_auto_dj_tools(mcp: FastMCP):
                 ],
                 "suggestion_style": style
             }
-            
+
         except Exception as e:
             logger.error(f"Error getting track suggestions: {e}", exc_info=True)
             return {"status": "error", "message": str(e)}
 
     @mcp.tool()
     async def set_auto_dj_preferences(
-        fade_time: Optional[int] = None,
-        energy_matching: Optional[bool] = None,
-        harmonic_mixing: Optional[bool] = None,
-        genre_sticking: Optional[bool] = None,
-        min_energy_variation: Optional[float] = None
-    ) -> Dict[str, Any]:
+        fade_time: int | None = None,
+        energy_matching: bool | None = None,
+        harmonic_mixing: bool | None = None,
+        genre_sticking: bool | None = None,
+        min_energy_variation: float | None = None
+    ) -> dict[str, Any]:
         """
         Update Auto-DJ preferences.
         
@@ -234,7 +234,7 @@ def setup_auto_dj_tools(mcp: FastMCP):
                 prefs['genre_sticking'] = genre_sticking
             if min_energy_variation is not None:
                 prefs['min_energy_variation'] = min_energy_variation
-            
+
             if not prefs:
                 return {
                     "status": "error",
@@ -258,7 +258,7 @@ def setup_auto_dj_tools(mcp: FastMCP):
                     "min_energy_variation": engine.preferences.min_energy_variation
                 }
             }
-            
+
         except Exception as e:
             logger.error(f"Error updating Auto-DJ preferences: {e}", exc_info=True)
             return {

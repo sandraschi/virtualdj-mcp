@@ -5,7 +5,7 @@ Consolidates library operations into a single interface.
 Operations: search, analyze
 """
 
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -43,22 +43,22 @@ def setup_library_portmanteau(mcp: FastMCP):
     async def vdj_library(
         operation: Literal["search", "analyze"],
         query: str = "",
-        track_path: Optional[str] = None,
+        track_path: str | None = None,
         limit: int = 50,
-        artist: Optional[str] = None,
-        genre: Optional[str] = None,
-        bpm_min: Optional[float] = None,
-        bpm_max: Optional[float] = None,
-        key: Optional[str] = None,
-        year_min: Optional[int] = None,
-        year_max: Optional[int] = None,
-        duration_min: Optional[float] = None,
-        duration_max: Optional[float] = None,
-        energy_min: Optional[float] = None,
-        energy_max: Optional[float] = None,
+        artist: str | None = None,
+        genre: str | None = None,
+        bpm_min: float | None = None,
+        bpm_max: float | None = None,
+        key: str | None = None,
+        year_min: int | None = None,
+        year_max: int | None = None,
+        duration_min: float | None = None,
+        duration_max: float | None = None,
+        energy_min: float | None = None,
+        energy_max: float | None = None,
         sort_by: str = "relevance",
         sort_desc: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         VirtualDJ library management and audio analysis.
 
@@ -95,7 +95,7 @@ def setup_library_portmanteau(mcp: FastMCP):
         try:
             if operation == "search":
                 from ..library.models import TrackInfo
-                
+
                 limit = max(1, min(1000, limit))
                 scanner = await get_library_scanner()
 

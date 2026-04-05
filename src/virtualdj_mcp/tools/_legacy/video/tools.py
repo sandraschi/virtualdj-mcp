@@ -36,17 +36,17 @@ def setup_video_tools(mcp: FastMCP):
             Dict with video crossfader status
         """
         from ..shared.dependencies import get_vdj_client
-        
+
         vdj = await get_vdj_client()
-        
+
         # Clamp position
         position = max(-100, min(100, position))
-        
+
         # VDJ uses 0-100 for video_crossfader where 50 is center
         vdj_pos = int((position + 100) / 2)
-        
+
         await vdj.send_command(f"video_crossfader {vdj_pos}%")
-        
+
         return {
             "success": True,
             "video_crossfader": position,
@@ -79,9 +79,9 @@ def setup_video_tools(mcp: FastMCP):
             Dict with transition settings
         """
         from ..shared.dependencies import get_vdj_client
-        
+
         vdj = await get_vdj_client()
-        
+
         # Map friendly names to VDJ transition names
         transitions = {
             "crossfade": "crossfade",
@@ -98,13 +98,13 @@ def setup_video_tools(mcp: FastMCP):
             "slide_left": "slide_left",
             "slide_right": "slide_right"
         }
-        
+
         vdj_transition = transitions.get(transition_type.lower(), "crossfade")
         duration = max(0.1, min(10.0, duration))
-        
+
         await vdj.send_command(f"video_transition '{vdj_transition}'")
         await vdj.send_command(f"video_transition_time {int(duration * 1000)}ms")
-        
+
         return {
             "success": True,
             "transition": vdj_transition,
@@ -147,9 +147,9 @@ def setup_video_tools(mcp: FastMCP):
             Dict with effect status
         """
         from ..shared.dependencies import get_vdj_client
-        
+
         vdj = await get_vdj_client()
-        
+
         effects = {
             "none": "video_fx 'none'",
             "negative": "video_fx 'negative'",
@@ -169,15 +169,15 @@ def setup_video_tools(mcp: FastMCP):
             "vhs": "video_fx 'vhs'",
             "glitch": "video_fx 'glitch'"
         }
-        
+
         fx_cmd = effects.get(effect.lower(), f"video_fx '{effect}'")
-        
+
         if enabled:
             await vdj.send_command(f"deck {deck_id} {fx_cmd}")
             await vdj.send_command(f"deck {deck_id} video_fx_slider {intensity}%")
         else:
             await vdj.send_command(f"deck {deck_id} video_fx 'none'")
-        
+
         return {
             "success": True,
             "deck": deck_id,
@@ -215,23 +215,23 @@ def setup_video_tools(mcp: FastMCP):
             Dict with overlay status
         """
         from ..shared.dependencies import get_vdj_client
-        
+
         vdj = await get_vdj_client()
-        
+
         # Escape quotes in text
         safe_text = text.replace("'", "\\'").replace('"', '\\"')
-        
+
         position_map = {"top": "top", "center": "middle", "bottom": "bottom"}
         vdj_position = position_map.get(position.lower(), "bottom")
-        
+
         await vdj.send_command(f"video_text '{safe_text}'")
         await vdj.send_command(f"video_text_position '{vdj_position}'")
         await vdj.send_command(f"video_text_size {font_size}")
         await vdj.send_command(f"video_text_color '{color}'")
-        
+
         if duration > 0:
             await vdj.send_command(f"video_text_duration {int(duration * 1000)}ms")
-        
+
         return {
             "success": True,
             "text": text,
@@ -265,16 +265,16 @@ def setup_video_tools(mcp: FastMCP):
             VirtualDJ Pro license required to remove watermark from output.
         """
         from ..shared.dependencies import get_vdj_client
-        
+
         vdj = await get_vdj_client()
-        
+
         if enabled:
             await vdj.send_command("video_window 'show'")
             if fullscreen:
                 await vdj.send_command(f"video_window 'fullscreen' {monitor}")
         else:
             await vdj.send_command("video_window 'hide'")
-        
+
         return {
             "success": True,
             "enabled": enabled,
@@ -302,9 +302,9 @@ def setup_video_tools(mcp: FastMCP):
             Dict with master output settings
         """
         from ..shared.dependencies import get_vdj_client
-        
+
         vdj = await get_vdj_client()
-        
+
         if mode == "auto":
             await vdj.send_command("video_master 'auto'")
         elif mode == "split":
@@ -313,7 +313,7 @@ def setup_video_tools(mcp: FastMCP):
             await vdj.send_command("video_master 'pip'")
         elif mode == "deck" and deck_id:
             await vdj.send_command(f"video_master 'deck' {deck_id}")
-        
+
         return {
             "success": True,
             "mode": mode,
@@ -343,9 +343,9 @@ def setup_video_tools(mcp: FastMCP):
             Dict with karaoke mode status
         """
         from ..shared.dependencies import get_vdj_client
-        
+
         vdj = await get_vdj_client()
-        
+
         if enabled:
             await vdj.send_command(f"deck {deck_id} karaoke on")
             if remove_vocals:
@@ -353,7 +353,7 @@ def setup_video_tools(mcp: FastMCP):
         else:
             await vdj.send_command(f"deck {deck_id} karaoke off")
             await vdj.send_command(f"deck {deck_id} stem_unkill 'vocal'")
-        
+
         return {
             "success": True,
             "deck": deck_id,
@@ -380,12 +380,12 @@ def setup_video_tools(mcp: FastMCP):
             Dict with video scratch status
         """
         from ..shared.dependencies import get_vdj_client
-        
+
         vdj = await get_vdj_client()
-        
+
         state = "on" if enabled else "off"
         await vdj.send_command(f"deck {deck_id} video_scratch {state}")
-        
+
         return {
             "success": True,
             "deck": deck_id,
@@ -413,14 +413,14 @@ def setup_video_tools(mcp: FastMCP):
             Dict with video loop status
         """
         from ..shared.dependencies import get_vdj_client
-        
+
         vdj = await get_vdj_client()
-        
+
         if enabled:
             await vdj.send_command(f"deck {deck_id} video_loop {beats}")
         else:
             await vdj.send_command(f"deck {deck_id} video_loop_exit")
-        
+
         return {
             "success": True,
             "deck": deck_id,
@@ -447,12 +447,12 @@ def setup_video_tools(mcp: FastMCP):
             Dict with tempo sync status
         """
         from ..shared.dependencies import get_vdj_client
-        
+
         vdj = await get_vdj_client()
-        
+
         state = "on" if enabled else "off"
         await vdj.send_command(f"deck {deck_id} video_tempo_sync {state}")
-        
+
         return {
             "success": True,
             "deck": deck_id,
@@ -477,12 +477,12 @@ def setup_video_tools(mcp: FastMCP):
             Dict with load status
         """
         from ..shared.dependencies import get_vdj_client
-        
+
         vdj = await get_vdj_client()
-        
+
         # Use the standard load_track command - VDJ handles video files automatically
         await vdj.load_track(deck_id, video_path)
-        
+
         return {
             "success": True,
             "deck": deck_id,

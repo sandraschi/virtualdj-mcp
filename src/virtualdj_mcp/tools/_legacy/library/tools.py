@@ -2,7 +2,7 @@
 Library tools for VirtualDJ MCP
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -49,20 +49,20 @@ def setup_library_tools(mcp: FastMCP):
     async def search_tracks(
         query: str = "",
         limit: int = 50,
-        artist: Optional[str] = None,
-        genre: Optional[str] = None,
-        bpm_min: Optional[float] = None,
-        bpm_max: Optional[float] = None,
-        key: Optional[str] = None,
-        year_min: Optional[int] = None,
-        year_max: Optional[int] = None,
-        duration_min: Optional[float] = None,
-        duration_max: Optional[float] = None,
-        energy_min: Optional[float] = None,
-        energy_max: Optional[float] = None,
+        artist: str | None = None,
+        genre: str | None = None,
+        bpm_min: float | None = None,
+        bpm_max: float | None = None,
+        key: str | None = None,
+        year_min: int | None = None,
+        year_max: int | None = None,
+        duration_min: float | None = None,
+        duration_max: float | None = None,
+        energy_min: float | None = None,
+        energy_max: float | None = None,
         sort_by: str = "relevance",
         sort_desc: bool = True
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Search the music library with advanced filtering and sorting.
 
@@ -182,7 +182,7 @@ def setup_library_tools(mcp: FastMCP):
 
 
     @mcp.tool()
-    async def analyze_track_audio(track_path: str) -> Dict[str, Any]:
+    async def analyze_track_audio(track_path: str) -> dict[str, Any]:
         """
         Analyze an audio file to extract BPM, key, and other audio features.
 

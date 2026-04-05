@@ -5,9 +5,9 @@ Consolidates deck control operations into a single interface.
 Operations: play, pause, toggle, load, seek, volume, status, load_security
 """
 
-from pathlib import Path
-from typing import Any, Dict, Literal, Optional, Union
 import asyncio
+from pathlib import Path
+from typing import Any, Literal
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -25,12 +25,12 @@ def setup_deck_portmanteau(mcp: FastMCP):
     async def vdj_deck(
         operation: Literal["play", "pause", "toggle", "stop", "load", "seek", "volume", "status", "load_security"],
         deck_id: int = 1,
-        track_path: Optional[str] = None,
-        position: Optional[Union[float, str]] = None,
-        volume: Optional[int] = None,
+        track_path: str | None = None,
+        position: float | str | None = None,
+        volume: int | None = None,
         force: bool = True,
-        security_mode: Optional[str] = None
-    ) -> Dict[str, Any]:
+        security_mode: str | None = None
+    ) -> dict[str, Any]:
         """
         Comprehensive deck control for VirtualDJ.
 
@@ -105,7 +105,7 @@ def setup_deck_portmanteau(mcp: FastMCP):
             elif operation == "load":
                 if not track_path:
                     return {"success": False, "error": "track_path required for load operation"}
-                
+
                 path = Path(track_path)
                 if not path.exists():
                     raise VDJError(f"Track file not found: {track_path}")
@@ -129,7 +129,7 @@ def setup_deck_portmanteau(mcp: FastMCP):
 
                     console.print(f"[green]Loaded '{path.name}' to deck {deck_id}[/green]")
                     await asyncio.sleep(1)
-                    
+
                     return {
                         "success": True,
                         "operation": "load",
@@ -140,7 +140,7 @@ def setup_deck_portmanteau(mcp: FastMCP):
             elif operation == "seek":
                 if position is None:
                     return {"success": False, "error": "position required for seek operation"}
-                
+
                 if isinstance(position, str) and position.endswith('%'):
                     cmd = f"deck {deck_id} goto {position}"
                 else:
@@ -156,7 +156,7 @@ def setup_deck_portmanteau(mcp: FastMCP):
             elif operation == "volume":
                 if volume is None:
                     return {"success": False, "error": "volume required for volume operation"}
-                
+
                 vol = max(0, min(100, volume))
                 async with client:
                     result = await client.send_command(f"deck {deck_id} volume {vol}%")
@@ -211,7 +211,7 @@ def setup_deck_portmanteau(mcp: FastMCP):
             elif operation == "load_security":
                 if not security_mode:
                     return {"success": False, "error": "security_mode required (off/on/always)"}
-                
+
                 mode_map = {"off": "off", "none": "off", "on": "on", "ask": "on", "always": "always", "block": "always"}
                 normalized_mode = mode_map.get(security_mode.lower())
                 if not normalized_mode:

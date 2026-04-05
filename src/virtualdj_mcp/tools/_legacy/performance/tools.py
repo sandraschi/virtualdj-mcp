@@ -3,7 +3,7 @@ Performance monitoring tools for VirtualDJ MCP
 """
 
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -23,7 +23,7 @@ def setup_performance_tools(mcp: FastMCP):
     """
 
     @mcp.tool()
-    async def get_performance_metrics() -> Dict[str, Any]:
+    async def get_performance_metrics() -> dict[str, Any]:
         """
         Get current performance metrics.
 
@@ -47,9 +47,9 @@ def setup_performance_tools(mcp: FastMCP):
 
     @mcp.tool()
     async def get_session_statistics(
-        session_start: Optional[str] = None,
-        session_end: Optional[str] = None
-    ) -> Dict[str, Any]:
+        session_start: str | None = None,
+        session_end: str | None = None
+    ) -> dict[str, Any]:
         """
         Get DJ session statistics and analytics.
 
@@ -80,7 +80,7 @@ def setup_performance_tools(mcp: FastMCP):
     async def analyze_performance_trends(
         hours: int = 24,
         metric: str = "energy"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Analyze performance trends over time.
 
@@ -107,7 +107,7 @@ def setup_performance_tools(mcp: FastMCP):
             }
 
     @mcp.tool()
-    async def get_recommendations() -> Dict[str, Any]:
+    async def get_recommendations() -> dict[str, Any]:
         """
         Get AI-powered recommendations for improving DJ performance.
 
@@ -132,8 +132,8 @@ def setup_performance_tools(mcp: FastMCP):
     @mcp.tool()
     async def export_performance_data(
         format: str = "json",
-        filename: Optional[str] = None
-    ) -> Dict[str, Any]:
+        filename: str | None = None
+    ) -> dict[str, Any]:
         """
         Export performance data for analysis or backup.
 

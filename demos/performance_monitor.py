@@ -4,22 +4,23 @@ Performance Monitor Example for VirtualDJ-MCP
 This script demonstrates how to monitor VirtualDJ performance metrics
 including deck status, playback information, and system variables.
 """
-import asyncio
 import argparse
+import asyncio
 import json
-from datetime import datetime
-from pathlib import Path
 
 # Add parent directory to path to import from virtualdj_mcp
 import sys
+from datetime import datetime
+from pathlib import Path
+
 sys.path.append(str(Path(__file__).parent.parent))
 
 from rich.console import Console
 from rich.table import Table
-from rich.live import Live
 
-from virtualdj_mcp.core.vdj_client import VirtualDJClient
 from virtualdj_mcp.config import VDJConfig
+from virtualdj_mcp.core.vdj_client import VirtualDJClient
+
 
 async def main():
     print("📊 VirtualDJ-MCP Performance Monitor")

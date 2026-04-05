@@ -9,7 +9,7 @@ import json
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from rich.console import Console
 
@@ -26,22 +26,22 @@ class TrackAnalysis:
     key: str
     energy: float  # 0.0 to 1.0
     start_time: datetime
-    end_time: Optional[datetime] = None
+    end_time: datetime | None = None
     bpm_variance: float = 0.0
     peak_volume: float = 0.0
     avg_volume: float = 0.0
-    volume_samples: List[float] = field(default_factory=list)
-    bpm_samples: List[float] = field(default_factory=list)
-    
+    volume_samples: list[float] = field(default_factory=list)
+    bpm_samples: list[float] = field(default_factory=list)
+
     def add_sample(self, volume: float, bpm: float):
         """Add a volume and BPM sample."""
         self.volume_samples.append(volume)
         self.bpm_samples.append(bpm)
-        
+
         # Update peak volume
         if volume > self.peak_volume:
             self.peak_volume = volume
-            
+
         # Update BPM variance
         if len(self.bpm_samples) > 1:
             self.bpm_variance = sum(
@@ -53,7 +53,7 @@ def calculate_energy_level(bpm: float, key: str) -> float:
     """Calculate an energy level (0.0 to 1.0) based on BPM and key."""
     # Base energy from BPM (normalized 70-180 BPM to 0.0-1.0)
     bpm_energy = min(max((bpm - 70) / 110, 0.0), 1.0)
-    
+
     # Adjust based on key (Camelot wheel position)
     key_energy = 0.5  # Default
     if key:
@@ -62,23 +62,23 @@ def calculate_energy_level(bpm: float, key: str) -> float:
             key_energy = key_num / 12.0  # 1-12 to 0.08-1.0
         except (ValueError, AttributeError):
             pass
-    
+
     # Weighted average (70% BPM, 30% key)
     return (bpm_energy * 0.7) + (key_energy * 0.3)
 
 class PerformanceMonitor:
     """Monitors and analyzes DJ performance metrics."""
-    
+
     def __init__(self, vdj_client: VirtualDJClient):
         """Initialize the performance monitor."""
         self.vdj = vdj_client
         self.console = Console()
-        
+
         # Track history
-        self.track_history: List[TrackAnalysis] = []
-        self.current_track: Optional[TrackAnalysis] = None
+        self.track_history: list[TrackAnalysis] = []
+        self.current_track: TrackAnalysis | None = None
         self.last_update = datetime.now()
-        
+
         # Performance metrics
         self.metrics = {
             'bpm_stability': 1.0,  # 0.0 to 1.0
@@ -87,24 +87,24 @@ class PerformanceMonitor:
             'transition_quality': 1.0,  # 0.0 to 1.0
             'alerts': []
         }
-        
+
         # Background task for monitoring
-        self._monitor_task: Optional[asyncio.Task] = None
+        self._monitor_task: asyncio.Task | None = None
         self._running = False
-    
+
     async def start_monitoring(self):
         """Start the background monitoring task."""
         if self._running:
             return
-            
+
         self._running = True
         self._monitor_task = asyncio.create_task(self._monitor_loop())
-    
+
     async def stop_monitoring(self):
         """Stop the background monitoring task."""
         if not self._running:
             return
-            
+
         self._running = False
         if self._monitor_task:
             self._monitor_task.cancel()
@@ -112,7 +112,7 @@ class PerformanceMonitor:
                 await self._monitor_task
             except asyncio.CancelledError:
                 pass
-    
+
     async def _monitor_loop(self):
         """Background task that monitors performance metrics."""
         while self._running:
@@ -124,11 +124,11 @@ class PerformanceMonitor:
             except Exception as e:
                 self.console.print(f"[red]Error in monitor loop: {e}[/]")
                 await asyncio.sleep(5)  # Wait before retrying
-    
+
     async def _update_metrics(self):
         """Update performance metrics based on current state."""
         now = datetime.now()
-        
+
         # Get current deck status using CLI variables
         try:
             # Get track information from VirtualDJ variables
@@ -151,7 +151,7 @@ class PerformanceMonitor:
                 if self.current_track:
                     self.current_track.end_time = now
                     self.track_history.append(self.current_track)
-                
+
                 # Start new track analysis
                 self.current_track = TrackAnalysis(
                     track_id=track_id,
@@ -162,65 +162,65 @@ class PerformanceMonitor:
                     energy=calculate_energy_level(track_bpm, ''),
                     start_time=now
                 )
-            
+
             # Add current sample to track analysis
             if self.current_track:
                 self.current_track.add_sample(
                     volume=track_volume,
                     bpm=track_bpm
                 )
-                
+
                 # Update BPM stability (1.0 = perfect stability)
                 if len(self.current_track.bpm_samples) > 1:
-                    bpm_std = (sum((x - self.current_track.bpm) ** 2 for x in self.current_track.bpm_samples) / 
+                    bpm_std = (sum((x - self.current_track.bpm) ** 2 for x in self.current_track.bpm_samples) /
                               len(self.current_track.bpm_samples)) ** 0.5
                     self.metrics['bpm_stability'] = max(0, 1 - (bpm_std / 5.0))  # 5 BPM std dev = 0 stability
-                
+
                 # Update beat match quality (if we have multiple decks)
                 # This is a simplified example - in a real implementation, you'd analyze
                 # the phase alignment between decks
                 self.metrics['beat_match_quality'] = 0.9  # Placeholder
-                
+
                 # Update energy flow
                 if len(self.track_history) >= 2:
                     prev_energy = self.track_history[-1].energy
                     current_energy = self.current_track.energy
                     energy_diff = current_energy - prev_energy
-                    
+
                     if energy_diff > 0.1:
                         self.metrics['energy_flow'] = 'increasing'
                     elif energy_diff < -0.1:
                         self.metrics['energy_flow'] = 'decreasing'
                     else:
                         self.metrics['energy_flow'] = 'steady'
-                
+
                 # Check for alerts
                 self._check_alerts()
-                
+
             self.last_update = now
-            
+
         except Exception as e:
             self.console.print(f"[red]Error updating metrics: {e}[/]")
-    
+
     def _check_alerts(self):
         """Check for performance issues and generate alerts."""
         if not self.current_track:
             return
-            
+
         # Check for BPM drift
         if self.metrics['bpm_stability'] < 0.7:  # 30% or more BPM variance
             self.metrics['alerts'].append(
                 f"BPM stability low ({self.metrics['bpm_stability']:.0%}) - check beatmatching"
             )
-        
+
         # Check for clipping
         if self.current_track.peak_volume > 0.95:  # 95% of max volume
             self.metrics['alerts'].append("Warning: Audio clipping detected!")
-    
-    async def get_current_metrics(self) -> Dict[str, Any]:
+
+    async def get_current_metrics(self) -> dict[str, Any]:
         """Get current performance metrics."""
         metrics = self.metrics.copy()
-        
+
         # Add current track info
         if self.current_track:
             metrics['current_track'] = {
@@ -230,7 +230,7 @@ class PerformanceMonitor:
                 'key': self.current_track.key,
                 'energy': self.current_track.energy
             }
-        
+
         # Add track history
         metrics['track_history'] = [
             {
@@ -243,10 +243,10 @@ class PerformanceMonitor:
             }
             for t in self.track_history[-10:]  # Last 10 tracks
         ]
-        
+
         return metrics
-    
-    async def generate_report(self, output_path: Optional[Path] = None) -> Dict[str, Any]:
+
+    async def generate_report(self, output_path: Path | None = None) -> dict[str, Any]:
         """Generate a performance report."""
         report = {
             'timestamp': datetime.now().isoformat(),
@@ -257,24 +257,24 @@ class PerformanceMonitor:
             'tracks': [],
             'alerts': self.metrics['alerts'].copy()
         }
-        
+
         # Calculate session duration
         if self.track_history:
             start_time = self.track_history[0].start_time
             end_time = self.current_track.start_time if self.current_track else self.track_history[-1].end_time
-            
+
             if end_time and start_time:
                 report['session_duration'] = (end_time - start_time).total_seconds() / 60  # in minutes
-        
+
         # Calculate average metrics
         if self.track_history:
             report['avg_bpm_stability'] = sum(
                 t.bpm_variance for t in self.track_history
             ) / len(self.track_history)
-            
+
             # This would be calculated based on transition analysis in a real implementation
             report['avg_transition_quality'] = 0.85  # Placeholder
-        
+
         # Add track details
         for track in self.track_history:
             report['tracks'].append({
@@ -287,7 +287,7 @@ class PerformanceMonitor:
                 'bpm_stability': 1 - (track.bpm_variance / 25.0) if track.bpm_variance > 0 else 1.0,
                 'peak_volume': track.peak_volume
             })
-        
+
         # Save to file if path is provided
         if output_path:
             try:
@@ -295,10 +295,10 @@ class PerformanceMonitor:
                     json.dump(report, f, indent=2, default=str)
             except Exception as e:
                 self.console.print(f"[red]Error saving report: {e}[/]")
-        
+
         return report
 
-    async def get_recommendations(self) -> Dict[str, Any]:
+    async def get_recommendations(self) -> dict[str, Any]:
         """Generate AI-powered recommendations for improving DJ performance."""
         recommendations = {
             'timestamp': datetime.now().isoformat(),
@@ -354,7 +354,7 @@ class PerformanceMonitor:
 
         return recommendations
 
-    async def get_session_stats(self, start_time: datetime, end_time: datetime) -> Dict[str, Any]:
+    async def get_session_stats(self, start_time: datetime, end_time: datetime) -> dict[str, Any]:
         """Get session statistics for a time period."""
         session_tracks = [
             track for track in self.track_history
@@ -382,7 +382,7 @@ class PerformanceMonitor:
             'timestamp': datetime.now().isoformat()
         }
 
-    async def analyze_trends(self, hours: int, metric: str) -> Dict[str, Any]:
+    async def analyze_trends(self, hours: int, metric: str) -> dict[str, Any]:
         """Analyze performance trends over time."""
         cutoff_time = datetime.now() - timedelta(hours=hours)
 
@@ -420,7 +420,7 @@ class PerformanceMonitor:
             'timestamp': datetime.now().isoformat()
         }
 
-    async def export_data(self, format: str, filename: str) -> Dict[str, Any]:
+    async def export_data(self, format: str, filename: str) -> dict[str, Any]:
         """Export performance data in specified format."""
         data = {
             'timestamp': datetime.now().isoformat(),

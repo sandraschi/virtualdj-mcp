@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "virtualdj-mcp": {
+      "command": "python",
+      "args": [
+        "-m",
+        "virtualdj_mcp.__main__"
+      ],
+      "env": {
+        "PYTHONPATH": "D:/Dev/repos/virtualdj-mcp/src",
+        "PYTHONUNBUFFERED": "1",
+        "VDJ_HTTP_HOST": "127.0.0.1",
+        "VDJ_HTTP_PORT": "80",
+        "VDJ_TOOL_MODE": "portmanteau"
+      }
+    }
+  }
+}

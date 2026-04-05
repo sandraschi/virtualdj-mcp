@@ -7,7 +7,7 @@ Operations: start, stop, status, list, export, delete
 
 import os
 from pathlib import Path
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -35,14 +35,14 @@ def setup_recording_portmanteau(mcp: FastMCP):
     @mcp.tool()
     async def vdj_recording(
         operation: Literal["start", "stop", "status", "list", "export", "delete"],
-        name: Optional[str] = None,
+        name: str | None = None,
         format: str = "wav",
-        recording_id: Optional[str] = None,
+        recording_id: str | None = None,
         output_format: str = "json",
         include_tracklist: bool = True,
         limit: int = 10,
         offset: int = 0
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Recording control for VirtualDJ mixes.
 
@@ -84,7 +84,7 @@ def setup_recording_portmanteau(mcp: FastMCP):
                 result = await service.start_recording(name, format)
                 if result.get("status") == "error":
                     return {"success": False, "error": result.get("message")}
-                
+
                 console.print(f"[green]Recording started: {name or 'Untitled'}[/green]")
                 return {
                     "success": True,
@@ -96,7 +96,7 @@ def setup_recording_portmanteau(mcp: FastMCP):
                 result = await service.stop_recording()
                 if result.get("status") == "error":
                     return {"success": False, "error": result.get("message")}
-                
+
                 console.print("[green]Recording stopped[/green]")
                 return {
                     "success": True,
@@ -131,14 +131,14 @@ def setup_recording_portmanteau(mcp: FastMCP):
 
             elif operation == "export":
                 result = await service.export_mix_history(output_format)
-                
+
                 if result.get("status") != "success":
                     return {"success": False, "error": result.get("message", "Export failed")}
-                
+
                 if include_tracklist and output_format == "json":
                     result["tracklist_included"] = False
                     result["message"] = "Tracklist export not yet implemented"
-                
+
                 console.print(f"[green]Mix history exported as {output_format}[/green]")
                 return {
                     "success": True,
@@ -170,7 +170,7 @@ def setup_recording_portmanteau(mcp: FastMCP):
 
                 service.recordings.pop(recording_idx)
                 service._save_recordings()
-                
+
                 console.print(f"[green]Recording deleted: {recording_id}[/green]")
                 return {
                     "success": True,

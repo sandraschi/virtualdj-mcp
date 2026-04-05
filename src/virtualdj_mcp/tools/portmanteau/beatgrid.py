@@ -5,7 +5,7 @@ Consolidates BPM, beatgrid, and loop operations into a single interface.
 Operations: set_bpm, tap, adjust, anchor, pitch_bend, pitch_reset, beat_jump, loop, loop_roll, loop_exit
 """
 
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -23,12 +23,12 @@ def setup_beatgrid_portmanteau(mcp: FastMCP):
     async def vdj_beatgrid(
         operation: Literal["set_bpm", "tap", "adjust", "anchor", "pitch_bend", "pitch_reset", "beat_jump", "loop", "loop_roll", "loop_exit"],
         deck_id: int = 1,
-        bpm: Optional[float] = None,
-        adjustment: Optional[float] = None,
-        direction: Optional[str] = None,
+        bpm: float | None = None,
+        adjustment: float | None = None,
+        direction: str | None = None,
         amount: float = 4.0,
-        beats: Optional[float] = None
-    ) -> Dict[str, Any]:
+        beats: float | None = None
+    ) -> dict[str, Any]:
         """
         BPM, beatgrid, and loop control for VirtualDJ.
 
@@ -77,7 +77,7 @@ def setup_beatgrid_portmanteau(mcp: FastMCP):
             if operation == "set_bpm":
                 if bpm is None:
                     return {"success": False, "error": "bpm required for set_bpm operation"}
-                
+
                 target_bpm = max(60.0, min(200.0, bpm))
                 async with client:
                     result = await client.send_command(f"deck {deck_id} bpm {target_bpm}")
@@ -99,7 +99,7 @@ def setup_beatgrid_portmanteau(mcp: FastMCP):
             elif operation == "adjust":
                 if adjustment is None:
                     return {"success": False, "error": "adjustment required for adjust operation"}
-                
+
                 adj = max(-100, min(100, adjustment))
                 async with client:
                     result = await client.send_command(f"deck {deck_id} beatgrid_adjust {adj}")
@@ -122,7 +122,7 @@ def setup_beatgrid_portmanteau(mcp: FastMCP):
             elif operation == "pitch_bend":
                 if not direction:
                     return {"success": False, "error": "direction required for pitch_bend (up/down)"}
-                
+
                 if direction.lower() == "up":
                     cmd = f"deck {deck_id} pitch +{amount}%"
                 else:
@@ -148,7 +148,7 @@ def setup_beatgrid_portmanteau(mcp: FastMCP):
             elif operation == "beat_jump":
                 if beats is None:
                     return {"success": False, "error": "beats required for beat_jump operation"}
-                
+
                 async with client:
                     result = await client.send_command(f"deck {deck_id} beatjump {int(beats)}")
                     if result["status"] == "success":
@@ -161,7 +161,7 @@ def setup_beatgrid_portmanteau(mcp: FastMCP):
             elif operation == "loop":
                 if beats is None:
                     return {"success": False, "error": "beats required for loop operation"}
-                
+
                 async with client:
                     result = await client.send_command(f"deck {deck_id} loop {beats}")
                     if result["status"] == "success":
@@ -173,7 +173,7 @@ def setup_beatgrid_portmanteau(mcp: FastMCP):
             elif operation == "loop_roll":
                 if beats is None:
                     return {"success": False, "error": "beats required for loop_roll operation"}
-                
+
                 async with client:
                     result = await client.send_command(f"deck {deck_id} loop_roll {beats}")
                     if result["status"] == "success":

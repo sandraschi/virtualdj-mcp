@@ -2,7 +2,7 @@
 Mixing tools for VirtualDJ MCP
 """
 
-from typing import Any, Dict
+from typing import Any
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -67,7 +67,7 @@ def setup_mixing_tools(mcp: FastMCP):
 
 
     @mcp.tool()
-    async def auto_sync_decks(deck_a: int, deck_b: int) -> Dict[str, Any]:
+    async def auto_sync_decks(deck_a: int, deck_b: int) -> dict[str, Any]:
         """
         Automatically sync BPM between two decks
 

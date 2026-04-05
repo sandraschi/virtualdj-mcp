@@ -26,18 +26,18 @@ BENEFITS:
 - AI-friendly comprehensive docstrings
 """
 
-from .deck import setup_deck_portmanteau
-from .mixer import setup_mixer_portmanteau
-from .library import setup_library_portmanteau
 from .automation import setup_automation_portmanteau
-from .recording import setup_recording_portmanteau
-from .performance import setup_performance_portmanteau
-from .stems import setup_stems_portmanteau
 from .beatgrid import setup_beatgrid_portmanteau
-from .skin import setup_skin_portmanteau
-from .video import setup_video_portmanteau
+from .deck import setup_deck_portmanteau
+from .library import setup_library_portmanteau
+from .mixer import setup_mixer_portmanteau
+from .performance import setup_performance_portmanteau
 from .plex import setup_plex_portmanteau
+from .recording import setup_recording_portmanteau
+from .skin import setup_skin_portmanteau
+from .stems import setup_stems_portmanteau
 from .system import setup_system_portmanteau
+from .video import setup_video_portmanteau
 
 
 def setup_all_portmanteau_tools(mcp):

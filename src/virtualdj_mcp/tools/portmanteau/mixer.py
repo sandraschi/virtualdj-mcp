@@ -5,7 +5,7 @@ Consolidates mixing operations into a single interface.
 Operations: crossfader, sync, eq_high, eq_mid, eq_low, gain
 """
 
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -22,12 +22,12 @@ def setup_mixer_portmanteau(mcp: FastMCP):
     @mcp.tool()
     async def vdj_mixer(
         operation: Literal["crossfader", "sync", "eq_high", "eq_mid", "eq_low", "gain", "filter"],
-        position: Optional[float] = None,
-        deck_a: Optional[int] = None,
-        deck_b: Optional[int] = None,
-        deck_id: Optional[int] = None,
-        value: Optional[float] = None
-    ) -> Dict[str, Any]:
+        position: float | None = None,
+        deck_a: int | None = None,
+        deck_b: int | None = None,
+        deck_id: int | None = None,
+        value: float | None = None
+    ) -> dict[str, Any]:
         """
         Comprehensive mixer control for VirtualDJ.
 
@@ -66,7 +66,7 @@ def setup_mixer_portmanteau(mcp: FastMCP):
             if operation == "crossfader":
                 if position is None:
                     return {"success": False, "error": "position required for crossfader operation"}
-                
+
                 pos = max(-100, min(100, position))
                 vdj_position = (pos + 100) / 2  # Convert to VDJ's 0-100 scale
 
@@ -74,7 +74,7 @@ def setup_mixer_portmanteau(mcp: FastMCP):
                     result = await client.send_command(f"crossfader {vdj_position}%")
                     if result["status"] != "success":
                         raise VDJError("Failed to set crossfader")
-                    
+
                     console.print(f"[green]Crossfader set to {pos}[/green]")
                     return {
                         "success": True,
@@ -109,7 +109,7 @@ def setup_mixer_portmanteau(mcp: FastMCP):
             elif operation in ("eq_high", "eq_mid", "eq_low"):
                 if deck_id is None or value is None:
                     return {"success": False, "error": "deck_id and value required for EQ operation"}
-                
+
                 val = max(0, min(100, value))
                 eq_map = {"eq_high": "eq_high", "eq_mid": "eq_mid", "eq_low": "eq_low"}
                 eq_cmd = eq_map[operation]
@@ -118,7 +118,7 @@ def setup_mixer_portmanteau(mcp: FastMCP):
                     result = await client.send_command(f"deck {deck_id} {eq_cmd} {val}%")
                     if result["status"] != "success":
                         raise VDJError(f"Failed to set {operation}")
-                    
+
                     console.print(f"[green]Deck {deck_id} {operation} set to {val}%[/green]")
                     return {
                         "success": True,
@@ -130,14 +130,14 @@ def setup_mixer_portmanteau(mcp: FastMCP):
             elif operation == "gain":
                 if deck_id is None or value is None:
                     return {"success": False, "error": "deck_id and value required for gain operation"}
-                
+
                 val = max(0, min(150, value))  # Gain can go to 150%
 
                 async with client:
                     result = await client.send_command(f"deck {deck_id} gain {val}%")
                     if result["status"] != "success":
                         raise VDJError("Failed to set gain")
-                    
+
                     console.print(f"[green]Deck {deck_id} gain set to {val}%[/green]")
                     return {
                         "success": True,
@@ -149,14 +149,14 @@ def setup_mixer_portmanteau(mcp: FastMCP):
             elif operation == "filter":
                 if deck_id is None or value is None:
                     return {"success": False, "error": "deck_id and value required for filter operation"}
-                
+
                 val = max(0, min(100, value))
 
                 async with client:
                     result = await client.send_command(f"deck {deck_id} filter {val}%")
                     if result["status"] != "success":
                         raise VDJError("Failed to set filter")
-                    
+
                     console.print(f"[green]Deck {deck_id} filter set to {val}%[/green]")
                     return {
                         "success": True,

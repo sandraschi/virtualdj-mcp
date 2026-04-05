@@ -10,7 +10,8 @@ VirtualDJ's Stems 2.0 engine allows real-time isolation of:
 - Melody/synths
 """
 
-from typing import Optional, List, Literal
+from typing import Literal
+
 from fastmcp import FastMCP
 from rich.console import Console
 
@@ -50,7 +51,7 @@ def setup_stem_tools(mcp: FastMCP):
         """
         try:
             client = await get_vdj_client()
-            
+
             action = "kill" if kill else "unkill"
             cmd = f"deck {deck_id} stem_{action} '{stem}'"
 
@@ -92,7 +93,7 @@ def setup_stem_tools(mcp: FastMCP):
         """
         try:
             client = await get_vdj_client()
-            
+
             volume = max(0, min(100, volume))
             cmd = f"deck {deck_id} stem_volume '{stem}' {volume}%"
 

@@ -6,7 +6,7 @@ Requires VirtualDJ 2023+ with Pro license and Network Control Plugin installed.
 """
 
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 import httpx
 import psutil
@@ -23,7 +23,7 @@ class VirtualDJClient:
     def __init__(self, config):
         self.config = config
         self.base_url = f"http://{config.http_host}:{config.http_port}"
-        self._client: Optional[httpx.AsyncClient] = None
+        self._client: httpx.AsyncClient | None = None
 
     async def __aenter__(self):
         """Async context manager entry"""
@@ -36,7 +36,7 @@ class VirtualDJClient:
             await self._client.aclose()
             self._client = None
 
-    def _get_headers(self) -> Dict[str, str]:
+    def _get_headers(self) -> dict[str, str]:
         """Get request headers including auth if configured"""
         headers = {"Content-Type": "text/plain"}
         if self.config.http_password:
@@ -63,22 +63,22 @@ class VirtualDJClient:
         except Exception:
             return False
 
-    async def send_command(self, command: str) -> Dict[str, Any]:
+    async def send_command(self, command: str) -> dict[str, Any]:
         """Send VDJScript command via HTTP API"""
         return await self._send_http_command(command, is_query=False)
 
-    async def query(self, script: str) -> Dict[str, Any]:
+    async def query(self, script: str) -> dict[str, Any]:
         """Query VirtualDJ for information via HTTP API"""
         return await self._send_http_command(script, is_query=True)
 
-    async def _send_http_command(self, script: str, is_query: bool = False) -> Dict[str, Any]:
+    async def _send_http_command(self, script: str, is_query: bool = False) -> dict[str, Any]:
         """Send command via HTTP Network Control Plugin API"""
         endpoint = "query" if is_query else "execute"
-        
+
         try:
             client = self._client or httpx.AsyncClient(timeout=self.config.http_timeout)
             close_after = self._client is None
-            
+
             try:
                 # Use POST for complex scripts (handles special chars better)
                 response = await client.post(
@@ -86,7 +86,7 @@ class VirtualDJClient:
                     content=script,
                     headers=self._get_headers()
                 )
-                
+
                 if response.status_code == 200:
                     result = response.text.strip()
                     # For execute, result is 'true' or 'false'
@@ -103,7 +103,7 @@ class VirtualDJClient:
                     return {"status": "error", "error": "Authentication failed - check password"}
                 else:
                     return {"status": "error", "error": f"HTTP {response.status_code}: {response.text}"}
-                    
+
             finally:
                 if close_after:
                     await client.aclose()
@@ -120,12 +120,12 @@ class VirtualDJClient:
         result = await self.send_command(script)
         return result.get("status") == "success" and result.get("result", "").lower() == "true"
 
-    async def get_status(self) -> Dict[str, Any]:
+    async def get_status(self) -> dict[str, Any]:
         """Get VirtualDJ status"""
         try:
             if not await self.is_running():
                 return {"status": "not_running", "details": "VirtualDJ is not running"}
-            
+
             # Try to get deck info
             result = await self.query("deck 1 get_title")
             if result["status"] == "success":
@@ -137,7 +137,7 @@ class VirtualDJClient:
             else:
                 return {"status": "running", "details": "VirtualDJ process found but plugin not responding"}
         except Exception as e:
-            raise VDJError(f"Failed to get status: {e}")
+            raise VDJError(f"Failed to get status: {e}") from e
 
     async def get_variable(self, variable: str) -> Any:
         """Get a VirtualDJ variable value"""
@@ -147,7 +147,7 @@ class VirtualDJClient:
         else:
             raise VDJError(f"Failed to get variable {variable}: {result.get('error', 'Unknown error')}")
 
-    async def execute_vdjscript(self, script: str) -> Dict[str, Any]:
+    async def execute_vdjscript(self, script: str) -> dict[str, Any]:
         """Execute a VDJScript expression directly"""
         return await self.send_command(script)
 
@@ -170,26 +170,26 @@ class VirtualDJClient:
         """Stop playback on a deck"""
         return await self.execute(f"deck {deck_id} stop")
 
-    async def get_deck_info(self, deck_id: int) -> Dict[str, Any]:
+    async def get_deck_info(self, deck_id: int) -> dict[str, Any]:
         """Get comprehensive deck information"""
         info = {}
         queries = {
             "title": f"deck {deck_id} get_title",
-            "artist": f"deck {deck_id} get_artist", 
+            "artist": f"deck {deck_id} get_artist",
             "bpm": f"deck {deck_id} get_bpm",
             "key": f"deck {deck_id} get_key",
             "position": f"deck {deck_id} get_position",
             "duration": f"deck {deck_id} get_songlength",
             "is_playing": f"deck {deck_id} get_isplaying",
         }
-        
+
         for key, script in queries.items():
             result = await self.query(script)
             if result["status"] == "success":
                 info[key] = result["result"]
             else:
                 info[key] = None
-                
+
         return info
 
     async def stop_virtualdj(self):
@@ -197,4 +197,4 @@ class VirtualDJClient:
         try:
             await self.send_command("quit")
         except Exception as e:
-            raise VDJError(f"Failed to stop VirtualDJ: {e}")
+            raise VDJError(f"Failed to stop VirtualDJ: {e}") from e

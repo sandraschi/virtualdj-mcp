@@ -5,7 +5,6 @@ Uses HTTP Network Control Plugin API for communication.
 """
 
 from pathlib import Path
-from typing import Union
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -117,11 +116,11 @@ def setup_deck_control_tools(mcp: FastMCP):
                     raise VDJError(f"Failed to load track to deck {deck_id}: {result.get('error', 'Unknown error')}")
 
                 console.print(f"[green]Loaded '{path.name}' to deck {deck_id}[/green]")
-                
+
                 # Wait a moment for track to load before getting status
                 import asyncio
                 await asyncio.sleep(1)
-                
+
                 return await get_deck_status(deck_id)
 
         except Exception as e:
@@ -132,7 +131,7 @@ def setup_deck_control_tools(mcp: FastMCP):
     @mcp.tool()
     async def seek_deck(
         deck_id: int,
-        position: Union[float, str]
+        position: float | str
     ) -> DeckStatus:
         """
         Seek to a specific position on a deck
@@ -308,7 +307,7 @@ def setup_deck_control_tools(mcp: FastMCP):
                 "always": "always",
                 "block": "always"
             }
-            
+
             normalized_mode = mode_map.get(mode.lower())
             if not normalized_mode:
                 return {
@@ -319,14 +318,14 @@ def setup_deck_control_tools(mcp: FastMCP):
             async with client:
                 # Set the loadSecurity setting
                 result = await client.send_command(f"setting loadSecurity {normalized_mode}")
-                
+
                 if result["status"] == "success":
                     console.print(f"[green]Load security set to: {normalized_mode}[/green]")
-                    
+
                     # Verify the setting
                     verify = await client.query("setting loadSecurity")
                     current = verify.get("result", "unknown")
-                    
+
                     return {
                         "success": True,
                         "mode": normalized_mode,

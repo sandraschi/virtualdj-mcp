@@ -5,7 +5,7 @@ Provides multilevel help system and system status monitoring.
 """
 import time
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -25,7 +25,7 @@ def setup_help_tools(mcp: FastMCP):
     """
 
     @mcp.tool()
-    async def show_help(level: str = "overview", category: Optional[str] = None, tool_name: Optional[str] = None) -> str:
+    async def show_help(level: str = "overview", category: str | None = None, tool_name: str | None = None) -> str:
         """
         Multilevel help system for VirtualDJ-MCP.
 
@@ -63,7 +63,7 @@ def setup_help_tools(mcp: FastMCP):
             return f"Error generating help: {e}"
 
     @mcp.tool()
-    async def get_system_status() -> Dict[str, Any]:
+    async def get_system_status() -> dict[str, Any]:
         """
         Get comprehensive system status for VirtualDJ-MCP server.
 

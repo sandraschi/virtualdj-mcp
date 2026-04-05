@@ -2,7 +2,7 @@
 Pydantic models for library tools
 """
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -12,22 +12,22 @@ class TrackInfo(BaseModel):
     path: str = Field(..., description="File path to track")
     title: str = Field(..., description="Track title")
     artist: str = Field(..., description="Artist name")
-    album: Optional[str] = Field(None, description="Album name")
-    genre: Optional[str] = Field(None, description="Music genre")
-    bpm: Optional[float] = Field(None, description="Beats per minute")
-    key: Optional[str] = Field(None, description="Musical key")
+    album: str | None = Field(None, description="Album name")
+    genre: str | None = Field(None, description="Music genre")
+    bpm: float | None = Field(None, description="Beats per minute")
+    key: str | None = Field(None, description="Musical key")
     duration: float = Field(0.0, description="Duration in seconds")
-    energy: Optional[float] = Field(None, description="Energy level (0.0-1.0)")
-    danceability: Optional[float] = Field(None, description="Danceability score (0.0-1.0)")
-    year: Optional[int] = Field(None, description="Release year")
-    bitrate: Optional[int] = Field(None, description="Audio bitrate (kbps)")
-    sample_rate: Optional[int] = Field(None, description="Sample rate (Hz)")
-    channels: Optional[int] = Field(None, description="Number of audio channels")
-    file_size: Optional[int] = Field(None, description="File size in bytes")
-    last_modified: Optional[float] = Field(None, description="Last modified timestamp")
+    energy: float | None = Field(None, description="Energy level (0.0-1.0)")
+    danceability: float | None = Field(None, description="Danceability score (0.0-1.0)")
+    year: int | None = Field(None, description="Release year")
+    bitrate: int | None = Field(None, description="Audio bitrate (kbps)")
+    sample_rate: int | None = Field(None, description="Sample rate (Hz)")
+    channels: int | None = Field(None, description="Number of audio channels")
+    file_size: int | None = Field(None, description="File size in bytes")
+    last_modified: float | None = Field(None, description="Last modified timestamp")
     play_count: int = Field(0, description="Number of times played")
     rating: int = Field(0, description="User rating (0-5)")
-    tags: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+    tags: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     class Config:
         json_encoders = {
@@ -57,7 +57,7 @@ class TrackInfo(BaseModel):
             tags=track.tags
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary with proper serialization"""
         import json
         return json.loads(self.json())

@@ -6,7 +6,7 @@ Operations: metrics, stats, trends, recommendations, export
 """
 
 from datetime import datetime
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -20,13 +20,13 @@ def setup_performance_portmanteau(mcp: FastMCP):
     @mcp.tool()
     async def vdj_performance(
         operation: Literal["metrics", "stats", "trends", "recommendations", "export"],
-        session_start: Optional[str] = None,
-        session_end: Optional[str] = None,
+        session_start: str | None = None,
+        session_end: str | None = None,
         hours: int = 24,
         metric: str = "energy",
         export_format: str = "json",
-        filename: Optional[str] = None
-    ) -> Dict[str, Any]:
+        filename: str | None = None
+    ) -> dict[str, Any]:
         """
         Performance analytics for DJ sessions.
 
@@ -62,7 +62,7 @@ def setup_performance_portmanteau(mcp: FastMCP):
             if operation == "metrics":
                 # Real-time performance metrics
                 timestamp = datetime.now().isoformat()
-                
+
                 # In a real implementation, these would come from VirtualDJ monitoring
                 return {
                     "success": True,
@@ -93,7 +93,7 @@ def setup_performance_portmanteau(mcp: FastMCP):
                 valid_metrics = ["energy", "bpm_stability", "crowd_response"]
                 if metric not in valid_metrics:
                     return {"success": False, "error": f"Invalid metric. Use: {valid_metrics}"}
-                
+
                 return {
                     "success": True,
                     "operation": "trends",
@@ -121,11 +121,11 @@ def setup_performance_portmanteau(mcp: FastMCP):
                 valid_formats = ["json", "csv", "xml"]
                 if export_format not in valid_formats:
                     return {"success": False, "error": f"Invalid format. Use: {valid_formats}"}
-                
+
                 # Generate filename if not provided
                 if not filename:
                     filename = f"performance_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-                
+
                 return {
                     "success": True,
                     "operation": "export",

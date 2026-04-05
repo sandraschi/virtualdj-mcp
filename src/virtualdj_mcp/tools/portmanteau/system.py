@@ -5,8 +5,9 @@ Consolidates system status and help operations into a single interface.
 Operations: status, help, connection_test
 """
 
+import logging
 from datetime import datetime
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -14,6 +15,7 @@ from rich.console import Console
 from ..shared.dependencies import get_vdj_client
 
 console = Console(file=__import__('sys').stderr)
+logger = logging.getLogger(__name__)
 
 HELP_CONTENT = {
     "overview": """
@@ -163,8 +165,8 @@ def setup_system_portmanteau(mcp: FastMCP):
     @mcp.tool()
     async def vdj_system(
         operation: Literal["status", "help", "connection_test"],
-        topic: Optional[str] = None
-    ) -> Dict[str, Any]:
+        topic: str | None = None
+    ) -> dict[str, Any]:
         """
         System status and help for VirtualDJ-MCP.
 
@@ -194,7 +196,7 @@ def setup_system_portmanteau(mcp: FastMCP):
                 # Test VDJ connection
                 connection_ok = False
                 vdj_version = None
-                
+
                 try:
                     client = await get_vdj_client()
                     async with client:
@@ -202,9 +204,9 @@ def setup_system_portmanteau(mcp: FastMCP):
                         if result.get("status") == "success":
                             connection_ok = True
                             vdj_version = result.get("result")
-                except Exception:
-                    pass
-                
+                except Exception as exc:
+                    logger.debug("VirtualDJ status probe failed: %s", exc)
+
                 return {
                     "success": True,
                     "operation": "status",
@@ -236,7 +238,7 @@ def setup_system_portmanteau(mcp: FastMCP):
             elif operation == "help":
                 topic_key = topic or "overview"
                 content = HELP_CONTENT.get(topic_key)
-                
+
                 if not content:
                     available = list(HELP_CONTENT.keys())
                     return {
@@ -244,7 +246,7 @@ def setup_system_portmanteau(mcp: FastMCP):
                         "error": f"Unknown topic: {topic}",
                         "available_topics": available
                     }
-                
+
                 return {
                     "success": True,
                     "operation": "help",
@@ -259,11 +261,11 @@ def setup_system_portmanteau(mcp: FastMCP):
                     async with client:
                         # Test basic query
                         result = await client.query("nop")
-                        
+
                         if result.get("status") == "success":
                             # Test deck query
                             deck_result = await client.query("deck 1 get_title")
-                            
+
                             console.print("[green]VirtualDJ connection successful![/green]")
                             return {
                                 "success": True,
@@ -278,7 +280,7 @@ def setup_system_portmanteau(mcp: FastMCP):
                                 "connected": False,
                                 "error": "VirtualDJ not responding"
                             }
-                            
+
                 except Exception as e:
                     console.print(f"[red]Connection failed: {e}[/red]")
                     return {

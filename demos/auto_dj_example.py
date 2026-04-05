@@ -4,17 +4,19 @@ Auto-DJ Example for VirtualDJ-MCP
 This script demonstrates automated DJ mixing using VirtualDJ's built-in Auto-DJ
 features and VDJScript for intelligent transitions.
 """
-import asyncio
 import argparse
+import asyncio
 import random
-from pathlib import Path
 
 # Add parent directory to path to import from virtualdj_mcp
 import sys
+from pathlib import Path
+
 sys.path.append(str(Path(__file__).parent.parent))
 
-from virtualdj_mcp.core.vdj_client import VirtualDJClient
 from virtualdj_mcp.config import VDJConfig
+from virtualdj_mcp.core.vdj_client import VirtualDJClient
+
 
 async def main():
     print("🤖 VirtualDJ-MCP Auto-DJ Example")

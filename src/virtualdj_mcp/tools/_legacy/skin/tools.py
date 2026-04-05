@@ -5,7 +5,6 @@ Provides tools for managing VirtualDJ skins, panels, and interface customization
 Uses HTTP Network Control Plugin API.
 """
 
-from typing import Optional
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -72,7 +71,7 @@ def setup_skin_tools(mcp: FastMCP):
     @mcp.tool()
     async def load_skin(
         skin_name: str,
-        variation: Optional[str] = None
+        variation: str | None = None
     ) -> SkinOperationResult:
         """
         Load a VirtualDJ skin or skin variation.
@@ -107,10 +106,10 @@ def setup_skin_tools(mcp: FastMCP):
 
                 if result["status"] == "success" and result.get("result", "").lower() == "true":
                     console.print(f"[green]Loaded skin: {skin_name}[/green]")
-                    
+
                     # Get updated skin info
                     skin_info = await get_skin_info()
-                    
+
                     return SkinOperationResult(
                         success=True,
                         message=f"Successfully loaded skin: {skin_name}" + (f" ({variation})" if variation else ""),
@@ -222,8 +221,8 @@ def setup_skin_tools(mcp: FastMCP):
     @mcp.tool()
     async def set_skin_panel_group(
         group_name: str,
-        panel_name: Optional[str] = None,
-        index: Optional[int] = None
+        panel_name: str | None = None,
+        index: int | None = None
     ) -> SkinOperationResult:
         """
         Switch which panel is shown in a skin panel group.
@@ -280,7 +279,7 @@ def setup_skin_tools(mcp: FastMCP):
     @mcp.tool()
     async def toggle_skin_window(
         window_name: str,
-        visible: Optional[bool] = None
+        visible: bool | None = None
     ) -> SkinOperationResult:
         """
         Show or hide a window on skins with multiple windows.

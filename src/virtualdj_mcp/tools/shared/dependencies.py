@@ -3,7 +3,7 @@ Shared dependencies and utilities for VirtualDJ MCP tools
 """
 
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from ...config import VDJConfig
 
@@ -12,9 +12,9 @@ from ...core.vdj_client import VDJError, VirtualDJClient
 from ...services.performance_monitor import PerformanceMonitor
 
 # Global managers (initialized on startup)
-vdj_client: Optional[VirtualDJClient] = None
-config: Optional[VDJConfig] = None
-performance_monitor: Optional[PerformanceMonitor] = None
+vdj_client: VirtualDJClient | None = None
+config: VDJConfig | None = None
+performance_monitor: PerformanceMonitor | None = None
 
 
 async def get_vdj_client() -> VirtualDJClient:
@@ -69,6 +69,6 @@ def update_system_status(key: str, value: Any):
         _system_status["start_time"] = time.time()
 
 
-def get_system_status() -> Dict[str, Any]:
+def get_system_status() -> dict[str, Any]:
     """Get current system status"""
     return _system_status.copy()

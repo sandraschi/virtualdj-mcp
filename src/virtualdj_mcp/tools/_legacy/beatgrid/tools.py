@@ -4,7 +4,6 @@ Beatgrid tools for VirtualDJ MCP
 Tools for manipulating beat grids, BPM, and beat alignment.
 """
 
-from typing import Optional
 from fastmcp import FastMCP
 from rich.console import Console
 
@@ -34,7 +33,7 @@ def setup_beatgrid_tools(mcp: FastMCP):
         """
         try:
             client = await get_vdj_client()
-            
+
             bpm = max(60.0, min(200.0, bpm))
             cmd = f"deck {deck_id} bpm {bpm}"
 
@@ -100,7 +99,7 @@ def setup_beatgrid_tools(mcp: FastMCP):
         """
         try:
             client = await get_vdj_client()
-            
+
             adjustment = max(-100, min(100, adjustment))
             cmd = f"deck {deck_id} beatgrid_adjust {adjustment}"
 
@@ -169,7 +168,7 @@ def setup_beatgrid_tools(mcp: FastMCP):
         """
         try:
             client = await get_vdj_client()
-            
+
             if direction.lower() == "up":
                 cmd = f"deck {deck_id} pitch +{amount}%"
             else:

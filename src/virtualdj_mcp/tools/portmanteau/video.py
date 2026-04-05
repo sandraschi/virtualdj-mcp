@@ -5,7 +5,7 @@ Consolidates video operations into a single interface.
 Operations: crossfader, transition, fx, text, output, master, karaoke, scratch, loop, tempo_sync, load
 """
 
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -21,14 +21,14 @@ def setup_video_portmanteau(mcp: FastMCP):
     @mcp.tool()
     async def vdj_video(
         operation: Literal["crossfader", "transition", "fx", "text", "output", "master", "karaoke", "scratch", "loop", "tempo_sync", "load"],
-        deck_id: Optional[int] = None,
-        position: Optional[float] = None,
+        deck_id: int | None = None,
+        position: float | None = None,
         transition_type: str = "crossfade",
         duration: float = 1.0,
-        effect: Optional[str] = None,
+        effect: str | None = None,
         enabled: bool = True,
         intensity: int = 50,
-        text: Optional[str] = None,
+        text: str | None = None,
         text_position: str = "bottom",
         font_size: int = 48,
         color: str = "white",
@@ -37,8 +37,8 @@ def setup_video_portmanteau(mcp: FastMCP):
         mode: str = "auto",
         remove_vocals: bool = True,
         beats: float = 4,
-        video_path: Optional[str] = None
-    ) -> Dict[str, Any]:
+        video_path: str | None = None
+    ) -> dict[str, Any]:
         """
         Video control for VirtualDJ.
 
@@ -99,10 +99,10 @@ def setup_video_portmanteau(mcp: FastMCP):
             if operation == "crossfader":
                 if position is None:
                     return {"success": False, "error": "position required for crossfader operation"}
-                
+
                 pos = max(-100, min(100, position))
                 vdj_pos = int((pos + 100) / 2)
-                
+
                 async with client:
                     await client.send_command(f"video_crossfader {vdj_pos}%")
                     console.print(f"[green]Video crossfader set to {pos}[/green]")
@@ -118,7 +118,7 @@ def setup_video_portmanteau(mcp: FastMCP):
                 }
                 vdj_transition = transitions.get(transition_type.lower(), "crossfade")
                 dur = max(0.1, min(10.0, duration))
-                
+
                 async with client:
                     await client.send_command(f"video_transition '{vdj_transition}'")
                     await client.send_command(f"video_transition_time {int(dur * 1000)}ms")
@@ -128,34 +128,34 @@ def setup_video_portmanteau(mcp: FastMCP):
             elif operation == "fx":
                 if not deck_id or not effect:
                     return {"success": False, "error": "deck_id and effect required for fx operation"}
-                
+
                 async with client:
                     if enabled:
                         await client.send_command(f"deck {deck_id} video_fx '{effect}'")
                         await client.send_command(f"deck {deck_id} video_fx_slider {intensity}%")
                     else:
                         await client.send_command(f"deck {deck_id} video_fx 'none'")
-                    
+
                     console.print(f"[green]Deck {deck_id}: Video FX '{effect}' {'enabled' if enabled else 'disabled'}[/green]")
                     return {"success": True, "operation": "fx", "deck_id": deck_id, "effect": effect, "enabled": enabled, "intensity": intensity}
 
             elif operation == "text":
                 if not text:
                     return {"success": False, "error": "text required for text operation"}
-                
+
                 safe_text = text.replace("'", "\\'").replace('"', '\\"')
                 position_map = {"top": "top", "center": "middle", "bottom": "bottom"}
                 vdj_position = position_map.get(text_position.lower(), "bottom")
-                
+
                 async with client:
                     await client.send_command(f"video_text '{safe_text}'")
                     await client.send_command(f"video_text_position '{vdj_position}'")
                     await client.send_command(f"video_text_size {font_size}")
                     await client.send_command(f"video_text_color '{color}'")
-                    
+
                     if duration > 0:
                         await client.send_command(f"video_text_duration {int(duration * 1000)}ms")
-                    
+
                     console.print(f"[green]Video text: '{text}' at {text_position}[/green]")
                     return {"success": True, "operation": "text", "text": text, "position": text_position}
 
@@ -167,7 +167,7 @@ def setup_video_portmanteau(mcp: FastMCP):
                             await client.send_command(f"video_window 'fullscreen' {monitor}")
                     else:
                         await client.send_command("video_window 'hide'")
-                    
+
                     console.print(f"[green]Video output: {'enabled' if enabled else 'disabled'}[/green]")
                     return {"success": True, "operation": "output", "enabled": enabled, "fullscreen": fullscreen, "monitor": monitor}
 
@@ -181,14 +181,14 @@ def setup_video_portmanteau(mcp: FastMCP):
                         await client.send_command("video_master 'pip'")
                     elif mode == "deck" and deck_id:
                         await client.send_command(f"video_master 'deck' {deck_id}")
-                    
+
                     console.print(f"[green]Video master: {mode}[/green]")
                     return {"success": True, "operation": "master", "mode": mode, "deck_id": deck_id}
 
             elif operation == "karaoke":
                 if not deck_id:
                     return {"success": False, "error": "deck_id required for karaoke operation"}
-                
+
                 async with client:
                     if enabled:
                         await client.send_command(f"deck {deck_id} karaoke on")
@@ -197,14 +197,14 @@ def setup_video_portmanteau(mcp: FastMCP):
                     else:
                         await client.send_command(f"deck {deck_id} karaoke off")
                         await client.send_command(f"deck {deck_id} stem_unkill 'vocal'")
-                    
+
                     console.print(f"[green]Deck {deck_id}: Karaoke {'ON' if enabled else 'OFF'}[/green]")
                     return {"success": True, "operation": "karaoke", "deck_id": deck_id, "enabled": enabled}
 
             elif operation == "scratch":
                 if not deck_id:
                     return {"success": False, "error": "deck_id required for scratch operation"}
-                
+
                 async with client:
                     state = "on" if enabled else "off"
                     await client.send_command(f"deck {deck_id} video_scratch {state}")
@@ -214,20 +214,20 @@ def setup_video_portmanteau(mcp: FastMCP):
             elif operation == "loop":
                 if not deck_id:
                     return {"success": False, "error": "deck_id required for loop operation"}
-                
+
                 async with client:
                     if enabled:
                         await client.send_command(f"deck {deck_id} video_loop {beats}")
                     else:
                         await client.send_command(f"deck {deck_id} video_loop_exit")
-                    
+
                     console.print(f"[green]Deck {deck_id}: Video loop {'set to ' + str(beats) + ' beats' if enabled else 'exited'}[/green]")
                     return {"success": True, "operation": "loop", "deck_id": deck_id, "beats": beats if enabled else None}
 
             elif operation == "tempo_sync":
                 if not deck_id:
                     return {"success": False, "error": "deck_id required for tempo_sync operation"}
-                
+
                 async with client:
                     state = "on" if enabled else "off"
                     await client.send_command(f"deck {deck_id} video_tempo_sync {state}")
@@ -237,7 +237,7 @@ def setup_video_portmanteau(mcp: FastMCP):
             elif operation == "load":
                 if not deck_id or not video_path:
                     return {"success": False, "error": "deck_id and video_path required for load operation"}
-                
+
                 async with client:
                     await client.load_track(deck_id, video_path)
                     console.print(f"[green]Video loaded to Deck {deck_id}[/green]")

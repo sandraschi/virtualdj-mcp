@@ -5,7 +5,7 @@ Consolidates skin control operations into a single interface.
 Operations: info, load, variation, panel, panel_group, window
 """
 
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -22,14 +22,14 @@ def setup_skin_portmanteau(mcp: FastMCP):
     @mcp.tool()
     async def vdj_skin(
         operation: Literal["info", "load", "variation", "panel", "panel_group", "window"],
-        skin_name: Optional[str] = None,
-        variation: Optional[str] = None,
-        panel_name: Optional[str] = None,
-        group_name: Optional[str] = None,
-        window_name: Optional[str] = None,
-        visible: Optional[bool] = None,
-        index: Optional[int] = None
-    ) -> Dict[str, Any]:
+        skin_name: str | None = None,
+        variation: str | None = None,
+        panel_name: str | None = None,
+        group_name: str | None = None,
+        window_name: str | None = None,
+        visible: bool | None = None,
+        index: int | None = None
+    ) -> dict[str, Any]:
         """
         Skin control for VirtualDJ.
 
@@ -88,13 +88,13 @@ def setup_skin_portmanteau(mcp: FastMCP):
             elif operation == "load":
                 if not skin_name:
                     return {"success": False, "error": "skin_name required for load operation"}
-                
+
                 async with client:
                     if variation:
                         cmd = f"skin '{skin_name}' '{variation}'"
                     else:
                         cmd = f"skin '{skin_name}'"
-                    
+
                     result = await client.send_command(cmd)
                     if result["status"] == "success":
                         console.print(f"[green]Skin loaded: {skin_name}{f' ({variation})' if variation else ''}[/green]")
@@ -110,7 +110,7 @@ def setup_skin_portmanteau(mcp: FastMCP):
             elif operation == "variation":
                 if not variation:
                     return {"success": False, "error": "variation required for variation operation"}
-                
+
                 async with client:
                     result = await client.send_command(f"skin_variation '{variation}'")
                     if result["status"] == "success":
@@ -122,9 +122,9 @@ def setup_skin_portmanteau(mcp: FastMCP):
             elif operation == "panel":
                 if not panel_name:
                     return {"success": False, "error": "panel_name required for panel operation"}
-                
+
                 show = visible if visible is not None else True
-                
+
                 async with client:
                     action = "show" if show else "hide"
                     result = await client.send_command(f"skin_panel '{panel_name}' {action}")
@@ -137,7 +137,7 @@ def setup_skin_portmanteau(mcp: FastMCP):
             elif operation == "panel_group":
                 if not group_name:
                     return {"success": False, "error": "group_name required for panel_group operation"}
-                
+
                 async with client:
                     if panel_name:
                         cmd = f"skin_panel_group '{group_name}' '{panel_name}'"
@@ -145,7 +145,7 @@ def setup_skin_portmanteau(mcp: FastMCP):
                         cmd = f"skin_panel_group '{group_name}' {index}"
                     else:
                         return {"success": False, "error": "Either panel_name or index required for panel_group"}
-                    
+
                     result = await client.send_command(cmd)
                     if result["status"] == "success":
                         console.print(f"[green]Panel group '{group_name}' switched[/green]")
@@ -162,7 +162,7 @@ def setup_skin_portmanteau(mcp: FastMCP):
             elif operation == "window":
                 if not window_name:
                     return {"success": False, "error": "window_name required for window operation"}
-                
+
                 async with client:
                     if visible is None:
                         # Toggle
@@ -170,7 +170,7 @@ def setup_skin_portmanteau(mcp: FastMCP):
                     else:
                         action = "show" if visible else "hide"
                         cmd = f"skin_window '{window_name}' {action}"
-                    
+
                     result = await client.send_command(cmd)
                     if result["status"] == "success":
                         console.print(f"[green]Window '{window_name}' toggled[/green]")

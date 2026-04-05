@@ -7,15 +7,12 @@ Run this script to verify MCP tool registration and basic functionality.
 """
 
 import asyncio
-import json
 import sys
-import os
 from pathlib import Path
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
-from virtualdj_mcp.server import mcp
 
 
 async def test_mcp_tools():

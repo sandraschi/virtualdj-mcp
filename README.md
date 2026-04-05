@@ -1,4 +1,4 @@
-# VirtualDJ-MCP 🎵
+# VirtualDJ-MCP 
 
 [![Production Ready](https://img.shields.io/badge/status-production%20ready-brightgreen.svg)](docs/MCP_PRODUCTION_CHECKLIST.md)
 [![FastMCP](https://img.shields.io/badge/FastMCP-2.13.1-blue.svg)](https://gofastmcp.com)
@@ -6,11 +6,11 @@
 
 Professional DJ automation MCP server with Austrian efficiency for Sandra's music mixing needs.
 
-## 🎯 Overview
+##  Overview
 
 VirtualDJ-MCP provides seamless integration between Claude and VirtualDJ, enabling professional DJ automation, mixing, and library management through natural language commands.
 
-### ✨ What's New (v2.0)
+###  What's New (v2.0)
 
 - **Portmanteau Tools**: 62+ tools consolidated into 12 clean interfaces (81% reduction!)
 - **Plex Integration**: Search and load tracks directly from Plex Media Server
@@ -18,7 +18,7 @@ VirtualDJ-MCP provides seamless integration between Claude and VirtualDJ, enabli
 - **Video Mixing**: Full video DJ support with effects and transitions
 - **Cross-MCP deck API**: standard REST endpoints for load/play/sync/cue handoff from other MCP servers
 
-### 💪 Strengths
+###  Strengths
 
 - Professional DJ software integration (20+ years of VirtualDJ development)
 - **HTTP API Integration**: Real-time control via Network Control Plugin
@@ -27,23 +27,23 @@ VirtualDJ-MCP provides seamless integration between Claude and VirtualDJ, enabli
 - **NEW: Plex Media Server integration**
 - **Production-Ready**: FastMCP 2.13.1 implementation
 
-### ⚠️ Requirements
+###  Requirements
 
 - **VirtualDJ 2023 or later**
 - **VirtualDJ Pro license** (required for Network Control Plugin)
 - **Python 3.10 or 3.11** (3.12+ not supported - aubio dependency)
 - Network Control Plugin installed and enabled
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Step 1: Install VirtualDJ Network Control Plugin
 
 1. Open **VirtualDJ**
-2. Go to **Config** → **Extensions** → **Effects** → **Other**
+2. Go to **Config**  **Extensions**  **Effects**  **Other**
 3. Install **"Network Control"** plugin
-4. Enable it in **Master panel** → **Master Effect** → **Auto-Start**
+4. Enable it in **Master panel**  **Master Effect**  **Auto-Start**
 
-📖 **[Full Plugin Setup Guide](docs/NETWORK_CONTROL_SETUP.md)**
+ **[Full Plugin Setup Guide](docs/NETWORK_CONTROL_SETUP.md)**
 
 ### Step 2: Install VirtualDJ-MCP
 
@@ -95,7 +95,7 @@ Add to `claude_desktop_config.json`:
 
 **Note:** Some JSON linters object to `cwd` parameter. Using `-m` module execution with `PYTHONPATH` avoids this issue.
 
-## 🎛️ Portmanteau Tools (Default)
+##  Portmanteau Tools (Default)
 
 VirtualDJ-MCP uses **12 consolidated portmanteau tools** for a cleaner AI interface:
 
@@ -132,19 +132,19 @@ VirtualDJ-MCP exposes stable REST endpoints so other MCP servers can hand off tr
 These are used by `songgeneration-mcp` Listen exports for direct deck preparation before live mixing/scratching.
 
 
-## 🚀 Installation
+##  Installation
 
 ### Prerequisites
 - [uv](https://docs.astral.sh/uv/) installed (RECOMMENDED)
 - Python 3.12+
 
-### 📦 Quick Start
+###  Quick Start
 Run immediately via `uvx`:
 ```bash
 uvx virtualdj-mcp
 ```
 
-### 🎯 Claude Desktop Integration
+###  Claude Desktop Integration
 Add to your `claude_desktop_config.json`:
 ```json
 "mcpServers": {
@@ -199,7 +199,7 @@ vdj_recording("start", name="Friday Night Mix", format="mp3")
 vdj_recording("stop")
 ```
 
-## 🎬 Plex Integration
+##  Plex Integration
 
 Load tracks directly from your Plex Media Server!
 
@@ -219,19 +219,19 @@ Add Plex token to your environment:
 ```
 
 
-## 🚀 Installation
+##  Installation
 
 ### Prerequisites
 - [uv](https://docs.astral.sh/uv/) installed (RECOMMENDED)
 - Python 3.12+
 
-### 📦 Quick Start
+###  Quick Start
 Run immediately via `uvx`:
 ```bash
 uvx virtualdj-mcp
 ```
 
-### 🎯 Claude Desktop Integration
+###  Claude Desktop Integration
 Add to your `claude_desktop_config.json`:
 ```json
 "mcpServers": {
@@ -256,7 +256,7 @@ vdj_plex("search", artist="Pink Floyd")
 vdj_plex("load_from_plex", query="Dancing Queen", deck_id=1)
 ```
 
-## 🎤 Stem Separation
+##  Stem Separation
 
 VirtualDJ's Stems 2.0 enables real-time isolation:
 
@@ -308,32 +308,32 @@ VDJ_LIBRARY_PATH=C:/Music
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Claude / Cursor                          │
-│                         (MCP Client)                            │
-└─────────────────────────┬───────────────────────────────────────┘
-                          │ MCP Protocol (stdio)
-                          ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                      VirtualDJ-MCP Server                       │
-│                       (FastMCP 2.13.1)                          │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │              12 Portmanteau Tools                         │   │
-│  │  vdj_deck │ vdj_mixer │ vdj_stems │ vdj_plex │ ...       │   │
-│  └──────────────────────────┬───────────────────────────────┘   │
-│                             ▼                                    │
-│  ┌──────────────┐    ┌──────────────┐                           │
-│  │ VDJ Client   │    │ Plex Client  │                           │
-│  │ (HTTP/httpx) │    │ (HTTP/httpx) │                           │
-│  └──────┬───────┘    └──────┬───────┘                           │
-└─────────┼───────────────────┼───────────────────────────────────┘
-          │                   │
-          ▼                   ▼
-┌─────────────────┐    ┌─────────────────┐
-│   VirtualDJ     │    │  Plex Server    │
-│ Network Control │    │  (port 32400)   │
-│   (port 80)     │    │                 │
-└─────────────────┘    └─────────────────┘
+
+                        Claude / Cursor                          
+                         (MCP Client)                            
+
+                           MCP Protocol (stdio)
+                          
+
+                      VirtualDJ-MCP Server                       
+                       (FastMCP 2.13.1)                          
+     
+                12 Portmanteau Tools                            
+    vdj_deck  vdj_mixer  vdj_stems  vdj_plex  ...          
+     
+                                                                 
+                                 
+   VDJ Client        Plex Client                             
+   (HTTP/httpx)      (HTTP/httpx)                            
+                                 
+
+                             
+                             
+    
+   VirtualDJ           Plex Server    
+ Network Control       (port 32400)   
+   (port 80)                          
+    
 ```
 
 ## Troubleshooting
@@ -349,15 +349,15 @@ VDJ_LIBRARY_PATH=C:/Music
 1. Verify `PLEX_TOKEN` is set correctly
 2. Test: `curl "http://localhost:32400/?X-Plex-Token=YOUR_TOKEN"`
 
-📖 **[Full Troubleshooting Guide](docs/NETWORK_CONTROL_SETUP.md#troubleshooting)**
+ **[Full Troubleshooting Guide](docs/NETWORK_CONTROL_SETUP.md#troubleshooting)**
 
-## 📚 Documentation
+##  Documentation
 
 - **[Network Control Setup](docs/NETWORK_CONTROL_SETUP.md)** - Plugin installation
 - **[VirtualDJ Reference](docs/VIRTUALDJ_REFERENCE.md)** - VDJScript commands
 - **[MCP Production Checklist](docs/MCP_PRODUCTION_CHECKLIST.md)** - Production readiness
 
-## 🇦🇹 Austrian Efficiency
+##  Austrian Efficiency
 
 - **Practical solutions** over theoretical complexity
 - **12 tools** instead of 62+ (81% reduction!)
@@ -366,4 +366,4 @@ VDJ_LIBRARY_PATH=C:/Music
 
 ---
 
-**Built with Austrian efficiency for professional DJ automation! 🎵🇦🇹**
+**Built with Austrian efficiency for professional DJ automation! **

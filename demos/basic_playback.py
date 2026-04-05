@@ -10,14 +10,16 @@ This script demonstrates basic deck control using VirtualDJ CLI commands:
 """
 import asyncio
 import os
-from pathlib import Path
 
 # Add parent directory to path to import from virtualdj_mcp
 import sys
+from pathlib import Path
+
 sys.path.append(str(Path(__file__).parent.parent))
 
-from virtualdj_mcp.core.vdj_client import VirtualDJClient
 from virtualdj_mcp.config import VDJConfig
+from virtualdj_mcp.core.vdj_client import VirtualDJClient
+
 
 async def main():
     print("🎵 VirtualDJ-MCP Basic Playback Example")

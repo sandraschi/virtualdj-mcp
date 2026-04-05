@@ -6,7 +6,7 @@ This module provides MCP tools for recording and exporting DJ mixes.
 
 import logging
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -41,12 +41,12 @@ def setup_recording_tools(mcp: FastMCP):
     Args:
         mcp: FastMCP instance to register tools with
     """
-    
+
     @mcp.tool()
     async def start_recording(
-        name: Optional[str] = None, 
+        name: str | None = None,
         format: str = "wav"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Start recording the current mix.
         
@@ -66,9 +66,9 @@ def setup_recording_tools(mcp: FastMCP):
                 "status": "error",
                 "message": f"Failed to start recording: {str(e)}"
             }
-    
+
     @mcp.tool()
-    async def stop_recording() -> Dict[str, Any]:
+    async def stop_recording() -> dict[str, Any]:
         """
         Stop the current recording.
         
@@ -84,9 +84,9 @@ def setup_recording_tools(mcp: FastMCP):
                 "status": "error",
                 "message": f"Failed to stop recording: {str(e)}"
             }
-    
+
     @mcp.tool()
-    async def get_recording_status(recording_id: Optional[str] = None) -> Dict[str, Any]:
+    async def get_recording_status(recording_id: str | None = None) -> dict[str, Any]:
         """
         Get the status of the current or specified recording.
         
@@ -105,9 +105,9 @@ def setup_recording_tools(mcp: FastMCP):
                 "status": "error",
                 "message": f"Failed to get recording status: {str(e)}"
             }
-    
+
     @mcp.tool()
-    async def list_recordings(limit: int = 10, offset: int = 0) -> Dict[str, Any]:
+    async def list_recordings(limit: int = 10, offset: int = 0) -> dict[str, Any]:
         """
         List all available recordings.
         
@@ -142,12 +142,12 @@ def setup_recording_tools(mcp: FastMCP):
                 "status": "error",
                 "message": f"Failed to list recordings: {str(e)}"
             }
-    
+
     @mcp.tool()
     async def export_mix_history(
         output_format: str = "json",
         include_tracklist: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Export the mix history in the specified format.
         
@@ -162,28 +162,28 @@ def setup_recording_tools(mcp: FastMCP):
             service = await get_recording_service()
             # First export the basic mix history
             result = await service.export_mix_history(output_format)
-            
+
             if result["status"] != "success":
                 return result
-            
+
             # If tracklist should be included, add it to the export
             if include_tracklist and output_format == "json":
                 # This would be enhanced with actual tracklist data from VirtualDJ
                 # For now, we'll just add a placeholder
                 result["tracklist_included"] = False
                 result["message"] = "Tracklist export not yet implemented"
-            
+
             return result
-            
+
         except Exception as e:
             logger.error(f"Error exporting mix history: {e}", exc_info=True)
             return {
                 "status": "error",
                 "message": f"Failed to export mix history: {str(e)}"
             }
-    
+
     @mcp.tool()
-    async def delete_recording(recording_id: str) -> Dict[str, Any]:
+    async def delete_recording(recording_id: str) -> dict[str, Any]:
         """
         Delete a recording.
         
@@ -219,13 +219,13 @@ def setup_recording_tools(mcp: FastMCP):
             # Remove from recordings list
             service.recordings.pop(i)
             service._save_recordings()
-            
+
             return {
                 "status": "success",
                 "message": f"Recording deleted: {recording_id}",
                 "recording_id": recording_id
             }
-            
+
         except Exception as e:
             logger.error(f"Error deleting recording: {e}", exc_info=True)
             return {

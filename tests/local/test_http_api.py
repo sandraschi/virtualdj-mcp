@@ -217,14 +217,14 @@ async def test_track_loading(result: TestResult):
         # Load track to deck 2 (avoid interrupting deck 1)
         normalized_path = test_track.replace("\\", "/")
         script = f"deck 2 load '{normalized_path}'"
-        
+
         success, res = await execute(client, script)
         if success:
-            result.ok(f"Track loaded to deck 2")
-            
+            result.ok("Track loaded to deck 2")
+
             # Wait for track to load
             await asyncio.sleep(1)
-            
+
             # Verify track loaded
             success, title = await query(client, "deck 2 get_title")
             if success and title:
@@ -245,7 +245,7 @@ async def main():
 
     # Run tests
     connected = await test_connection(result)
-    
+
     if connected:
         await test_deck_queries(result)
         await test_deck_commands(result)
@@ -258,7 +258,7 @@ async def main():
 
     # Summary
     success = result.summary()
-    
+
     if success:
         print("\n🎉 All tests passed!")
     else:

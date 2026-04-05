@@ -7,17 +7,15 @@ Run this script to verify API endpoints and functionality.
 """
 
 import asyncio
-import httpx
 import json
 import sys
-import os
 from pathlib import Path
-import time
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 from fastapi.testclient import TestClient
+
 from virtualdj_mcp.api.app import create_app
 
 

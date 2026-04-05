@@ -7,7 +7,7 @@ Operations: search, get_path, load_from_plex
 
 import os
 from pathlib import Path
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -28,14 +28,14 @@ def setup_plex_portmanteau(mcp: FastMCP):
     @mcp.tool()
     async def vdj_plex(
         operation: Literal["search", "get_path", "load_from_plex", "list_libraries"],
-        query: Optional[str] = None,
-        artist: Optional[str] = None,
-        album: Optional[str] = None,
-        library_id: Optional[str] = None,
-        media_id: Optional[str] = None,
+        query: str | None = None,
+        artist: str | None = None,
+        album: str | None = None,
+        library_id: str | None = None,
+        media_id: str | None = None,
         deck_id: int = 1,
         limit: int = 10
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Plex Media Server integration for VirtualDJ.
 
@@ -95,25 +95,25 @@ def setup_plex_portmanteau(mcp: FastMCP):
             if operation == "list_libraries":
                 try:
                     import httpx
-                    
+
                     headers = {
                         "X-Plex-Token": PLEX_TOKEN,
                         "Accept": "application/json"
                     }
-                    
+
                     async with httpx.AsyncClient() as http_client:
                         response = await http_client.get(
                             f"{PLEX_SERVER_URL}/library/sections",
                             headers=headers,
                             timeout=30.0
                         )
-                        
+
                         if response.status_code != 200:
                             return {"success": False, "error": f"Plex API error: {response.status_code}"}
-                        
+
                         data = response.json()
                         directories = data.get("MediaContainer", {}).get("Directory", [])
-                        
+
                         # Filter to music libraries
                         music_libraries = [
                             {
@@ -125,14 +125,14 @@ def setup_plex_portmanteau(mcp: FastMCP):
                             for lib in directories
                             if lib.get("type") in ("artist", "track")
                         ]
-                        
+
                         return {
                             "success": True,
                             "operation": "list_libraries",
                             "libraries": music_libraries,
                             "total": len(music_libraries)
                         }
-                        
+
                 except ImportError:
                     return {"success": False, "error": "httpx not installed. Run: pip install httpx"}
                 except Exception as e:
@@ -141,24 +141,24 @@ def setup_plex_portmanteau(mcp: FastMCP):
             elif operation == "search":
                 if not query and not artist and not album:
                     return {"success": False, "error": "query, artist, or album required for search"}
-                
+
                 try:
                     import httpx
-                    
+
                     headers = {
                         "X-Plex-Token": PLEX_TOKEN,
                         "Accept": "application/json"
                     }
-                    
+
                     # Build search query
                     search_term = query or artist or album
                     params = {"query": search_term, "limit": limit}
-                    
+
                     if library_id:
                         url = f"{PLEX_SERVER_URL}/library/sections/{library_id}/search"
                     else:
                         url = f"{PLEX_SERVER_URL}/search"
-                    
+
                     async with httpx.AsyncClient() as http_client:
                         response = await http_client.get(
                             url,
@@ -166,13 +166,13 @@ def setup_plex_portmanteau(mcp: FastMCP):
                             params=params,
                             timeout=30.0
                         )
-                        
+
                         if response.status_code != 200:
                             return {"success": False, "error": f"Plex API error: {response.status_code}"}
-                        
+
                         data = response.json()
                         results = data.get("MediaContainer", {}).get("Metadata", [])
-                        
+
                         # Filter to audio tracks and extract relevant info
                         tracks = []
                         for item in results:
@@ -186,16 +186,16 @@ def setup_plex_portmanteau(mcp: FastMCP):
                                     "duration": item.get("duration"),
                                     "year": item.get("year"),
                                 }
-                                
+
                                 # Try to get file path from Media/Part
                                 media = item.get("Media", [])
                                 if media:
                                     parts = media[0].get("Part", [])
                                     if parts:
                                         track_info["file_path"] = parts[0].get("file")
-                                
+
                                 tracks.append(track_info)
-                        
+
                         console.print(f"[green]Found {len(tracks)} tracks in Plex[/green]")
                         return {
                             "success": True,
@@ -204,7 +204,7 @@ def setup_plex_portmanteau(mcp: FastMCP):
                             "tracks": tracks[:limit],
                             "total": len(tracks)
                         }
-                        
+
                 except ImportError:
                     return {"success": False, "error": "httpx not installed. Run: pip install httpx"}
                 except Exception as e:
@@ -213,43 +213,43 @@ def setup_plex_portmanteau(mcp: FastMCP):
             elif operation == "get_path":
                 if not media_id:
                     return {"success": False, "error": "media_id required for get_path operation"}
-                
+
                 try:
                     import httpx
-                    
+
                     headers = {
                         "X-Plex-Token": PLEX_TOKEN,
                         "Accept": "application/json"
                     }
-                    
+
                     async with httpx.AsyncClient() as http_client:
                         response = await http_client.get(
                             f"{PLEX_SERVER_URL}/library/metadata/{media_id}",
                             headers=headers,
                             timeout=30.0
                         )
-                        
+
                         if response.status_code != 200:
                             return {"success": False, "error": f"Plex API error: {response.status_code}"}
-                        
+
                         data = response.json()
                         metadata = data.get("MediaContainer", {}).get("Metadata", [])
-                        
+
                         if not metadata:
                             return {"success": False, "error": f"Media not found: {media_id}"}
-                        
+
                         item = metadata[0]
                         media = item.get("Media", [])
-                        
+
                         if not media:
                             return {"success": False, "error": "No media file found for this item"}
-                        
+
                         parts = media[0].get("Part", [])
                         if not parts:
                             return {"success": False, "error": "No file parts found"}
-                        
+
                         file_path = parts[0].get("file")
-                        
+
                         return {
                             "success": True,
                             "operation": "get_path",
@@ -259,7 +259,7 @@ def setup_plex_portmanteau(mcp: FastMCP):
                             "file_path": file_path,
                             "exists": Path(file_path).exists() if file_path else False
                         }
-                        
+
                 except ImportError:
                     return {"success": False, "error": "httpx not installed. Run: pip install httpx"}
                 except Exception as e:
@@ -268,7 +268,7 @@ def setup_plex_portmanteau(mcp: FastMCP):
             elif operation == "load_from_plex":
                 if not query and not artist:
                     return {"success": False, "error": "query or artist required for load_from_plex"}
-                
+
                 # First search
                 search_result = await vdj_plex(
                     operation="search",
@@ -278,17 +278,17 @@ def setup_plex_portmanteau(mcp: FastMCP):
                     library_id=library_id,
                     limit=1
                 )
-                
+
                 if not search_result.get("success"):
                     return search_result
-                
+
                 tracks = search_result.get("tracks", [])
                 if not tracks:
                     return {"success": False, "error": f"No tracks found for: {query or artist}"}
-                
+
                 track = tracks[0]
                 file_path = track.get("file_path")
-                
+
                 if not file_path:
                     # Try to get path via media_id
                     path_result = await vdj_plex(
@@ -297,21 +297,21 @@ def setup_plex_portmanteau(mcp: FastMCP):
                     )
                     if path_result.get("success"):
                         file_path = path_result.get("file_path")
-                
+
                 if not file_path:
                     return {"success": False, "error": "Could not determine file path for track"}
-                
+
                 if not Path(file_path).exists():
                     return {
                         "success": False,
                         "error": f"File not accessible: {file_path}",
                         "hint": "Plex server may be on different machine. Ensure path is accessible."
                     }
-                
+
                 # Load to VirtualDJ
                 vdj_client = await get_vdj_client()
                 normalized_path = file_path.replace("\\", "/")
-                
+
                 async with vdj_client:
                     # Stop deck if playing
                     status_result = await vdj_client.query(f"deck {deck_id} get_isplaying")
@@ -319,14 +319,14 @@ def setup_plex_portmanteau(mcp: FastMCP):
                         await vdj_client.send_command(f"deck {deck_id} stop")
                         import asyncio
                         await asyncio.sleep(0.2)
-                    
+
                     result = await vdj_client.send_command(f"deck {deck_id} load '{normalized_path}'")
-                    
+
                     if result["status"] != "success":
                         raise VDJError(f"Failed to load track: {result.get('error')}")
-                    
+
                     console.print(f"[green]Loaded '{track.get('title')}' by {track.get('artist')} to deck {deck_id}[/green]")
-                    
+
                     return {
                         "success": True,
                         "operation": "load_from_plex",

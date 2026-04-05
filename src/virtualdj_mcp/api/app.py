@@ -6,11 +6,11 @@ Provides REST API endpoints alongside MCP interface.
 
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from ..config import VDJConfig
 from ..core.vdj_client import VDJError, VirtualDJClient
@@ -26,16 +26,29 @@ class HealthResponse(BaseModel):
     service: str = "VirtualDJ-MCP"
 
 
+class SettingsResponse(BaseModel):
+    """Non-secret connection settings exposed to the webapp."""
+
+    osc_port: int = Field(
+        default=40100,
+        ge=1,
+        le=65535,
+        description="OSC (OS2V) UDP port — must match VirtualDJ Settings → OSC (env VDJ_OSC_PORT)",
+    )
+    http_host: str = "127.0.0.1"
+    http_port: int = 80
+
+
 class DeckStatusResponse(BaseModel):
     deck_id: int
     is_playing: bool
-    track_path: Optional[str] = None
-    track_title: Optional[str] = None
-    track_artist: Optional[str] = None
+    track_path: str | None = None
+    track_title: str | None = None
+    track_artist: str | None = None
     position: float
     duration: float
-    bpm: Optional[float] = None
-    key: Optional[str] = None
+    bpm: float | None = None
+    key: str | None = None
     volume: int
     pitch: float
 
@@ -43,31 +56,31 @@ class DeckStatusResponse(BaseModel):
 class TrackSearchRequest(BaseModel):
     query: str = ""
     limit: int = 50
-    artist: Optional[str] = None
-    genre: Optional[str] = None
-    bpm_min: Optional[float] = None
-    bpm_max: Optional[float] = None
-    key: Optional[str] = None
-    year_min: Optional[int] = None
-    year_max: Optional[int] = None
-    duration_min: Optional[float] = None
-    duration_max: Optional[float] = None
-    energy_min: Optional[float] = None
-    energy_max: Optional[float] = None
+    artist: str | None = None
+    genre: str | None = None
+    bpm_min: float | None = None
+    bpm_max: float | None = None
+    key: str | None = None
+    year_min: int | None = None
+    year_max: int | None = None
+    duration_min: float | None = None
+    duration_max: float | None = None
+    energy_min: float | None = None
+    energy_max: float | None = None
     sort_by: str = "relevance"
     sort_desc: bool = True
 
 
 class AudioAnalysisResponse(BaseModel):
-    bpm: Optional[float] = None
-    key: Optional[str] = None
-    energy: Optional[float] = None
-    danceability: Optional[float] = None
-    loudness: Optional[float] = None
-    spectral_centroid: Optional[float] = None
-    zero_crossing_rate: Optional[float] = None
-    onset_strength: Optional[float] = None
-    beats: List[float] = []
+    bpm: float | None = None
+    key: str | None = None
+    energy: float | None = None
+    danceability: float | None = None
+    loudness: float | None = None
+    spectral_centroid: float | None = None
+    zero_crossing_rate: float | None = None
+    onset_strength: float | None = None
+    beats: list[float] = []
     analysis_successful: bool
 
 
@@ -134,6 +147,22 @@ def create_app() -> FastAPI:
             service="VirtualDJ-MCP"
         )
 
+    @app.get("/settings", response_model=SettingsResponse)
+    async def get_public_settings():
+        """Settings for the dashboard (OSC port, HTTP plugin host/port)."""
+        return SettingsResponse(
+            osc_port=config.osc_port,
+            http_host=config.http_host,
+            http_port=config.http_port,
+        )
+
+    @app.post("/connection-test")
+    async def post_connection_test():
+        """HTTP Network Control Plugin + OSC UDP reachability for the dashboard."""
+        from ..services.connection_test import run_connection_tests
+
+        return await run_connection_tests(config)
+
     # API v1 endpoints
     @app.get("/api/v1/deck/{deck_id}/status", response_model=DeckStatusResponse)
     async def get_deck_status_api(deck_id: int):
@@ -188,12 +217,12 @@ def create_app() -> FastAPI:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(e)
-            )
+            ) from e
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Unexpected error: {str(e)}"
-            )
+            ) from e
 
     @app.post("/api/v1/deck/{deck_id}/play_pause")
     async def play_pause_deck_api(deck_id: int, action: str = "toggle"):
@@ -232,7 +261,7 @@ def create_app() -> FastAPI:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(e)
-            )
+            ) from e
 
     @app.post("/api/v1/deck/{deck_id}/load")
     async def load_track_api(deck_id: int, track_path: str):
@@ -273,7 +302,61 @@ def create_app() -> FastAPI:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(e)
-            )
+            ) from e
+
+    @app.post("/api/v1/deck/{deck_id}/sync")
+    async def sync_deck_api(deck_id: int):
+        """
+        Sync selected deck to current master/tempo reference.
+        """
+        try:
+            client = await get_vdj_client()
+            cmd = f"deck {deck_id} sync"
+            async with client:
+                result = await client.send_command(cmd)
+                if result["status"] != "success":
+                    raise HTTPException(
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        detail=f"Failed to sync deck {deck_id}"
+                    )
+                return {"status": "success", "message": f"Deck {deck_id} synced"}
+        except VDJError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=str(e)
+            ) from e
+
+    @app.post("/api/v1/deck/{deck_id}/cue")
+    async def cue_deck_api(deck_id: int, mode: str = "start"):
+        """
+        Cue helper endpoint.
+
+        Modes:
+        - start: jump to track start
+        - cue: jump to existing cue point
+        - set_cue: set cue at current position
+        """
+        try:
+            client = await get_vdj_client()
+            if mode == "cue":
+                cmd = f"deck {deck_id} goto_cue"
+            elif mode == "set_cue":
+                cmd = f"deck {deck_id} set_cue"
+            else:
+                cmd = f"deck {deck_id} goto_start"
+            async with client:
+                result = await client.send_command(cmd)
+                if result["status"] != "success":
+                    raise HTTPException(
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        detail=f"Failed cue operation on deck {deck_id}"
+                    )
+                return {"status": "success", "message": f"Deck {deck_id} cue mode {mode} applied"}
+        except VDJError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=str(e)
+            ) from e
 
     @app.post("/api/v1/library/search")
     async def search_tracks_api(request: TrackSearchRequest):
@@ -346,7 +429,7 @@ def create_app() -> FastAPI:
 
             # Sort results
             if request.sort_by == "relevance" and request.query:
-                def relevance_score(track: Dict[str, Any]) -> int:
+                def relevance_score(track: dict[str, Any]) -> int:
                     score = 0
                     if request.query.lower() in (track.get("title") or "").lower():
                         score += 3
@@ -379,7 +462,7 @@ def create_app() -> FastAPI:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Search failed: {str(e)}"
-            )
+            ) from e
 
     @app.post("/api/v1/audio/analyze")
     async def analyze_audio_api(track_path: str):

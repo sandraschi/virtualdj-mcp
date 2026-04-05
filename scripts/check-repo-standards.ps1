@@ -41,7 +41,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 Write-Host "`n╔═══════════════════════════════════════════════════════════╗" -ForegroundColor Magenta
-Write-Host "║    [search] MCP Server Repository Standards Checker [search]       ║" -ForegroundColor Magenta
+Write-Host "║    🔍 MCP Server Repository Standards Checker 🔍       ║" -ForegroundColor Magenta
 Write-Host "╚═══════════════════════════════════════════════════════════╝`n" -ForegroundColor Magenta
 
 # Check if we're in a repo
@@ -71,7 +71,7 @@ $results = @{
 # SECTION 1: FastMCP 2.12+ Compliance
 # ============================================================================
 
-Write-Host "[search] Checking FastMCP 2.12+ Compliance..." -ForegroundColor Yellow
+Write-Host "🔍 Checking FastMCP 2.12+ Compliance..." -ForegroundColor Yellow
 
 $fastmcpIssues = @()
 $fastmcpScore = 10
@@ -102,7 +102,7 @@ $results.Scores["FastMCP"] = [Math]::Max(0, $fastmcpScore)
 # SECTION 2: MCPB Packaging
 # ============================================================================
 
-Write-Host "[search] Checking MCPB Packaging..." -ForegroundColor Yellow
+Write-Host "🔍 Checking MCPB Packaging..." -ForegroundColor Yellow
 
 $mcpbScore = 10
 $mcpbIssues = @()
@@ -136,7 +136,7 @@ $results.Scores["MCPB"] = [Math]::Max(0, $mcpbScore)
 # SECTION 3: CI/CD Workflows
 # ============================================================================
 
-Write-Host "[search] Checking CI/CD..." -ForegroundColor Yellow
+Write-Host "🔍 Checking CI/CD..." -ForegroundColor Yellow
 
 $ciScore = 10
 $ciIssues = @()
@@ -167,7 +167,7 @@ $results.Scores["CICD"] = [Math]::Max(0, $ciScore)
 # SECTION 4: Test Scaffold
 # ============================================================================
 
-Write-Host "[search] Checking Test Scaffold..." -ForegroundColor Yellow
+Write-Host "🔍 Checking Test Scaffold..." -ForegroundColor Yellow
 
 $testScore = 10
 $testIssues = @()
@@ -206,7 +206,7 @@ $results.Scores["Tests"] = [Math]::Max(0, $testScore)
 # SECTION 5: Folder Structure
 # ============================================================================
 
-Write-Host "[search] Checking Folder Structure..." -ForegroundColor Yellow
+Write-Host "🔍 Checking Folder Structure..." -ForegroundColor Yellow
 
 $structureScore = 10
 $structureIssues = @()
@@ -239,7 +239,7 @@ $results.Scores["Structure"] = [Math]::Max(0, $structureScore)
 # SECTION 6: Minimum Documentation
 # ============================================================================
 
-Write-Host "[search] Checking Documentation..." -ForegroundColor Yellow
+Write-Host "🔍 Checking Documentation..." -ForegroundColor Yellow
 
 $docsScore = 10
 $docsIssues = @()
@@ -282,7 +282,7 @@ $results.Scores["Documentation"] = [Math]::Max(0, $docsScore)
 # SECTION 7: Repo Root Cleanliness
 # ============================================================================
 
-Write-Host "[search] Checking Repo Root Cleanliness..." -ForegroundColor Yellow
+Write-Host "🔍 Checking Repo Root Cleanliness..." -ForegroundColor Yellow
 
 $cleanScore = 10
 $rubbishFiles = @()
@@ -337,7 +337,7 @@ $results.Scores["Cleanliness"] = [Math]::Max(0, $cleanScore)
 # SECTION 8: Modern Python Tooling
 # ============================================================================
 
-Write-Host "[search] Checking Modern Python Tooling..." -ForegroundColor Yellow
+Write-Host "🔍 Checking Modern Python Tooling..." -ForegroundColor Yellow
 
 $toolingScore = 10
 $toolingIssues = @()
@@ -384,11 +384,11 @@ $results.Summary["TotalFixes"] = $results.Fixes.Count
 
 # Determine grade
 $grade = switch ($overallScore) {
-    {$_ -ge 9.0} { "[trophy] EXCELLENT"; break }
+    {$_ -ge 9.0} { "🏆 EXCELLENT"; break }
     {$_ -ge 8.0} { "✅ GOOD"; break }
     {$_ -ge 7.0} { "⚠️  NEEDS WORK"; break }
     {$_ -ge 6.0} { "❌ POOR"; break }
-    default { "[hot] CRITICAL"; break }
+    default { "🔥 CRITICAL"; break }
 }
 
 $results.Summary["Grade"] = $grade
@@ -521,7 +521,7 @@ if ($GenerateFixScript -and $results.Fixes.Count -gt 0) {
     $fixScriptContent += "param([switch]`$DryRun = `$false)"
     $fixScriptContent += ""
     $fixScriptContent += "Write-Host '🔧 Fixing Repository Standards...' -ForegroundColor Cyan"
-    $fixScriptContent += "if (`$DryRun) { Write-Host '[search] DRY RUN MODE' -ForegroundColor Yellow }"
+    $fixScriptContent += "if (`$DryRun) { Write-Host '🔍 DRY RUN MODE' -ForegroundColor Yellow }"
     $fixScriptContent += ""
     $fixScriptContent += "`$centralDocs = 'D:\Dev\repos\mcp-central-docs'"
     $fixScriptContent += ""

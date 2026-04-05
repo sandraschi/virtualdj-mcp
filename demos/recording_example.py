@@ -3,17 +3,19 @@ Recording Example for VirtualDJ-MCP
 
 This script demonstrates how to record your DJ mix using VirtualDJ's built-in recording features.
 """
-import asyncio
 import argparse
-from datetime import datetime
-from pathlib import Path
+import asyncio
 
 # Add parent directory to path to import from virtualdj_mcp
 import sys
+from datetime import datetime
+from pathlib import Path
+
 sys.path.append(str(Path(__file__).parent.parent))
 
-from virtualdj_mcp.core.vdj_client import VirtualDJClient
 from virtualdj_mcp.config import VDJConfig
+from virtualdj_mcp.core.vdj_client import VirtualDJClient
+
 
 async def main():
     print("[mic]️  VirtualDJ-MCP Recording Example")

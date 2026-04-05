@@ -5,7 +5,7 @@ Consolidates Auto-DJ operations into a single interface.
 Operations: start, stop, status, suggest, preferences
 """
 
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal
 
 from fastmcp import FastMCP
 from rich.console import Console
@@ -31,16 +31,16 @@ def setup_automation_portmanteau(mcp: FastMCP):
     async def vdj_automation(
         operation: Literal["start", "stop", "status", "suggest", "preferences"],
         duration_minutes: int = 60,
-        genre_filter: Optional[str] = None,
-        fade_time: Optional[int] = None,
-        energy_matching: Optional[bool] = None,
-        harmonic_mixing: Optional[bool] = None,
-        genre_sticking: Optional[bool] = None,
-        min_energy_variation: Optional[float] = None,
+        genre_filter: str | None = None,
+        fade_time: int | None = None,
+        energy_matching: bool | None = None,
+        harmonic_mixing: bool | None = None,
+        genre_sticking: bool | None = None,
+        min_energy_variation: float | None = None,
         suggestion_style: str = "similar",
-        current_track_id: Optional[str] = None,
+        current_track_id: str | None = None,
         limit: int = 5
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Auto-DJ control for VirtualDJ.
 
@@ -91,7 +91,7 @@ def setup_automation_portmanteau(mcp: FastMCP):
                     prefs['harmonic_mixing'] = harmonic_mixing
                 if genre_sticking is not None:
                     prefs['genre_sticking'] = genre_sticking
-                    
+
                 if prefs:
                     engine.set_auto_dj_preferences(**prefs)
 
@@ -99,10 +99,10 @@ def setup_automation_portmanteau(mcp: FastMCP):
                     duration_minutes=duration_minutes,
                     genre_filter=genre_filter
                 )
-                
+
                 if not success:
                     return {"success": False, "error": "Failed to start Auto-DJ"}
-                    
+
                 status = await engine.get_auto_dj_status()
                 console.print(f"[green]Auto-DJ started for {duration_minutes} minutes[/green]")
                 return {
@@ -145,7 +145,7 @@ def setup_automation_portmanteau(mcp: FastMCP):
                     style=suggestion_style
                 )
                 suggestions = suggestions[:limit]
-                
+
                 return {
                     "success": True,
                     "operation": "suggest",
@@ -183,7 +183,7 @@ def setup_automation_portmanteau(mcp: FastMCP):
                     prefs['genre_sticking'] = genre_sticking
                 if min_energy_variation is not None:
                     prefs['min_energy_variation'] = min_energy_variation
-                
+
                 if not prefs:
                     return {"success": False, "error": "No preferences provided"}
 
