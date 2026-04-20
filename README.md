@@ -1,7 +1,9 @@
 # VirtualDJ-MCP 
 
+[![FastMCP Version](https://img.shields.io/badge/FastMCP-3.1.0-blue?style=flat-square&logo=python&logoColor=white)](https://github.com/sandraschi/fastmcp) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) [![Linted with Biome](https://img.shields.io/badge/Linted_with-Biome-60a5fa?style=flat-square&logo=biome&logoColor=white)](https://biomejs.dev/) [![Built with Just](https://img.shields.io/badge/Built_with-Just-000000?style=flat-square&logo=gnu-bash&logoColor=white)](https://github.com/casey/just)
+
 [![Production Ready](https://img.shields.io/badge/status-production%20ready-brightgreen.svg)](docs/MCP_PRODUCTION_CHECKLIST.md)
-[![FastMCP](https://img.shields.io/badge/FastMCP-2.13.1-blue.svg)](https://gofastmcp.com)
+[![FastMCP](https://img.shields.io/badge/FastMCP-2.13.1-blue.svg)](https://goFastMCP 3.1.0com)
 [![Portmanteau](https://img.shields.io/badge/Tools-12%20Portmanteau-purple.svg)](#-portmanteau-tools-default)
 
 Professional DJ automation MCP server with Austrian efficiency for Sandra's music mixing needs.
@@ -25,7 +27,7 @@ VirtualDJ-MCP provides seamless integration between Claude and VirtualDJ, enabli
 - Real-time deck control and mixing automation
 - Multi-deck support (up to 8 decks simultaneously)
 - **NEW: Plex Media Server integration**
-- **Production-Ready**: FastMCP 2.13.1 implementation
+- **Production-Ready**: FastMCP 3.1.0 implementation
 
 ###  Requirements
 
@@ -316,7 +318,7 @@ VDJ_LIBRARY_PATH=C:/Music
                           
 
                       VirtualDJ-MCP Server                       
-                       (FastMCP 2.13.1)                          
+                       (FastMCP 3.1.0)                          
      
                 12 Portmanteau Tools                            
     vdj_deck  vdj_mixer  vdj_stems  vdj_plex  ...          
@@ -367,3 +369,14 @@ VDJ_LIBRARY_PATH=C:/Music
 ---
 
 **Built with Austrian efficiency for professional DJ automation! **
+
+
+## 🛡️ Industrial Quality Stack
+
+This project adheres to **SOTA 14.1** industrial standards for high-fidelity agentic orchestration:
+
+- **Python (Core)**: [Ruff](https://astral.sh/ruff) for linting and formatting. Zero-tolerance for `print` statements in core handlers (`T201`).
+- **Webapp (UI)**: [Biome](https://biomejs.dev/) for sub-millisecond linting. Strict `noConsoleLog` enforcement.
+- **Protocol Compliance**: Hardened `stdout/stderr` isolation to ensure crash-resistant JSON-RPC communication.
+- **Automation**: [Justfile](./justfile) recipes for all fleet operations (`just lint`, `just fix`, `just dev`).
+- **Security**: Automated audits via `bandit` and `safety`.
