@@ -1,7 +1,7 @@
 {
   "manifest_version": "0.2",
   "name": "virtualdj-mcp",
-  "version": "2.0.0",
+  "version": "2.0.0-beta.1",
   "description": "FastMCP 3.4.4 server for VirtualDJ automation. 12 consolidated portmanteau tools for playback, mixing, stems separation, Plex integration, and real-time audio analysis.",
   "author": {
     "name": "Sandra",
