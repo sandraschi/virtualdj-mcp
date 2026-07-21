@@ -49,6 +49,7 @@ dependencies = [
     "psutil>=5.9.0",
     "ruff>=0.14.6",
     "prefab-ui>=0.14.0",
+    "python-osc>=1.8.0",
 ]
 
 [project.urls]

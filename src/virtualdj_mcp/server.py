@@ -77,7 +77,7 @@ try:
             "[green]Portmanteau tools: vdj_deck, vdj_mixer, vdj_library, vdj_automation,[/green]"
         )
         console.print(
-            "[green]  vdj_recording, vdj_performance, vdj_stems, vdj_beatgrid,[/green]"
+            "[green]  vdj_recording, vdj_performance, vdj_stems, vdj_beatgrid, vdj_show_control,[/green]"
         )
         console.print("[green]  vdj_skin, vdj_video, vdj_plex, vdj_system[/green]")
 

@@ -35,6 +35,7 @@ from .performance import setup_performance_portmanteau
 from .plex import setup_plex_portmanteau
 from .recording import setup_recording_portmanteau
 from .skin import setup_skin_portmanteau
+from .show_control import setup_show_control_portmanteau
 from .stems import setup_stems_portmanteau
 from .system import setup_system_portmanteau
 from .video import setup_video_portmanteau
@@ -53,6 +54,7 @@ def setup_all_portmanteau_tools(mcp):
     setup_skin_portmanteau(mcp)
     setup_video_portmanteau(mcp)
     setup_plex_portmanteau(mcp)
+    setup_show_control_portmanteau(mcp)
     setup_system_portmanteau(mcp)
 
 
@@ -67,6 +69,7 @@ __all__ = [
     "setup_plex_portmanteau",
     "setup_recording_portmanteau",
     "setup_skin_portmanteau",
+    "setup_show_control_portmanteau",
     "setup_stems_portmanteau",
     "setup_system_portmanteau",
     "setup_video_portmanteau",

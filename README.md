@@ -125,7 +125,7 @@ Add to `claude_desktop_config.json`:
 
 ##  Portmanteau Tools (Default)
 
-VirtualDJ-MCP uses **12 consolidated portmanteau tools** for a cleaner AI interface:
+VirtualDJ-MCP uses **13 consolidated portmanteau tools** for a cleaner AI interface:
 
 | Tool | Operations | Description |
 |------|------------|-------------|
@@ -137,6 +137,7 @@ VirtualDJ-MCP uses **12 consolidated portmanteau tools** for a cleaner AI interf
 | `vdj_performance` | metrics, stats, trends, recommendations | Performance analytics |
 | `vdj_stems` | kill, unkill, volume, acapella, instrumental, swap, reset, sample_stem | Stem separation |
 | `vdj_beatgrid` | set_bpm, tap, adjust, anchor, pitch_bend, loop, loop_roll, loop_exit, fluid, reanalyze_fluid | BPM and loops |
+| `vdj_show_control` | osc_send, os2l_button, os2l_fader, os2l_cmd | DMX lighting and Resolume Arena visual sync |
 | `vdj_skin` | info, load, variation, panel, window | Skin control |
 | `vdj_video` | crossfader, transition, fx, text, output, karaoke, loop | Video mixing |
 | **`vdj_plex`** | **search, get_path, load_from_plex, list_libraries** | **Plex integration** |

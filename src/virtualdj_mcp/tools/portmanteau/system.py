@@ -193,6 +193,25 @@ vdj_beatgrid("fluid", deck_id=1, enable=True)
 vdj_beatgrid("reanalyze_fluid", deck_id=1)
 ```
 """,
+    "show_control": """
+# Show Control (vdj_show_control)
+
+Bridges lighting (SoundSwitch/QLC+ via OS2L) and video mapping (Resolume Arena via OSC).
+
+## Operations
+
+- `osc_send` - Dispatch OSC UDP packet (requires address, value)
+- `os2l_button` - Trigger OS2L DMX buttons (requires name, enable)
+- `os2l_fader` - Set OS2L DMX faders (requires name, value)
+- `os2l_cmd` - Run custom OS2L commands (requires name, value)
+
+## Examples
+
+```python
+vdj_show_control("osc_send", address="/composition/layers/1/clips/1/connect", value=1)
+vdj_show_control("os2l_button", name="fog", enable=True)
+```
+""",
 }
 
 
@@ -216,7 +235,7 @@ def setup_system_portmanteau(mcp: FastMCP):
 
         Args:
             operation: The system operation to perform
-            topic: Help topic (overview, deck_control, mixing, stems, plex, beatgrid)
+            topic: Help topic (overview, deck_control, mixing, stems, plex, beatgrid, show_control)
 
         Returns:
             Dict with operation result
@@ -225,7 +244,7 @@ def setup_system_portmanteau(mcp: FastMCP):
             vdj_system("status")
             vdj_system("help")
             vdj_system("help", topic="stems")
-            vdj_system("help", topic="beatgrid")
+            vdj_system("help", topic="show_control")
             vdj_system("connection_test")
         """
         try:
