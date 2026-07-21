@@ -87,7 +87,7 @@ Enable these:
 ### **Step-by-Step Instructions**
 
 1. **Go to Repository Settings**
-   - Open: https://github.com/sandraschi/notepadpp-mcp
+   - Open: https://github.com/sandraschi/virtualdj-mcp
    - Click: `Settings` tab (top right)
 
 2. **Navigate to Branch Protection**
@@ -167,7 +167,7 @@ git push origin feature/experimental
 
 ### **Scenario 2: "Go Wild! Add Crazy Features!"**
 
-**YOU SAY**: *"Add 10 experimental Notepad++ automation features, try bold ideas!"*
+**YOU SAY**: *"Add 10 experimental VirtualDJ automation features, try bold ideas!"*
 
 **AI WORKFLOW**:
 
@@ -371,7 +371,7 @@ git checkout feature/experimental
 
 # Commit (descriptive message)
 git add .
-git commit -m "Experiment: Add voice control for Notepad++"
+git commit -m "Experiment: Add voice control for VirtualDJ"
 
 # Push (can force push here)
 git push origin feature/experimental --force-with-lease
@@ -437,7 +437,7 @@ git push --force  # Allowed! No protection here
 **You can say**:
 - ✅ "Add 10 wild experimental features!"
 - ✅ "Try implementing [crazy idea]"
-- ✅ "Prototype a voice-controlled Notepad++"
+- ✅ "Prototype a voice-controlled VirtualDJ"
 - ✅ "Add machine learning text prediction"
 - ✅ "Go nuts with the plugin API!"
 
@@ -476,7 +476,7 @@ git push --force  # Allowed! No protection here
 
 ### **Protection Setup** (Your Turn)
 
-Go to: https://github.com/sandraschi/notepadpp-mcp/settings/branches
+Go to: https://github.com/sandraschi/virtualdj-mcp/settings/branches
 
 - [ ] Add rule for `main` (strict protection)
 - [ ] Add rule for `develop` (optional, moderate)

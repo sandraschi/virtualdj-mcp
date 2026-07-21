@@ -33,7 +33,7 @@ touch my_mcp_server.py
 
 # Edit with any editor
 code my_mcp_server.py  # VS Code
-notepad my_mcp_server.py  # Notepad
+virtualdj my_mcp_server.py  # Notepad
 ```
 
 ### **Step 2: Install Dependencies**

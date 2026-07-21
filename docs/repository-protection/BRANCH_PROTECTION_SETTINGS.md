@@ -1,6 +1,6 @@
 # Branch Protection Settings - Quick Reference
 
-**For Repository**: notepadpp-mcp  
+**For Repository**: virtualdj-mcp  
 **Setup Time**: ~5 minutes
 
 ---
@@ -9,7 +9,7 @@
 
 ### 1. Go to Settings
 
-**URL**: https://github.com/sandraschi/notepadpp-mcp/settings/branches
+**URL**: https://github.com/sandraschi/virtualdj-mcp/settings/branches
 
 Or:
 1. Open repository on GitHub

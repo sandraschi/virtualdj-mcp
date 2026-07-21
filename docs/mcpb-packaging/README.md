@@ -44,7 +44,7 @@
 
 **Read Time**: 15 minutes  
 **Status**: ✅ **COMPLETED** implementation  
-**Package**: dist/notepadpp-mcp.mcpb (ready!)
+**Package**: dist/virtualdj-mcp.mcpb (ready!)
 
 ---
 
@@ -67,28 +67,28 @@
 
 | Property | Value |
 |----------|-------|
-| **Name** | notepadpp-mcp.mcpb |
+| **Name** | virtualdj-mcp.mcpb |
 | **Version** | 1.2.0 |
 | **Size** | 0.19 MB |
 | **Tools** | 26 |
 | **Status** | ✅ Production Ready |
-| **Location** | `dist/notepadpp-mcp.mcpb` |
+| **Location** | `dist/virtualdj-mcp.mcpb` |
 
 ### **User Configuration**
 
 When users install our MCPB package, they're prompted for:
 
-1. **Notepad++ Executable Path** (file picker)
-   - Default: `C:\Program Files\Notepad++\notepad++.exe`
+1. **VirtualDJ Executable Path** (file picker)
+   - Default: `C:\Program Files\VirtualDJ\virtualdj.exe`
    - Auto-detection if left empty
 
-2. **Auto-start Notepad++** (boolean)
+2. **Auto-start VirtualDJ** (boolean)
    - Default: `true`
-   - Automatically starts Notepad++ if not running
+   - Automatically starts VirtualDJ if not running
 
 3. **Operation Timeout** (string)
    - Default: `30` seconds
-   - Timeout for Notepad++ operations
+   - Timeout for VirtualDJ operations
 
 ---
 
@@ -100,7 +100,7 @@ When users install our MCPB package, they're prompted for:
 # Build MCPB package (development)
 .\scripts\build-mcpb-package.ps1 -NoSign
 
-# Output: dist/notepadpp-mcp.mcpb (0.19 MB)
+# Output: dist/virtualdj-mcp.mcpb (0.19 MB)
 ```
 
 ### **Build Script Features**
@@ -165,7 +165,7 @@ When users install our MCPB package, they're prompted for:
 **Key Sections**:
 ```json
 {
-  "name": "notepadpp-mcp",
+  "name": "virtualdj-mcp",
   "version": "1.2.0",
   "mcp": {
     "version": "2.13.1",
@@ -190,22 +190,22 @@ When users install our MCPB package, they're prompted for:
 ```json
 {
   "manifest_version": "0.2",
-  "name": "notepadpp-mcp",
+  "name": "virtualdj-mcp",
   "version": "1.2.0",
   "server": {
     "type": "python",
-    "entry_point": "src/notepadpp_mcp/tools/server.py",
+    "entry_point": "src/virtualdj_mcp/tools/server.py",
     "mcp_config": {
       "command": "python",
-      "args": ["-m", "notepadpp_mcp.tools.server"],
+      "args": ["-m", "virtualdj_mcp.tools.server"],
       "env": {
         "PYTHONPATH": "${PWD}",
-        "NOTEPADPP_PATH": "${user_config.notepadpp_path}"
+        "VIRTUALDJ_PATH": "${user_config.virtualdj_path}"
       }
     }
   },
   "user_config": {
-    "notepadpp_path": { "type": "file", "title": "..." }
+    "virtualdj_path": { "type": "file", "title": "..." }
   },
   "tools": [ /* 26 tools listed */ ]
 }
@@ -301,11 +301,11 @@ When users install our MCPB package, they're prompted for:
 ### **What's Inside the MCPB Package**
 
 ```
-notepadpp-mcp.mcpb (0.19 MB)
+virtualdj-mcp.mcpb (0.19 MB)
 ├── manifest.json              # Runtime configuration
 ├── requirements.txt           # Python dependencies
 ├── src/                       # Source code
-│   └── notepadpp_mcp/
+│   └── virtualdj_mcp/
 │       ├── __init__.py
 │       ├── tools/
 │       │   └── server.py      # Main server (2,424 lines)
