@@ -242,6 +242,7 @@ git push origin develop
 ### **Protection Setup**
 
 - [ ] Branch protection enabled on `main`
+- [ ] Renovate Bot configured on GitHub (optional)
 - [ ] Backup script tested (`scripts\backup-repo.ps1`)
 - [ ] Backup branches created
 - [ ] Windows Task Scheduler configured (optional)

@@ -267,6 +267,16 @@ Enable on GitHub to prevent force-pushes:
 
 **This prevents Cursor from force-pushing to main!**
 
+### Automated Dependency Management (Renovate Bot)
+
+Instead of Dependabot (which generates excessive noise and individual PR alerts), it is recommended to configure **Renovate Bot** for automated dependency updates on GitHub:
+
+1. **Setup**: Install the **Renovate** GitHub App from the GitHub Marketplace and grant access to your repository.
+2. **Best Practices**:
+   - Group related updates (e.g. all dev dependencies in a single PR) to reduce CI runs.
+   - Configure auto-merge for safe minor/patch upgrades passing all Windows CI test checks.
+   - Auto-upgrade and resolve package resolutions in `uv.lock`.
+
 ### Review Before Pushing
 
 ```powershell
