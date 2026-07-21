@@ -1,8 +1,8 @@
 {
   "manifest_version": "0.2",
   "name": "virtualdj-mcp",
-  "version": "1.0.0",
-  "description": "Professional DJ automation MCP server with VirtualDJ integration for mixing, library management, and performance control",
+  "version": "2.0.0",
+  "description": "FastMCP 3.4.4 server for VirtualDJ automation. 12 consolidated portmanteau tools for playback, mixing, stems separation, Plex integration, and real-time audio analysis.",
   "author": {
     "name": "Sandra",
     "email": "sandra@sandraschi.dev"
@@ -29,45 +29,38 @@
     {
       "name": "system",
       "description": "System prompt for VirtualDJ automation",
-      "text": "You are an expert DJ automation assistant with deep knowledge of VirtualDJ and professional mixing techniques. You have access to VirtualDJ-MCP tools for deck control, mixing, library management, automation, and performance monitoring."
+      "text": "You are an expert DJ assistant powered by VirtualDJ-MCP. You have access to 12 portmanteau tools to automate deck operations, real-time stem extraction, and crossfader controls. Guide Sandra with Austrian efficiency, avoiding decision paralysis."
     },
     {
-      "name": "dj_performance",
-      "description": "DJ performance guidance",
-      "text": "Guide for DJ performance including deck control (play, pause, stop, seek, volume), mixing (crossfader, sync, beatmatching, EQ), and multi-deck monitoring."
+      "name": "stems_remixing",
+      "description": "Stem separation and live mashups prompt",
+      "text": "Instructions on performing on-the-fly acapella or instrumental stem extraction using vdj_stems, and recording isolated loops directly into sampler slots with the sample_stem operation."
     },
     {
-      "name": "mixing_guide",
-      "description": "Mixing techniques guide",
-      "text": "Mixing techniques including crossfader control, BPM synchronization, beatmatching, and smooth transitions between tracks."
+      "name": "plex_music_search",
+      "description": "Plex Media Server integration prompt",
+      "text": "Instructions for searching Sandra's Plex music libraries and loading local track paths directly onto VirtualDJ decks using vdj_plex."
     },
     {
-      "name": "library_management",
-      "description": "Music library management",
-      "text": "Library management including browsing folders, searching tracks by name/artist/genre/BPM, and playlist organization."
+      "name": "fluid_grid_stabilizer",
+      "description": "Handling live and variable tempo recordings",
+      "text": "Guidelines on using vdj_beatgrid fluid and reanalyze_fluid operations to stabilize shaky tempos (e.g. live shows, vinyl transfers) using VirtualDJ 2026 AI Fluid Beatgrids."
     },
     {
-      "name": "automation",
-      "description": "DJ automation workflows",
-      "text": "Automation features including Auto-DJ mode, recording sessions, and session state management."
-    },
-    {
-      "name": "troubleshooting",
-      "description": "Troubleshooting guide",
-      "text": "Troubleshooting common issues including VirtualDJ connection, deck status, and error handling."
+      "name": "lyrics_karaoke",
+      "description": "Karaoke and lyrics display helper prompt",
+      "text": "Guide for displaying and editing track lyrics dynamically using vdj_deck edit_lyrics."
     }
   ],
   "tools": [
-    {"name": "show_help", "description": "Get detailed help about VirtualDJ-MCP capabilities"},
-    {"name": "play_pause_deck", "description": "Control playback on a specific deck"},
-    {"name": "load_track_to_deck", "description": "Load a track to a specific deck"},
-    {"name": "seek_deck", "description": "Seek to a specific position on a deck"},
-    {"name": "set_deck_volume", "description": "Set volume for a specific deck"},
-    {"name": "get_deck_status", "description": "Get current status of a specific deck"},
-    {"name": "set_crossfader_position", "description": "Set crossfader position (-100 to +100)"},
-    {"name": "auto_sync_decks", "description": "Automatically sync BPM between two decks"},
-    {"name": "search_tracks", "description": "Search music library with filters"},
-    {"name": "auto_dj_mode", "description": "Enable auto-DJ mode with genre filtering"}
+    {"name": "vdj_deck", "description": "Deck playback, volume, load, seek, status, and AI lyrics controls"},
+    {"name": "vdj_mixer", "description": "Crossfader, EQ bands, gains, master/cue volumes, headphone mixes, and audio effects slots"},
+    {"name": "vdj_library", "description": "Music library searches, filtering, and acoustic parameter analysis"},
+    {"name": "vdj_stems", "description": "Real-time stem isolation (vocals/drums), acapella modes, and sampler stem recording"},
+    {"name": "vdj_beatgrid", "description": "BPM matching, loops, rolls, exits, and AI Fluid beatgrid toggles"},
+    {"name": "vdj_video", "description": "Video DJ controls, transitions, overlays, and video FX"},
+    {"name": "vdj_plex", "description": "Search, locate, and load music files directly from Plex Media Server"},
+    {"name": "vdj_system", "description": "Diagnostics, connection status, and system dashboard view"}
   ],
   "keywords": [
     "dj",
@@ -76,6 +69,10 @@
     "automation",
     "music",
     "audio",
-    "performance"
+    "stems",
+    "plex",
+    "mcp-server",
+    "fastmcp",
+    "model-context-protocol"
   ]
 }

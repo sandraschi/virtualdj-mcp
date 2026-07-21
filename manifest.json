@@ -1,7 +1,7 @@
 {
   "name": "virtualdj-mcp",
-  "version": "1.0.0",
-  "description": "Professional DJ automation MCP server with VirtualDJ integration for mixing, library management, and performance control",
+  "version": "2.0.0",
+  "description": "FastMCP 3.4.4 server for VirtualDJ automation. 12 consolidated portmanteau tools for playback, mixing, stems separation, Plex integration, and real-time audio analysis.",
   "author": "Sandra",
   "license": "MIT",
   "homepage": "https://github.com/sandraschi/virtualdj-mcp",
@@ -15,35 +15,35 @@
     "capabilities": ["tools"],
     "prompts": {
       "system": "assets/prompts/system.md",
-      "dj_performance": "assets/prompts/dj_performance.md",
-      "mixing_guide": "assets/prompts/mixing_guide.md",
-      "library_management": "assets/prompts/library_management.md",
-      "automation": "assets/prompts/automation.md",
-      "troubleshooting": "assets/prompts/troubleshooting.md"
+      "stems_remixing": "assets/prompts/stems_remixing.md",
+      "plex_music_search": "assets/prompts/plex_music_search.md",
+      "fluid_grid_stabilizer": "assets/prompts/fluid_grid_stabilizer.md",
+      "lyrics_karaoke": "assets/prompts/lyrics_karaoke.md"
     }
   },
   "runtime": {
-    "python": ">=3.11"
+    "python": ">=3.12"
   },
   "dependencies": {
-    "fastmcp": ">=2.13.1",
+    "fastmcp": ">=3.4.4",
     "pydantic": ">=2.0.0",
-    "httpx": ">=0.27.0"
+    "httpx": ">=0.27.0",
+    "prefab-ui": ">=0.14.0"
   },
   "features": [
-    "Deck control (play, pause, stop, seek, volume)",
-    "Mixing tools (crossfader, sync, beatmatching, EQ)",
-    "Library management (browse, search, track info)",
-    "Automation (Auto-DJ, recording, session management)",
-    "Performance monitoring (real-time status, variables)",
-    "Multi-deck support (up to 8 decks)",
-    "VDJScript integration",
-    "FastAPI web interface"
+    "Deck control (play, pause, stop, seek, volume, AI lyrics)",
+    "Mixing tools (crossfader, sync, EQ reset, headphone mix, 122+ FX)",
+    "Library management (advanced local searches, audio feature extraction)",
+    "Stems (Vocal/Instrumental isolation, acapella mode, sampler recording)",
+    "Beatgrid (loop, loop rolls, fluid variable grids, BPM tap)",
+    "Plex integration (direct cloud music library queries and local loading)",
+    "System diagnostics (connected status probes, prefab visual cards)",
+    "FastAPI visual dashboard interface"
   ],
   "requirements": {
-    "software": ["VirtualDJ 2024 or later"],
-    "license": ["VirtualDJ Pro (for some advanced features)"],
-    "os": ["Windows 10/11", "macOS 10.15+"]
+    "software": ["VirtualDJ 2025 or later"],
+    "license": ["VirtualDJ Pro (required for Network Control plugin)"],
+    "os": ["Windows 10/11", "macOS 12+"]
   },
   "keywords": [
     "dj",
@@ -52,8 +52,9 @@
     "automation",
     "music",
     "audio",
-    "performance",
-    "austria"
+    "stems",
+    "plex",
+    "fastmcp",
+    "model-context-protocol"
   ]
 }
-

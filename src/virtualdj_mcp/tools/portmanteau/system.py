@@ -123,13 +123,14 @@ VirtualDJ Stems 2.0 allows real-time isolation of:
 - `isolate_drums` - Drums only
 - `swap` - Swap stem between decks
 - `reset` - Restore all stems
+- `sample_stem` - Record isolated stem directly to sampler slot (requires slot)
 
 ## Examples
 
 ```python
 vdj_stems("kill", deck_id=1, stem="vocal")     # Instant instrumental
 vdj_stems("acapella", deck_id=1, enable=True)  # Vocals only
-vdj_stems("swap", deck_a=1, deck_b=2, stem="vocal")  # Mashup!
+vdj_stems("sample_stem", deck_id=1, slot=1)    # Record acapella to sampler slot 1
 ```
 """,
     "plex": """
@@ -164,6 +165,34 @@ vdj_plex("load_from_plex", query="Dancing Queen", deck_id=1)
 vdj_plex("load_from_plex", artist="Pink Floyd", deck_id=2)
 ```
 """,
+    "beatgrid": """
+# Beatgrid & Tempo (vdj_beatgrid)
+
+BPM beat grids, loops, tempo adjustments, and variable fluid tempo stabilization.
+
+## Operations
+
+- `set_bpm` - Manually set BPM (60-200)
+- `tap` - Tap BPM
+- `adjust` - Shift beatgrid left/right
+- `anchor` - Set beatgrid anchor
+- `pitch_bend` - Temporarily speed up/slow down
+- `pitch_reset` - Reset pitch back to 0%
+- `beat_jump` - Jump forward/backward by beats
+- `loop` - Set loop of specified beats
+- `loop_roll` - Temporary loop
+- `loop_exit` - Exit loop
+- `fluid` - Toggle Fluid Beatgrids for variable tempo (requires enable)
+- `reanalyze_fluid` - Force fluid variable tempo re-analysis
+
+## Examples
+
+```python
+vdj_beatgrid("loop", deck_id=1, beats=4)
+vdj_beatgrid("fluid", deck_id=1, enable=True)
+vdj_beatgrid("reanalyze_fluid", deck_id=1)
+```
+""",
 }
 
 
@@ -187,7 +216,7 @@ def setup_system_portmanteau(mcp: FastMCP):
 
         Args:
             operation: The system operation to perform
-            topic: Help topic (overview, deck_control, mixing, stems, plex)
+            topic: Help topic (overview, deck_control, mixing, stems, plex, beatgrid)
 
         Returns:
             Dict with operation result
@@ -196,7 +225,7 @@ def setup_system_portmanteau(mcp: FastMCP):
             vdj_system("status")
             vdj_system("help")
             vdj_system("help", topic="stems")
-            vdj_system("help", topic="plex")
+            vdj_system("help", topic="beatgrid")
             vdj_system("connection_test")
         """
         try:

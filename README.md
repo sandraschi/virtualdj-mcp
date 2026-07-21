@@ -129,14 +129,14 @@ VirtualDJ-MCP uses **12 consolidated portmanteau tools** for a cleaner AI interf
 
 | Tool | Operations | Description |
 |------|------------|-------------|
-| `vdj_deck` | play, pause, toggle, stop, load, seek, volume, status, load_security | Deck playback control |
+| `vdj_deck` | play, pause, toggle, stop, load, seek, volume, status, load_security, edit_lyrics | Deck playback control |
 | `vdj_mixer` | crossfader, sync, eq_high, eq_mid, eq_low, gain, filter, master_volume, headphone_volume, headphone_mix, effect, eq_reset | Mixing and EQ |
 | `vdj_library` | search, analyze | Library search and audio analysis |
 | `vdj_automation` | start, stop, status, suggest, preferences | Auto-DJ control |
 | `vdj_recording` | start, stop, status, list, export, delete | Mix recording |
 | `vdj_performance` | metrics, stats, trends, recommendations | Performance analytics |
-| `vdj_stems` | kill, unkill, volume, acapella, instrumental, swap, reset | Stem separation |
-| `vdj_beatgrid` | set_bpm, tap, adjust, anchor, pitch_bend, loop, loop_roll | BPM and loops |
+| `vdj_stems` | kill, unkill, volume, acapella, instrumental, swap, reset, sample_stem | Stem separation |
+| `vdj_beatgrid` | set_bpm, tap, adjust, anchor, pitch_bend, loop, loop_roll, loop_exit, fluid, reanalyze_fluid | BPM and loops |
 | `vdj_skin` | info, load, variation, panel, window | Skin control |
 | `vdj_video` | crossfader, transition, fx, text, output, karaoke, loop | Video mixing |
 | **`vdj_plex`** | **search, get_path, load_from_plex, list_libraries** | **Plex integration** |

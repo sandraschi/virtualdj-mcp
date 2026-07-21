@@ -2,7 +2,7 @@
 VDJ Beatgrid Portmanteau Tool
 
 Consolidates BPM, beatgrid, and loop operations into a single interface.
-Operations: set_bpm, tap, adjust, anchor, pitch_bend, pitch_reset, beat_jump, loop, loop_roll, loop_exit
+Operations: set_bpm, tap, adjust, anchor, pitch_bend, pitch_reset, beat_jump, loop, loop_roll, loop_exit, fluid, reanalyze_fluid
 """
 
 from typing import Any, Literal
@@ -21,18 +21,32 @@ def setup_beatgrid_portmanteau(mcp: FastMCP):
 
     @mcp.tool()
     async def vdj_beatgrid(
-        operation: Literal["set_bpm", "tap", "adjust", "anchor", "pitch_bend", "pitch_reset", "beat_jump", "loop", "loop_roll", "loop_exit"],
+        operation: Literal[
+            "set_bpm",
+            "tap",
+            "adjust",
+            "anchor",
+            "pitch_bend",
+            "pitch_reset",
+            "beat_jump",
+            "loop",
+            "loop_roll",
+            "loop_exit",
+            "fluid",
+            "reanalyze_fluid",
+        ],
         deck_id: int = 1,
         bpm: float | None = None,
         adjustment: float | None = None,
         direction: str | None = None,
         amount: float = 4.0,
-        beats: float | None = None
+        beats: float | None = None,
+        enable: bool = True,
     ) -> dict[str, Any]:
         """
         BPM, beatgrid, and loop control for VirtualDJ.
 
-        PORTMANTEAU PATTERN: Consolidates 10 beatgrid tools into 1 unified interface.
+        PORTMANTEAU PATTERN: Consolidates all beatgrid and tempo tools into 1 unified interface.
 
         SUPPORTED OPERATIONS:
         - set_bpm: Manually set BPM (60-200)
@@ -45,31 +59,27 @@ def setup_beatgrid_portmanteau(mcp: FastMCP):
         - loop: Set a loop of specified beats
         - loop_roll: Temporary loop (returns to original position)
         - loop_exit: Exit current loop
+        - fluid: Toggle Fluid Beatgrids for variable tempo (requires enable)
+        - reanalyze_fluid: Force VirtualDJ to reanalyze the track with a fluid beatgrid
 
         Args:
             operation: The beatgrid operation to perform
-            deck_id: Deck number (1-4, default: 1)
+            deck_id: Deck number (1-8, default: 1)
             bpm: Target BPM for set_bpm (60-200)
             adjustment: Milliseconds to shift beatgrid (-100 to +100)
             direction: "up" or "down" for pitch_bend
             amount: Bend amount in percent (default: 4.0)
             beats: Number of beats for jump/loop operations
+            enable: Boolean state for toggles (e.g. for fluid beatgrid)
 
         Returns:
             Dict with operation result
 
         Examples:
             vdj_beatgrid("set_bpm", deck_id=1, bpm=128)
-            vdj_beatgrid("tap", deck_id=1)  # Call repeatedly
-            vdj_beatgrid("adjust", deck_id=1, adjustment=10)  # Shift 10ms right
-            vdj_beatgrid("anchor", deck_id=1)
-            vdj_beatgrid("pitch_bend", deck_id=1, direction="up", amount=4)
-            vdj_beatgrid("pitch_reset", deck_id=1)
-            vdj_beatgrid("beat_jump", deck_id=1, beats=8)  # Jump 8 beats forward
-            vdj_beatgrid("beat_jump", deck_id=1, beats=-4) # Jump 4 beats back
             vdj_beatgrid("loop", deck_id=1, beats=4)
-            vdj_beatgrid("loop_roll", deck_id=1, beats=0.5)
-            vdj_beatgrid("loop_exit", deck_id=1)
+            vdj_beatgrid("fluid", deck_id=1, enable=True) # Enable variable tempo
+            vdj_beatgrid("reanalyze_fluid", deck_id=1)     # Recalculate variable grid
         """
         try:
             client = await get_vdj_client()
@@ -191,10 +201,28 @@ def setup_beatgrid_portmanteau(mcp: FastMCP):
                     else:
                         raise VDJError(f"Failed to exit loop: {result.get('error')}")
 
+            elif operation == "fluid":
+                on_off = "on" if enable else "off"
+                async with client:
+                    result = await client.send_command(f"deck {deck_id} setting 'fluidBeatgrid' {on_off}")
+                    if result["status"] == "success":
+                        console.print(f"[green]Deck {deck_id}: Fluid Beatgrid set to {on_off}[/green]")
+                        return {"success": True, "operation": "fluid", "deck_id": deck_id, "enabled": enable}
+                    else:
+                        raise VDJError(f"Failed to toggle Fluid Beatgrid: {result.get('error')}")
+
+            elif operation == "reanalyze_fluid":
+                async with client:
+                    result = await client.send_command(f"deck {deck_id} reanalyze fluid")
+                    if result["status"] == "success":
+                        console.print(f"[green]Deck {deck_id}: Reanalyzing with Fluid Beatgrid[/green]")
+                        return {"success": True, "operation": "reanalyze_fluid", "deck_id": deck_id}
+                    else:
+                        raise VDJError(f"Failed to reanalyze fluid: {result.get('error')}")
+
             else:
                 return {"success": False, "error": f"Unknown operation: {operation}"}
 
         except Exception as e:
             console.print(f"[red]Error in vdj_beatgrid: {e}[/red]")
             return {"success": False, "error": str(e)}
-

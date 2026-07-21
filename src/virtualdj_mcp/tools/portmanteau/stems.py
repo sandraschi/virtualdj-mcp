@@ -2,9 +2,10 @@
 VDJ Stems Portmanteau Tool
 
 Consolidates stem separation operations into a single interface.
-Operations: kill, unkill, volume, acapella, instrumental, isolate_drums, swap, reset
+Operations: kill, unkill, volume, acapella, instrumental, isolate_drums, swap, reset, sample_stem
 """
 
+import asyncio
 from typing import Any, Literal
 
 from fastmcp import FastMCP
@@ -21,13 +22,24 @@ def setup_stems_portmanteau(mcp: FastMCP):
 
     @mcp.tool()
     async def vdj_stems(
-        operation: Literal["kill", "unkill", "volume", "acapella", "instrumental", "isolate_drums", "swap", "reset"],
+        operation: Literal[
+            "kill",
+            "unkill",
+            "volume",
+            "acapella",
+            "instrumental",
+            "isolate_drums",
+            "swap",
+            "reset",
+            "sample_stem",
+        ],
         deck_id: int = 1,
         stem: str | None = None,
         volume: int | None = None,
         enable: bool = True,
         deck_a: int | None = None,
-        deck_b: int | None = None
+        deck_b: int | None = None,
+        slot: int = 1,
     ) -> dict[str, Any]:
         """
         Stem separation control for VirtualDJ.
@@ -42,7 +54,7 @@ def setup_stems_portmanteau(mcp: FastMCP):
         - snare: Snare drum
         - melody: Melody/synths
 
-        PORTMANTEAU PATTERN: Consolidates 7 stem tools into 1 unified interface.
+        PORTMANTEAU PATTERN: Consolidates 8 stem tools into 1 unified interface.
 
         SUPPORTED OPERATIONS:
         - kill: Mute a specific stem (requires stem)
@@ -53,27 +65,25 @@ def setup_stems_portmanteau(mcp: FastMCP):
         - isolate_drums: Isolate drums only
         - swap: Swap a stem between two decks (requires stem, deck_a, deck_b)
         - reset: Reset all stems to full volume
+        - sample_stem: Record the active stems/solo from deck directly to sampler slot (requires slot)
 
         Args:
             operation: The stem operation to perform
-            deck_id: Deck number (1-4, default: 1)
+            deck_id: Deck number (1-8, default: 1)
             stem: Stem type (vocal, instru, bass, drums, hihat, kick, snare, melody)
             volume: Volume level 0-100 (for volume operation)
             enable: Enable/disable mode (for acapella/instrumental/isolate_drums)
             deck_a: Source deck for swap operation
             deck_b: Target deck for swap operation
+            slot: Sampler slot number to record into (for sample_stem operation, default: 1)
 
         Returns:
             Dict with operation result
 
         Examples:
             vdj_stems("kill", deck_id=1, stem="vocal")       # Instant instrumental
-            vdj_stems("kill", deck_id=1, stem="instru")      # Instant acapella
-            vdj_stems("volume", deck_id=1, stem="bass", volume=50)
             vdj_stems("acapella", deck_id=1, enable=True)
-            vdj_stems("instrumental", deck_id=2, enable=True)
-            vdj_stems("isolate_drums", deck_id=1)
-            vdj_stems("swap", deck_a=1, deck_b=2, stem="vocal")  # Vocals from 1, instrumental from 2
+            vdj_stems("sample_stem", deck_id=1, slot=2)      # Record isolated stem to sampler slot 2
             vdj_stems("reset", deck_id=1)
         """
         try:
@@ -183,10 +193,34 @@ def setup_stems_portmanteau(mcp: FastMCP):
                     console.print(f"[green]Deck {deck_id}: All stems restored[/green]")
                     return {"success": True, "operation": "reset", "deck_id": deck_id}
 
+            elif operation == "sample_stem":
+                async with client:
+                    # Let's start the recording
+                    result_start = await client.send_command(f"sampler {slot} start_rec")
+                    if result_start["status"] != "success":
+                        raise VDJError(f"Failed to start sampler recording: {result_start.get('error')}")
+
+                    console.print(f"[green]Deck {deck_id}: Started recording stem into sampler slot {slot}...[/green]")
+
+                    # Wait for a brief period to capture the loop (e.g., 4 seconds)
+                    await asyncio.sleep(4.0)
+
+                    result_stop = await client.send_command(f"sampler {slot} stop_rec")
+                    if result_stop["status"] != "success":
+                        raise VDJError(f"Failed to stop sampler recording: {result_stop.get('error')}")
+
+                    console.print(f"[green]Deck {deck_id}: Saved stem sample to sampler slot {slot}[/green]")
+                    return {
+                        "success": True,
+                        "operation": "sample_stem",
+                        "deck_id": deck_id,
+                        "sampler_slot": slot,
+                        "duration_seconds": 4.0
+                    }
+
             else:
                 return {"success": False, "error": f"Unknown operation: {operation}"}
 
         except Exception as e:
             console.print(f"[red]Error in vdj_stems: {e}[/red]")
             return {"success": False, "error": str(e)}
-

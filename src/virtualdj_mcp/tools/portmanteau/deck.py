@@ -26,18 +26,18 @@ def setup_deck_portmanteau(mcp: FastMCP):
 
     @mcp.tool()
     async def vdj_deck(
-        operation: Literal["play", "pause", "toggle", "stop", "load", "seek", "volume", "status", "load_security"],
+        operation: Literal["play", "pause", "toggle", "stop", "load", "seek", "volume", "status", "load_security", "edit_lyrics"],
         deck_id: int = 1,
         track_path: str | None = None,
         position: float | str | None = None,
         volume: int | None = None,
         force: bool = True,
         security_mode: str | None = None
-    ) -> dict[str, Any]:
+    ) -> Any:
         """
         Comprehensive deck control for VirtualDJ.
 
-        PORTMANTEAU PATTERN: Consolidates 6 deck tools into 1 unified interface.
+        PORTMANTEAU PATTERN: Consolidates all deck playback and loaded track controls.
 
         SUPPORTED OPERATIONS:
         - play: Start playback on deck
@@ -47,8 +47,9 @@ def setup_deck_portmanteau(mcp: FastMCP):
         - load: Load a track to deck (requires track_path)
         - seek: Seek to position (requires position - seconds or "50%")
         - volume: Set deck volume (requires volume 0-100)
-        - status: Get current deck status
+        - status: Get current deck status (with Prefab UI card view)
         - load_security: Set load security mode (requires security_mode: off/on/always)
+        - edit_lyrics: Open the AI lyrics editor panel for the loaded track
 
         Args:
             operation: The deck operation to perform
@@ -237,6 +238,15 @@ def setup_deck_portmanteau(mcp: FastMCP):
                         return {"success": True, "operation": "load_security", "mode": normalized_mode}
                     else:
                         return {"success": False, "error": result.get("error", "Failed to set load security")}
+
+            elif operation == "edit_lyrics":
+                async with client:
+                    result = await client.send_command(f"deck {deck_id} edit_lyrics")
+                    if result["status"] == "success":
+                        console.print(f"[green]Deck {deck_id}: AI Lyrics editor opened[/green]")
+                        return {"success": True, "operation": "edit_lyrics", "deck_id": deck_id}
+                    else:
+                        raise VDJError(f"Failed to open lyrics editor: {result.get('error')}")
 
             else:
                 return {"success": False, "error": f"Unknown operation: {operation}"}
