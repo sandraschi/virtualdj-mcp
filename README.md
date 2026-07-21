@@ -1,16 +1,24 @@
-# VirtualDJ-MCP 
+# 🎵 VirtualDJ-MCP
+
+<p align="center">
+  <img src="assets/logo.png" alt="VirtualDJ-MCP Logo" width="180" style="border-radius: 50%"/>
+</p>
+
+<p align="center">
+  <b>Austrian-Engineered Professional DJ Automation & Mixing Server</b>
+</p>
 
 <p align="center">
   <a href="https://github.com/casey/just"><img src="https://img.shields.io/badge/just-ready_to_go-7c5cfc?style=flat-square&logo=just&logoColor=white" alt="Just"></a>
   <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
   <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.12+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"></a>
   <a href="https://github.com/PrefectHQ/fastmcp"><img src="https://img.shields.io/badge/FastMCP-3.4.4-7c5cfc?style=flat-square" alt="FastMCP"></a>
+  <a href="https://github.com/sandraschi/virtualdj-mcp/actions"><img src="https://img.shields.io/github/actions/workflow/status/sandraschi/virtualdj-mcp/ci.yml?branch=master&style=flat-square&label=CI" alt="CI Status"></a>
 </p>
-
 
 > 📖 **[Installation Guide](INSTALL.md)** — quick start, manual setup, and troubleshooting
 
-Professional DJ automation MCP server with Austrian efficiency for Sandra's music mixing needs.
+Professional DJ automation MCP server with Austrian efficiency for Sandra's music mixing needs in Vienna.
 
 ## Quick Start
 

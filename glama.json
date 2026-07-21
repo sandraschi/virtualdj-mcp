@@ -17,7 +17,10 @@
     "plex",
     "stem-separation",
     "mcp-server",
-    "fastmcp"
+    "fastmcp",
+    "model-context-protocol",
+    "automation",
+    "vienna-standards"
   ],
   "features": {
     "deck_control": {

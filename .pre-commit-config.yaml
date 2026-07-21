@@ -1,0 +1,10 @@
+# Pre-commit configuration for VirtualDJ-MCP
+# Runs Ruff linting and formatting before commits
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.4
+    hooks:
+      - id: ruff
+        args: [ --fix ]
+      - id: ruff-format
