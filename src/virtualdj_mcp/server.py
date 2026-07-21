@@ -244,7 +244,7 @@ async def run_fastapi():
 
 # For Claude Desktop MCP integration, just export the MCP instance
 # Claude Desktop will handle running the server
-__all__ = ["app", "mcp", "main", "run_fastapi"]
+__all__ = ["app", "main", "mcp", "run_fastapi"]
 
 if __name__ == "__main__":
     # When run directly, start the MCP server

@@ -111,8 +111,8 @@ async def main():
         # Create a test configuration
         config = VDJConfig(
             virtualdj_path="C:/Program Files/VirtualDJ/virtualdj.exe",
-            rest_api_host="localhost",
-            rest_api_port=8080,
+            http_host="localhost",
+            http_port=8080,
             music_library_path=str(Path.home() / "Music"),
             max_decks=4
         )

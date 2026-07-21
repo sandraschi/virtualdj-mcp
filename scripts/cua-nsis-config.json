@@ -1,0 +1,14 @@
+{
+  "product_name": "VirtualDJ MCP",
+  "install_dir": "%LOCALAPPDATA%\\VirtualDJ MCP",
+  "operator_exe": "virtualdj-mcp-native.exe",
+  "backend_process_names": ["virtualdj-mcp-native", "virtualdj-mcp-backend"],
+  "backend_port": 10877,
+  "health_path": "/health",
+  "diagnostics_path": "/api/v1/diagnostics",
+  "feature_smoke_path": "/api/v1/status",
+  "window_title_re": "VirtualDJ MCP",
+  "nsis_glob": "native/target/release/bundle/nsis/VirtualDJ MCP_*_x64-setup.exe",
+  "bridge_ok_text": "API reachable",
+  "uninstall_registry_filter": "*VirtualDJ*"
+}

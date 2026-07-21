@@ -3,8 +3,8 @@
 <p align="center">
   <a href="https://github.com/casey/just"><img src="https://img.shields.io/badge/just-ready_to_go-7c5cfc?style=flat-square&logo=just&logoColor=white" alt="Just"></a>
   <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
-  <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.13+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"></a>
-  <a href="https://github.com/PrefectHQ/fastmcp"><img src="https://img.shields.io/badge/FastMCP-3.2-7c5cfc?style=flat-square" alt="FastMCP"></a>
+  <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.12+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"></a>
+  <a href="https://github.com/PrefectHQ/fastmcp"><img src="https://img.shields.io/badge/FastMCP-3.4.4-7c5cfc?style=flat-square" alt="FastMCP"></a>
 </p>
 
 
@@ -45,13 +45,13 @@ VirtualDJ-MCP provides seamless integration between Claude and VirtualDJ, enabli
 - Real-time deck control and mixing automation
 - Multi-deck support (up to 8 decks simultaneously)
 - **NEW: Plex Media Server integration**
-- **Production-Ready**: FastMCP 3.1.0 implementation
+- **Production-Ready**: FastMCP 3.4.4 implementation
 
 ###  Requirements
 
 - **VirtualDJ 2023 or later**
 - **VirtualDJ Pro license** (required for Network Control Plugin)
-- **Python 3.10 or 3.11** (3.12+ not supported - aubio dependency)
+- **Python 3.10, 3.11, or 3.12**
 - Network Control Plugin installed and enabled
 
 ##  Quick Start
@@ -121,8 +121,8 @@ VirtualDJ-MCP uses **12 consolidated portmanteau tools** for a cleaner AI interf
 
 | Tool | Operations | Description |
 |------|------------|-------------|
-| `vdj_deck` | play, pause, toggle, stop, load, seek, volume, status | Deck playback control |
-| `vdj_mixer` | crossfader, sync, eq_high, eq_mid, eq_low, gain, filter | Mixing and EQ |
+| `vdj_deck` | play, pause, toggle, stop, load, seek, volume, status, load_security | Deck playback control |
+| `vdj_mixer` | crossfader, sync, eq_high, eq_mid, eq_low, gain, filter, master_volume, headphone_volume, headphone_mix, effect, eq_reset | Mixing and EQ |
 | `vdj_library` | search, analyze | Library search and audio analysis |
 | `vdj_automation` | start, stop, status, suggest, preferences | Auto-DJ control |
 | `vdj_recording` | start, stop, status, list, export, delete | Mix recording |

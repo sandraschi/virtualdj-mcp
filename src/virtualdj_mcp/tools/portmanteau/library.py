@@ -8,6 +8,9 @@ Operations: search, analyze
 from typing import Any, Literal
 
 from fastmcp import FastMCP
+from fastmcp.tools import ToolResult
+from prefab_ui.app import PrefabApp
+from prefab_ui.components import Card, CardContent, CardHeader, CardTitle, Text
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
@@ -58,7 +61,7 @@ def setup_library_portmanteau(mcp: FastMCP):
         energy_max: float | None = None,
         sort_by: str = "relevance",
         sort_desc: bool = True
-    ) -> dict[str, Any]:
+    ) -> Any:
         """
         VirtualDJ library management and audio analysis.
 
@@ -169,17 +172,29 @@ def setup_library_portmanteau(mcp: FastMCP):
 
                         result_tracks = filtered_tracks[:limit]
 
-                        return {
-                            "success": True,
-                            "operation": "search",
-                            "query": query,
-                            "total_results": len(filtered_tracks),
-                            "returned": len(result_tracks),
-                            "tracks": [track.to_dict() for track in result_tracks]
-                        }
+                        with Card(css_class="max-w-lg border border-neutral-700 bg-neutral-900 rounded-lg shadow-lg p-4") as view:
+                            with CardHeader():
+                                CardTitle(f"🔍 Search Results for: {query or 'All'}", css_class="text-lg font-bold text-white")
+                            with CardContent(css_class="mt-2 space-y-2"):
+                                Text(f"Found {len(filtered_tracks)} tracks, showing top {len(result_tracks)}:")
+                                for i, track in enumerate(result_tracks):
+                                    t_title = track.title or "Unknown Title"
+                                    t_artist = track.artist or "Unknown Artist"
+                                    t_bpm = f"{track.bpm:.1f} BPM" if track.bpm else "N/A BPM"
+                                    t_key = track.key or "N/A"
+                                    Text(f"{i+1}. {t_title} - {t_artist} [{t_bpm} | {t_key}]", css_class="text-sm text-neutral-200")
+                                if not result_tracks:
+                                    Text("No matching tracks found in library.", css_class="text-sm text-neutral-400 italic")
+
+                        text_summary = f"Library search completed. Found {len(filtered_tracks)} tracks (showing {len(result_tracks)})."
+
+                        return ToolResult(
+                            content=text_summary,
+                            structured_content=PrefabApp(view=view, title="Library Search")
+                        )
 
                     except Exception as e:
-                        console.print(f"[red]Error during search: {str(e)}[/red]")
+                        console.print(f"[red]Error during search: {e!s}[/red]")
                         return {"success": False, "error": str(e)}
                     finally:
                         progress.update(task, completed=1, visible=False)
@@ -208,7 +223,7 @@ def setup_library_portmanteau(mcp: FastMCP):
                     }
 
                 except Exception as e:
-                    console.print(f"[red]Error analyzing audio: {str(e)}[/red]")
+                    console.print(f"[red]Error analyzing audio: {e!s}[/red]")
                     return {"success": False, "error": str(e)}
 
             else:

@@ -51,7 +51,7 @@ class AutoDJState:
 class AutomationEngine:
     """
     Handles automated DJ functionality including track selection and mixing.
-    
+
     This class provides intelligent track selection, automatic beatmatching,
     and smooth transitions between tracks.
     """
@@ -59,7 +59,7 @@ class AutomationEngine:
     def __init__(self, vdj_client, library_service, playlist_manager):
         """
         Initialize the Automation Engine.
-        
+
         Args:
             vdj_client: Instance of VirtualDJClient for sending commands
             library_service: Instance of LibraryService for track lookup
@@ -76,11 +76,11 @@ class AutomationEngine:
     async def start_auto_dj(self, duration_minutes: int = 60, genre_filter: str | None = None) -> bool:
         """
         Start the Auto-DJ system.
-        
+
         Args:
             duration_minutes: Duration to run in minutes (0 for indefinite)
             genre_filter: Optional genre to filter tracks by
-            
+
         Returns:
             bool: True if Auto-DJ started successfully
         """
@@ -120,7 +120,7 @@ class AutomationEngine:
     async def get_auto_dj_status(self) -> dict:
         """
         Get the current status of the Auto-DJ system.
-        
+
         Returns:
             Dict containing status information
         """
@@ -137,10 +137,10 @@ class AutomationEngine:
     def set_auto_dj_preferences(self, **prefs) -> bool:
         """
         Update Auto-DJ preferences.
-        
+
         Args:
             **prefs: Preferences to update (fade_time, energy_matching, etc.)
-            
+
         Returns:
             bool: True if preferences were updated successfully
         """
@@ -208,10 +208,10 @@ class AutomationEngine:
     async def _select_next_track(self, current_track: dict | None = None) -> dict:
         """
         Select the next track to play based on current track and preferences.
-        
+
         Args:
             current_track: Current track information or None if no track is playing
-            
+
         Returns:
             Dict containing selected track information
         """
@@ -254,7 +254,7 @@ class AutomationEngine:
     async def _transition_to_next_track(self, current_track: dict):
         """
         Handle the transition from the current track to the next track.
-        
+
         Args:
             current_track: Information about the currently playing track
         """
@@ -298,10 +298,10 @@ class AutomationEngine:
     def _get_compatible_keys(self, key: str | None) -> list[str]:
         """
         Get a list of keys that are harmonically compatible with the given key.
-        
+
         Args:
             key: Musical key (e.g., 'Amin', 'C#maj')
-            
+
         Returns:
             List of compatible keys
         """
@@ -327,7 +327,7 @@ class AutomationEngine:
     async def _execute_crossfade(self, from_deck: int, to_deck: int):
         """
         Execute a smooth crossfade between two decks.
-        
+
         Args:
             from_deck: Deck to fade out
             to_deck: Deck to fade in
@@ -344,11 +344,11 @@ class AutomationEngine:
     async def suggest_next_track(self, current_track: dict, style: str = "similar") -> list[dict]:
         """
         Suggest tracks to play next based on the current track and style.
-        
+
         Args:
             current_track: Information about the current track
             style: Suggestion style ('similar', 'energy_up', 'energy_down', 'genre_switch')
-            
+
         Returns:
             List of suggested tracks
         """

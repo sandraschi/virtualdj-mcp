@@ -77,14 +77,14 @@ class EffectSettings:
 class MixerController:
     """
     Controller for advanced mixing features including EQ, effects, and crossfader.
-    
+
     This class provides a high-level interface for controlling the VirtualDJ mixer
     with support for per-deck EQ, effects, and crossfader management.
     """
 
     def __init__(self, vdj_client):
         """Initialize the mixer controller.
-        
+
         Args:
             vdj_client: Instance of VirtualDJClient for sending commands
         """
@@ -107,12 +107,12 @@ class MixerController:
 
     async def set_eq_band(self, deck_id: int, band: EQBand, value: float) -> bool:
         """Set an EQ band for a specific deck.
-        
+
         Args:
             deck_id: Deck number (1-8)
             band: EQ band to adjust (low, mid, high)
             value: Gain value in dB (-24 to +12)
-            
+
         Returns:
             bool: True if successful, False otherwise
         """
@@ -144,12 +144,12 @@ class MixerController:
 
     async def kill_eq_band(self, deck_id: int, band: EQBand, kill: bool = True) -> bool:
         """Kill or restore an EQ band for a specific deck.
-        
+
         Args:
             deck_id: Deck number (1-8)
             band: EQ band to kill/restore
             kill: True to kill, False to restore
-            
+
         Returns:
             bool: True if successful, False otherwise
         """
@@ -177,10 +177,10 @@ class MixerController:
 
     async def reset_eq(self, deck_id: int) -> bool:
         """Reset all EQ bands for a specific deck to 0dB.
-        
+
         Args:
             deck_id: Deck number (1-8)
-            
+
         Returns:
             bool: True if successful, False otherwise
         """
@@ -206,7 +206,7 @@ class MixerController:
                         enabled: bool = True, wet_dry: float = 50.0,
                         param1: float = 0.0, param2: float = 0.0) -> bool:
         """Configure an effect for a specific deck.
-        
+
         Args:
             deck_id: Deck number (1-8)
             effect_slot: Effect slot (0-2)
@@ -215,7 +215,7 @@ class MixerController:
             wet_dry: Wet/dry mix (0-100%)
             param1: Effect-specific parameter 1
             param2: Effect-specific parameter 2
-            
+
         Returns:
             bool: True if successful, False otherwise
         """
@@ -249,10 +249,10 @@ class MixerController:
 
     async def set_crossfader(self, position: float) -> bool:
         """Set the crossfader position.
-        
+
         Args:
             position: Crossfader position (-1.0 to 1.0)
-            
+
         Returns:
             bool: True if successful, False otherwise
         """
@@ -277,10 +277,10 @@ class MixerController:
 
     async def set_master_volume(self, volume: float) -> bool:
         """Set the master volume.
-        
+
         Args:
             volume: Volume level (0.0 to 1.0)
-            
+
         Returns:
             bool: True if successful, False otherwise
         """
@@ -305,10 +305,10 @@ class MixerController:
 
     async def set_headphone_volume(self, volume: float) -> bool:
         """Set the headphone volume.
-        
+
         Args:
             volume: Volume level (0.0 to 1.0)
-            
+
         Returns:
             bool: True if successful, False otherwise
         """
@@ -333,10 +333,10 @@ class MixerController:
 
     async def set_headphone_mix(self, mix: float) -> bool:
         """Set the headphone mix between master and cue.
-        
+
         Args:
             mix: Mix level (0.0 = master, 1.0 = cue)
-            
+
         Returns:
             bool: True if successful, False otherwise
         """
@@ -361,10 +361,10 @@ class MixerController:
 
     def get_mixer_state(self, deck_id: int) -> dict:
         """Get the current mixer state for a specific deck.
-        
+
         Args:
             deck_id: Deck number (1-8)
-            
+
         Returns:
             Dict containing the mixer state
         """

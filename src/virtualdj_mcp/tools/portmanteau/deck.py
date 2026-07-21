@@ -10,6 +10,9 @@ from pathlib import Path
 from typing import Any, Literal
 
 from fastmcp import FastMCP
+from fastmcp.tools import ToolResult
+from prefab_ui.app import PrefabApp
+from prefab_ui.components import Card, CardContent, CardHeader, CardTitle, Text
 from rich.console import Console
 
 from ..shared.dependencies import get_vdj_client
@@ -192,21 +195,31 @@ def setup_deck_portmanteau(mcp: FastMCP):
                         except (ValueError, TypeError):
                             return default
 
-                    return {
-                        "success": True,
-                        "operation": "status",
-                        "deck_id": deck_id,
-                        "is_playing": results.get('is_playing', '0') == '1',
-                        "track_title": results.get('title') or 'No Track',
-                        "track_artist": results.get('artist') or 'Unknown',
-                        "track_path": results.get('filepath'),
-                        "position": safe_float(results.get('position')),
-                        "duration": safe_float(results.get('duration')),
-                        "bpm": safe_float(results.get('bpm')) or None,
-                        "key": results.get('key'),
-                        "volume": int(safe_float(results.get('volume'), 100)),
-                        "pitch": safe_float(results.get('pitch'))
-                    }
+                    is_playing = results.get('is_playing', '0') == '1'
+                    track_title = results.get('title') or 'No Track'
+                    track_artist = results.get('artist') or 'Unknown'
+                    bpm_val = safe_float(results.get('bpm'))
+                    key_val = results.get('key') or 'N/A'
+                    vol_val = int(safe_float(results.get('volume'), 100))
+                    pitch_val = safe_float(results.get('pitch'))
+                    is_play_str = "▶️ Playing" if is_playing else "⏸️ Paused"
+
+                    with Card(css_class="max-w-lg border border-neutral-700 bg-neutral-900 rounded-lg shadow-lg p-4") as view:
+                        with CardHeader():
+                            CardTitle(f"🎵 Deck {deck_id} Status", css_class="text-lg font-bold text-white")
+                        with CardContent(css_class="mt-2 space-y-1"):
+                            Text(f"State: {is_play_str}", css_class="text-sm text-neutral-300")
+                            Text(f"Track: {track_title}", css_class="text-sm font-semibold text-white")
+                            Text(f"Artist: {track_artist}", css_class="text-sm text-neutral-300")
+                            Text(f"BPM: {bpm_val:.1f} | Key: {key_val}", css_class="text-sm text-neutral-300")
+                            Text(f"Volume: {vol_val}% | Pitch: {pitch_val:+.2f}", css_class="text-sm text-neutral-300")
+
+                    text_summary = f"Deck {deck_id} Status: {is_play_str} - '{track_title}' by {track_artist} (BPM: {bpm_val:.1f}, Key: {key_val}, Volume: {vol_val}%)"
+
+                    return ToolResult(
+                        content=text_summary,
+                        structured_content=PrefabApp(view=view, title=f"Deck {deck_id} Status")
+                    )
 
             elif operation == "load_security":
                 if not security_mode:

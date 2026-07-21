@@ -10,6 +10,7 @@ $WindowStyle = if ($Headless) { 'Hidden' } else { 'Normal' }
 # ------------------------------
 
 # Webapp Start - Standardized SOTA (Auto-Repaired V2.5)
+$ProjectRoot = Split-Path -Parent $PSScriptRoot
 $WebPort = 10876
 $BackendPort = 10877
 $FleetStartPath = Join-Path $ProjectRoot "scripts\FleetStartMode.ps1"
@@ -18,8 +19,6 @@ if (-not (Test-Path -LiteralPath $FleetStartPath)) {
     exit 1
 }
 . $FleetStartPath
-
-$ProjectRoot = Split-Path -Parent $PSScriptRoot
 
 # 1. Kill any process squatting on the ports
 Write-Host "Checking for port squatters on $WebPort and $BackendPort..." -ForegroundColor Yellow
@@ -38,7 +37,14 @@ foreach ($pidKey in $pidSet.Keys) {
 
 # 2. Setup
 Set-Location $PSScriptRoot
-if (-not (Test-Path "node_modules")) { npm install }
+$PkgManager = "npm"
+if (Get-Command bun -ErrorAction SilentlyContinue) {
+    $PkgManager = "bun"
+}
+Write-Host "Using package manager: $PkgManager" -ForegroundColor Gray
+if (-not (Test-Path "node_modules")) {
+    if ($PkgManager -eq "bun") { bun install } else { npm install }
+}
 
 # 3. Start the Python backend (Background)
 Write-Host "Starting Python backend on port $BackendPort ..." -ForegroundColor Cyan
@@ -101,8 +107,8 @@ Start-Process powershell -ArgumentList "-NoProfile", "-WindowStyle", "Hidden", "
 
 Write-Host "Browser will open automatically when Vite is ready." -ForegroundColor Gray
 if ($SkipFrontend) { return }
-npm run dev -- --port $WebPort --host
-
-
-
-
+if ($PkgManager -eq "bun") {
+    bun run dev -- --port $WebPort --host
+} else {
+    npm run dev -- --port $WebPort --host
+}

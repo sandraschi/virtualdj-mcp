@@ -125,7 +125,7 @@ def setup_skin_tools(mcp: FastMCP):
             console.print(f"[red]Error in load_skin: {e}[/red]")
             return SkinOperationResult(
                 success=False,
-                message=f"Error loading skin: {str(e)}"
+                message=f"Error loading skin: {e!s}"
             )
 
 
@@ -165,7 +165,7 @@ def setup_skin_tools(mcp: FastMCP):
             console.print(f"[red]Error in switch_skin_variation: {e}[/red]")
             return SkinOperationResult(
                 success=False,
-                message=f"Error switching variation: {str(e)}"
+                message=f"Error switching variation: {e!s}"
             )
 
 
@@ -214,7 +214,7 @@ def setup_skin_tools(mcp: FastMCP):
             console.print(f"[red]Error in set_skin_panel: {e}[/red]")
             return SkinOperationResult(
                 success=False,
-                message=f"Error modifying panel: {str(e)}"
+                message=f"Error modifying panel: {e!s}"
             )
 
 
@@ -272,7 +272,7 @@ def setup_skin_tools(mcp: FastMCP):
             console.print(f"[red]Error in set_skin_panel_group: {e}[/red]")
             return SkinOperationResult(
                 success=False,
-                message=f"Error switching panel group: {str(e)}"
+                message=f"Error switching panel group: {e!s}"
             )
 
 
@@ -322,6 +322,6 @@ def setup_skin_tools(mcp: FastMCP):
             console.print(f"[red]Error in toggle_skin_window: {e}[/red]")
             return SkinOperationResult(
                 success=False,
-                message=f"Error toggling window: {str(e)}"
+                message=f"Error toggling window: {e!s}"
             )
 

@@ -2,7 +2,7 @@
 VDJ Mixer Portmanteau Tool
 
 Consolidates mixing operations into a single interface.
-Operations: crossfader, sync, eq_high, eq_mid, eq_low, gain
+Operations: crossfader, sync, eq_high, eq_mid, eq_low, gain, filter, master_volume, headphone_volume, headphone_mix, effect, eq_reset
 """
 
 from typing import Any, Literal
@@ -21,17 +21,36 @@ def setup_mixer_portmanteau(mcp: FastMCP):
 
     @mcp.tool()
     async def vdj_mixer(
-        operation: Literal["crossfader", "sync", "eq_high", "eq_mid", "eq_low", "gain", "filter"],
+        operation: Literal[
+            "crossfader",
+            "sync",
+            "eq_high",
+            "eq_mid",
+            "eq_low",
+            "gain",
+            "filter",
+            "master_volume",
+            "headphone_volume",
+            "headphone_mix",
+            "effect",
+            "eq_reset",
+        ],
         position: float | None = None,
         deck_a: int | None = None,
         deck_b: int | None = None,
         deck_id: int | None = None,
-        value: float | None = None
+        value: float | None = None,
+        effect_slot: int = 0,
+        effect_type: str | None = None,
+        enable: bool = True,
+        wet_dry: float = 50.0,
+        param1: float = 0.0,
+        param2: float = 0.0,
     ) -> dict[str, Any]:
         """
         Comprehensive mixer control for VirtualDJ.
 
-        PORTMANTEAU PATTERN: Consolidates mixer tools into 1 unified interface.
+        PORTMANTEAU PATTERN: Consolidates all mixer and EQ tools into 1 unified interface.
 
         SUPPORTED OPERATIONS:
         - crossfader: Set crossfader position (-100 to +100, 0 = center)
@@ -41,24 +60,34 @@ def setup_mixer_portmanteau(mcp: FastMCP):
         - eq_low: Set low/bass EQ for deck (requires deck_id, value 0-100)
         - gain: Set deck gain (requires deck_id, value 0-150)
         - filter: Set filter for deck (requires deck_id, value 0-100)
+        - master_volume: Set overall master volume (requires value 0-100)
+        - headphone_volume: Set headphone cue volume (requires value 0-100)
+        - headphone_mix: Set cue/master mix in headphones (requires value 0-100)
+        - effect: Configure audio effects (requires deck_id, effect_type)
+        - eq_reset: Reset EQ back to flat 0dB (requires deck_id)
 
         Args:
             operation: The mixer operation to perform
             position: Crossfader position -100 to +100 (for crossfader operation)
             deck_a: Source deck for sync operation
             deck_b: Target deck for sync operation
-            deck_id: Deck number for EQ/gain/filter operations
-            value: Value for EQ/gain/filter (0-100, gain allows 0-150)
+            deck_id: Deck number for EQ/gain/filter/effect operations
+            value: Numeric value for EQ, volume, gain, filter, or mix
+            effect_slot: Effect slot 0-2 (default: 0)
+            effect_type: Name of VirtualDJ audio effect (e.g., "echo", "flanger")
+            enable: Enable or disable the effect (for effect operation)
+            wet_dry: Wet/dry mix percentage 0-100 (for effect operation)
+            param1: Effect parameter 1 (0.0 to 1.0)
+            param2: Effect parameter 2 (0.0 to 1.0)
 
         Returns:
             Dict with operation result
 
         Examples:
             vdj_mixer("crossfader", position=0)        # Center crossfader
-            vdj_mixer("crossfader", position=-100)    # Full left (deck A)
-            vdj_mixer("sync", deck_a=1, deck_b=2)     # Sync deck 2 to deck 1
             vdj_mixer("eq_high", deck_id=1, value=75) # Set high EQ
-            vdj_mixer("eq_low", deck_id=2, value=50)  # Set bass EQ
+            vdj_mixer("master_volume", value=80)      # Set master volume to 80%
+            vdj_mixer("effect", deck_id=1, effect_type="echo", enable=True) # Turn echo on
         """
         try:
             client = await get_vdj_client()
@@ -165,10 +194,108 @@ def setup_mixer_portmanteau(mcp: FastMCP):
                         "value": val
                     }
 
+            elif operation == "master_volume":
+                if value is None:
+                    return {"success": False, "error": "value required for master_volume operation"}
+
+                val = max(0, min(100, int(value)))
+
+                async with client:
+                    result = await client.send_command(f"mastervolume {val}%")
+                    if result["status"] != "success":
+                        raise VDJError("Failed to set master volume")
+
+                    console.print(f"[green]Master volume set to {val}%[/green]")
+                    return {
+                        "success": True,
+                        "operation": "master_volume",
+                        "value": val
+                    }
+
+            elif operation == "headphone_volume":
+                if value is None:
+                    return {"success": False, "error": "value required for headphone_volume operation"}
+
+                val = max(0, min(100, int(value)))
+
+                async with client:
+                    result = await client.send_command(f"headphone {val}%")
+                    if result["status"] != "success":
+                        raise VDJError("Failed to set headphone volume")
+
+                    console.print(f"[green]Headphone volume set to {val}%[/green]")
+                    return {
+                        "success": True,
+                        "operation": "headphone_volume",
+                        "value": val
+                    }
+
+            elif operation == "headphone_mix":
+                if value is None:
+                    return {"success": False, "error": "value required for headphone_mix operation"}
+
+                val = max(0, min(100, int(value)))
+
+                async with client:
+                    result = await client.send_command(f"headphonemix {val}%")
+                    if result["status"] != "success":
+                        raise VDJError("Failed to set headphone mix")
+
+                    console.print(f"[green]Headphone mix set to {val}%[/green]")
+                    return {
+                        "success": True,
+                        "operation": "headphone_mix",
+                        "value": val
+                    }
+
+            elif operation == "eq_reset":
+                if deck_id is None:
+                    return {"success": False, "error": "deck_id required for eq_reset operation"}
+
+                async with client:
+                    result = await client.send_command(f"deck {deck_id} eq reset")
+                    if result["status"] != "success":
+                        raise VDJError("Failed to reset EQ")
+
+                    console.print(f"[green]Deck {deck_id} EQ reset[/green]")
+                    return {
+                        "success": True,
+                        "operation": "eq_reset",
+                        "deck_id": deck_id
+                    }
+
+            elif operation == "effect":
+                if deck_id is None or effect_type is None:
+                    return {"success": False, "error": "deck_id and effect_type required for effect operation"}
+
+                # VDJ effect slots are 1-indexed (1, 2, 3)
+                slot = max(1, min(3, effect_slot + 1))
+                on_off = "on" if enable else "off"
+                wd = max(0.0, min(100.0, wet_dry))
+
+                # Command format: deck X effect Y 'name' [on/off] [wet_dry] [param1] [param2]
+                cmd = f"deck {deck_id} effect {slot} '{effect_type}' {on_off} {wd}% {param1} {param2}"
+                async with client:
+                    result = await client.send_command(cmd)
+                    if result["status"] != "success":
+                        raise VDJError(f"Failed to set effect: {result.get('error', 'Unknown error')}")
+
+                    console.print(f"[green]Deck {deck_id}: Slot {slot} effect '{effect_type}' {on_off} ({wd}% wet/dry)[/green]")
+                    return {
+                        "success": True,
+                        "operation": "effect",
+                        "deck_id": deck_id,
+                        "effect_slot": effect_slot,
+                        "effect_type": effect_type,
+                        "enabled": enable,
+                        "wet_dry": wd,
+                        "param1": param1,
+                        "param2": param2
+                    }
+
             else:
                 return {"success": False, "error": f"Unknown operation: {operation}"}
 
         except Exception as e:
             console.print(f"[red]Error in vdj_mixer: {e}[/red]")
             return {"success": False, "error": str(e)}
-

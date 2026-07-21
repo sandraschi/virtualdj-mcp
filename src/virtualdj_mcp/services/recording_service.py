@@ -30,7 +30,7 @@ class RecordingStatus(Enum):
 class RecordingService:
     """
     Handles recording and exporting of DJ mixes.
-    
+
     This service provides functionality to record audio output, manage recordings,
     and export them in various formats.
     """
@@ -38,7 +38,7 @@ class RecordingService:
     def __init__(self, output_dir: str = "recordings"):
         """
         Initialize the RecordingService.
-        
+
         Args:
             output_dir: Base directory for storing recordings
         """
@@ -57,11 +57,11 @@ class RecordingService:
     async def start_recording(self, name: str | None = None, format: str = "wav") -> dict[str, Any]:
         """
         Start a new recording session.
-        
+
         Args:
             name: Optional name for the recording
             format: Output format (wav, mp3, ogg, flac)
-            
+
         Returns:
             Dict with recording information
         """
@@ -118,13 +118,13 @@ class RecordingService:
 
             return {
                 "status": "error",
-                "message": f"Failed to start recording: {str(e)}"
+                "message": f"Failed to start recording: {e!s}"
             }
 
     async def stop_recording(self) -> dict[str, Any]:
         """
         Stop the current recording.
-        
+
         Returns:
             Dict with recording information
         """
@@ -173,16 +173,16 @@ class RecordingService:
             logger.error(f"Error stopping recording: {e}", exc_info=True)
             return {
                 "status": "error",
-                "message": f"Failed to stop recording: {str(e)}"
+                "message": f"Failed to stop recording: {e!s}"
             }
 
     async def get_recording_status(self, recording_id: str | None = None) -> dict[str, Any]:
         """
         Get the status of the current or specified recording.
-        
+
         Args:
             recording_id: Optional ID of a specific recording
-            
+
         Returns:
             Dict with recording status
         """
@@ -218,10 +218,10 @@ class RecordingService:
     async def export_mix_history(self, output_format: str = "json") -> dict[str, Any]:
         """
         Export the mix history in the specified format.
-        
+
         Args:
             output_format: Output format (json, csv, txt)
-            
+
         Returns:
             Dict with export information
         """
@@ -253,7 +253,7 @@ class RecordingService:
             logger.error(f"Error exporting mix history: {e}", exc_info=True)
             return {
                 "status": "error",
-                "message": f"Failed to export mix history: {str(e)}"
+                "message": f"Failed to export mix history: {e!s}"
             }
 
     async def _monitor_recording(self):

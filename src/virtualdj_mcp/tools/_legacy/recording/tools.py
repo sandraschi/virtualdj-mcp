@@ -49,11 +49,11 @@ def setup_recording_tools(mcp: FastMCP):
     ) -> dict[str, Any]:
         """
         Start recording the current mix.
-        
+
         Args:
             name: Optional name for the recording
             format: Output format (wav, mp3, ogg, flac)
-            
+
         Returns:
             Dict with recording information
         """
@@ -64,14 +64,14 @@ def setup_recording_tools(mcp: FastMCP):
             logger.error(f"Error starting recording: {e}", exc_info=True)
             return {
                 "status": "error",
-                "message": f"Failed to start recording: {str(e)}"
+                "message": f"Failed to start recording: {e!s}"
             }
 
     @mcp.tool()
     async def stop_recording() -> dict[str, Any]:
         """
         Stop the current recording.
-        
+
         Returns:
             Dict with recording information
         """
@@ -82,17 +82,17 @@ def setup_recording_tools(mcp: FastMCP):
             logger.error(f"Error stopping recording: {e}", exc_info=True)
             return {
                 "status": "error",
-                "message": f"Failed to stop recording: {str(e)}"
+                "message": f"Failed to stop recording: {e!s}"
             }
 
     @mcp.tool()
     async def get_recording_status(recording_id: str | None = None) -> dict[str, Any]:
         """
         Get the status of the current or specified recording.
-        
+
         Args:
             recording_id: Optional ID of a specific recording
-            
+
         Returns:
             Dict with recording status
         """
@@ -103,18 +103,18 @@ def setup_recording_tools(mcp: FastMCP):
             logger.error(f"Error getting recording status: {e}", exc_info=True)
             return {
                 "status": "error",
-                "message": f"Failed to get recording status: {str(e)}"
+                "message": f"Failed to get recording status: {e!s}"
             }
 
     @mcp.tool()
     async def list_recordings(limit: int = 10, offset: int = 0) -> dict[str, Any]:
         """
         List all available recordings.
-        
+
         Args:
             limit: Maximum number of recordings to return
             offset: Offset for pagination
-            
+
         Returns:
             Dict with list of recordings and metadata
         """
@@ -127,7 +127,7 @@ def setup_recording_tools(mcp: FastMCP):
             if service.status == "recording" and service.current_recording:
                 current = service.current_recording.copy()
                 current["is_current"] = True
-                recordings = [current] + recordings
+                recordings = [current, *recordings]
 
             return {
                 "status": "success",
@@ -140,7 +140,7 @@ def setup_recording_tools(mcp: FastMCP):
             logger.error(f"Error listing recordings: {e}", exc_info=True)
             return {
                 "status": "error",
-                "message": f"Failed to list recordings: {str(e)}"
+                "message": f"Failed to list recordings: {e!s}"
             }
 
     @mcp.tool()
@@ -150,11 +150,11 @@ def setup_recording_tools(mcp: FastMCP):
     ) -> dict[str, Any]:
         """
         Export the mix history in the specified format.
-        
+
         Args:
             output_format: Output format (json, csv, txt)
             include_tracklist: Whether to include tracklist in export
-            
+
         Returns:
             Dict with export information
         """
@@ -179,17 +179,17 @@ def setup_recording_tools(mcp: FastMCP):
             logger.error(f"Error exporting mix history: {e}", exc_info=True)
             return {
                 "status": "error",
-                "message": f"Failed to export mix history: {str(e)}"
+                "message": f"Failed to export mix history: {e!s}"
             }
 
     @mcp.tool()
     async def delete_recording(recording_id: str) -> dict[str, Any]:
         """
         Delete a recording.
-        
+
         Args:
             recording_id: ID of the recording to delete
-            
+
         Returns:
             Dict with status information
         """
@@ -230,5 +230,5 @@ def setup_recording_tools(mcp: FastMCP):
             logger.error(f"Error deleting recording: {e}", exc_info=True)
             return {
                 "status": "error",
-                "message": f"Failed to delete recording: {str(e)}"
+                "message": f"Failed to delete recording: {e!s}"
             }

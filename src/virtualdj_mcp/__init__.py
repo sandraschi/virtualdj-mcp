@@ -11,4 +11,4 @@ __description__ = "FastMCP server for VirtualDJ automation and control"
 from .config import VDJConfig
 from .server import mcp
 
-__all__ = ["mcp", "VDJConfig"]
+__all__ = ["VDJConfig", "mcp"]

@@ -6,10 +6,12 @@ Operations: status, help, connection_test
 """
 
 import logging
-from datetime import datetime
 from typing import Any, Literal
 
 from fastmcp import FastMCP
+from fastmcp.tools import ToolResult
+from prefab_ui.app import PrefabApp
+from prefab_ui.components import Card, CardContent, CardHeader, CardTitle, Text
 from rich.console import Console
 
 from ..shared.dependencies import get_vdj_client
@@ -90,13 +92,19 @@ vdj_deck("status", deck_id=1)
 - `eq_low` - Set bass EQ (0-100)
 - `gain` - Set gain (0-150)
 - `filter` - Set filter (0-100)
+- `master_volume` - Set master volume (0-100)
+- `headphone_volume` - Set headphone cue volume (0-100)
+- `headphone_mix` - Adjust cue/master mix in headphones (0-100)
+- `effect` - Configure audio effects (slot, type, wet/dry, parameters)
+- `eq_reset` - Reset EQ to flat 0dB
 
 ## Examples
 
 ```python
 vdj_mixer("crossfader", position=-50)  # Favor deck A
 vdj_mixer("sync", deck_a=1, deck_b=2)
-vdj_mixer("eq_low", deck_id=1, value=75)
+vdj_mixer("master_volume", value=80)
+vdj_mixer("effect", deck_id=1, effect_type="echo", enable=True)
 ```
 """,
     "stems": """
@@ -166,7 +174,7 @@ def setup_system_portmanteau(mcp: FastMCP):
     async def vdj_system(
         operation: Literal["status", "help", "connection_test"],
         topic: str | None = None
-    ) -> dict[str, Any]:
+    ) -> Any:
         """
         System status and help for VirtualDJ-MCP.
 
@@ -207,33 +215,31 @@ def setup_system_portmanteau(mcp: FastMCP):
                 except Exception as exc:
                     logger.debug("VirtualDJ status probe failed: %s", exc)
 
-                return {
-                    "success": True,
-                    "operation": "status",
-                    "server": {
-                        "name": "VirtualDJ-MCP",
-                        "version": "2.0.0",
-                        "framework": "FastMCP 2.13.1",
-                        "portmanteau_tools": 13,
-                        "timestamp": datetime.now().isoformat()
-                    },
-                    "virtualdj": {
-                        "connected": connection_ok,
-                        "version": vdj_version,
-                        "api": "HTTP Network Control Plugin",
-                        "host": "127.0.0.1",
-                        "port": 80
-                    },
-                    "features": {
-                        "deck_control": True,
-                        "mixing": True,
-                        "stems": True,
-                        "video": True,
-                        "automation": True,
-                        "recording": True,
-                        "plex_integration": True
-                    }
-                }
+                vdj_status_str = f"🟢 Connected (v{vdj_version})" if connection_ok else "🔴 Disconnected"
+                server_ver = "2.0.0"
+                fastmcp_ver = "FastMCP 3.4.4"
+
+                with Card(css_class="max-w-lg border border-neutral-700 bg-neutral-900 rounded-lg shadow-lg p-4") as view:
+                    with CardHeader():
+                        CardTitle("🖥️ VirtualDJ-MCP System Dashboard", css_class="text-lg font-bold text-white")
+                    with CardContent(css_class="mt-2 space-y-2"):
+                        Text("--- Server Status ---", css_class="text-sm font-semibold text-neutral-400")
+                        Text("Server Name: VirtualDJ-MCP", css_class="text-sm text-neutral-300")
+                        Text(f"Version: {server_ver}", css_class="text-sm text-neutral-300")
+                        Text(f"Framework: {fastmcp_ver}", css_class="text-sm text-neutral-300")
+                        Text("Tools Loaded: 12 Portmanteau", css_class="text-sm text-neutral-300")
+
+                        Text("--- VirtualDJ Status ---", css_class="text-sm font-semibold text-neutral-400")
+                        Text(f"Connection: {vdj_status_str}", css_class="text-sm text-neutral-300")
+                        Text("API Target: HTTP Network Control Plugin", css_class="text-sm text-neutral-300")
+                        Text("Host: 127.0.0.1:80", css_class="text-sm text-neutral-300")
+
+                text_summary = f"System Status: Server: VirtualDJ-MCP v{server_ver} ({fastmcp_ver}), VirtualDJ Connection: {vdj_status_str} (Host: 127.0.0.1:80)"
+
+                return ToolResult(
+                    content=text_summary,
+                    structured_content=PrefabApp(view=view, title="System Status Dashboard")
+                )
 
             elif operation == "help":
                 topic_key = topic or "overview"

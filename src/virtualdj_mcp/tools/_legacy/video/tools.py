@@ -22,16 +22,16 @@ def setup_video_tools(mcp: FastMCP):
     async def video_crossfader(position: float) -> dict:
         """
         Set the video crossfader position.
-        
+
         The video crossfader controls the blend between video on deck A and deck B,
         independent of the audio crossfader.
-        
+
         Args:
             position: Crossfader position (-100 to +100)
                      -100 = Full deck A (left)
                        0  = 50/50 blend
                      +100 = Full deck B (right)
-        
+
         Returns:
             Dict with video crossfader status
         """
@@ -60,7 +60,7 @@ def setup_video_tools(mcp: FastMCP):
     ) -> dict:
         """
         Set the video transition effect between decks.
-        
+
         Args:
             transition_type: Type of transition. Options:
                 - "crossfade" (default) - Smooth blend
@@ -74,7 +74,7 @@ def setup_video_tools(mcp: FastMCP):
                 - "flip" - Page flip
                 - "slide_left" / "slide_right" - Slide transitions
             duration: Transition duration in seconds (0.1 to 10.0)
-        
+
         Returns:
             Dict with transition settings
         """
@@ -120,7 +120,7 @@ def setup_video_tools(mcp: FastMCP):
     ) -> dict:
         """
         Apply video effects to a deck.
-        
+
         Args:
             deck_id: Deck number (1-8)
             effect: Video effect name. Options:
@@ -142,7 +142,7 @@ def setup_video_tools(mcp: FastMCP):
                 - "glitch" - Digital glitch
             enabled: Whether to enable or disable the effect
             intensity: Effect intensity (0-100)
-        
+
         Returns:
             Dict with effect status
         """
@@ -196,21 +196,21 @@ def setup_video_tools(mcp: FastMCP):
     ) -> dict:
         """
         Display text overlay on the video output.
-        
+
         Perfect for:
         - Track titles
         - DJ name
         - Announcements
         - Karaoke lyrics
         - Event branding
-        
+
         Args:
             text: Text to display
             position: Position on screen ("top", "center", "bottom")
             duration: How long to display in seconds (0 for permanent)
             font_size: Font size in pixels (12-200)
             color: Text color ("white", "black", "red", "blue", "yellow", etc.)
-        
+
         Returns:
             Dict with overlay status
         """
@@ -249,18 +249,18 @@ def setup_video_tools(mcp: FastMCP):
     ) -> dict:
         """
         Control the external video output window.
-        
+
         VirtualDJ can output video to a second monitor, projector, or LED wall.
         Requires dual-monitor setup (Extended Desktop mode).
-        
+
         Args:
             enabled: Whether to show or hide the video output window
             fullscreen: Whether to display in fullscreen mode
             monitor: Which monitor to display on (1 = primary, 2 = secondary, etc.)
-        
+
         Returns:
             Dict with video output status
-        
+
         Note:
             VirtualDJ Pro license required to remove watermark from output.
         """
@@ -289,7 +289,7 @@ def setup_video_tools(mcp: FastMCP):
     ) -> dict:
         """
         Set which deck's video appears on the master output.
-        
+
         Args:
             deck_id: Specific deck to show (1-8), or None for auto
             mode: Output mode:
@@ -297,7 +297,7 @@ def setup_video_tools(mcp: FastMCP):
                 - "deck" - Fixed to specified deck
                 - "split" - Show both decks side by side
                 - "pip" - Picture-in-picture mode
-        
+
         Returns:
             Dict with master output settings
         """
@@ -328,17 +328,17 @@ def setup_video_tools(mcp: FastMCP):
     ) -> dict:
         """
         Enable karaoke mode on a deck.
-        
+
         Karaoke mode can:
         - Display scrolling lyrics (if embedded in file)
         - Remove/reduce vocals using stem separation
         - Show karaoke-style highlighting
-        
+
         Args:
             deck_id: Deck number (1-8)
             enabled: Enable or disable karaoke mode
             remove_vocals: Also remove vocals using stem separation
-        
+
         Returns:
             Dict with karaoke mode status
         """
@@ -368,14 +368,14 @@ def setup_video_tools(mcp: FastMCP):
     ) -> dict:
         """
         Enable video scratching - video follows audio scratch movements.
-        
+
         When enabled, scratching the audio will also scratch the video,
         creating a DJ-style video scratch effect.
-        
+
         Args:
             deck_id: Deck number (1-8)
             enabled: Enable or disable video scratch sync
-        
+
         Returns:
             Dict with video scratch status
         """
@@ -400,15 +400,15 @@ def setup_video_tools(mcp: FastMCP):
     ) -> dict:
         """
         Set a video loop on a deck.
-        
+
         The video will loop for the specified number of beats,
         synced with the audio loop if one is active.
-        
+
         Args:
             deck_id: Deck number (1-8)
             beats: Number of beats to loop (0.25, 0.5, 1, 2, 4, 8, 16, 32)
             enabled: Enable or disable the video loop
-        
+
         Returns:
             Dict with video loop status
         """
@@ -435,14 +435,14 @@ def setup_video_tools(mcp: FastMCP):
     ) -> dict:
         """
         Sync video playback speed to audio tempo.
-        
+
         When enabled, changing the audio tempo (pitch/BPM) will also
         adjust the video playback speed to match.
-        
+
         Args:
             deck_id: Deck number (1-8)
             enabled: Enable or disable tempo sync
-        
+
         Returns:
             Dict with tempo sync status
         """
@@ -466,13 +466,13 @@ def setup_video_tools(mcp: FastMCP):
     ) -> dict:
         """
         Load a video file to a deck.
-        
+
         Supported formats: AVI, MPEG, WMV, VOB, MOV, DIVX, MP4, M4V, MKV, FLV, WEBM
-        
+
         Args:
             deck_id: Deck number (1-8)
             video_path: Path to video file
-        
+
         Returns:
             Dict with load status
         """

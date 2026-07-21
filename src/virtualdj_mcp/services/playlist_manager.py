@@ -125,11 +125,11 @@ class Playlist:
     def update_position(self, track_id: str, new_position: int) -> bool:
         """
         Update the position of a track in the playlist.
-        
+
         Args:
             track_id: ID of the track to move
             new_position: New position (0-based)
-            
+
         Returns:
             bool: True if the track was found and moved, False otherwise
         """
@@ -158,11 +158,11 @@ class Playlist:
     def add_track(self, track_id: str, position: int | None = None) -> bool:
         """
         Add a track to the playlist.
-        
+
         Args:
             track_id: ID of the track to add
             position: Position to insert the track (None = append to end)
-            
+
         Returns:
             bool: True if the track was added, False if it already exists
         """
@@ -194,10 +194,10 @@ class Playlist:
     def remove_track(self, track_id: str) -> bool:
         """
         Remove a track from the playlist.
-        
+
         Args:
             track_id: ID of the track to remove
-            
+
         Returns:
             bool: True if the track was removed, False if not found
         """
@@ -234,7 +234,7 @@ class PlaylistManager:
     def __init__(self, storage_path: str | None = None):
         """
         Initialize the playlist manager.
-        
+
         Args:
             storage_path: Path to store playlist data (default: ~/.virtualdj-mcp/playlists)
         """
@@ -263,18 +263,18 @@ class PlaylistManager:
                         self._playlists[playlist.id] = playlist
                     logger.debug(f"Loaded playlist: {playlist.name} ({playlist.id})")
                 except Exception as e:
-                    logger.error(f"Error loading playlist from {file_path}: {str(e)}")
+                    logger.error(f"Error loading playlist from {file_path}: {e!s}")
 
             logger.info(f"Loaded {len(self._playlists)} playlists from disk")
 
         except Exception as e:
-            logger.error(f"Error loading playlists: {str(e)}")
+            logger.error(f"Error loading playlists: {e!s}")
             raise
 
     async def save_playlist(self, playlist: Playlist) -> None:
         """
         Save a playlist to disk.
-        
+
         Args:
             playlist: Playlist to save
         """
@@ -296,20 +296,20 @@ class PlaylistManager:
             logger.debug(f"Saved playlist: {playlist.name} ({playlist.id})")
 
         except Exception as e:
-            logger.error(f"Error saving playlist {playlist.id}: {str(e)}")
+            logger.error(f"Error saving playlist {playlist.id}: {e!s}")
             raise
 
     async def create_playlist(self, name: str, description: str = "",
                             is_public: bool = False, owner_id: str | None = None) -> Playlist:
         """
         Create a new playlist.
-        
+
         Args:
             name: Name of the playlist
             description: Optional description
             is_public: Whether the playlist is public
             owner_id: ID of the playlist owner (user)
-            
+
         Returns:
             The created Playlist object
         """
@@ -327,10 +327,10 @@ class PlaylistManager:
     async def get_playlist(self, playlist_id: str) -> Playlist | None:
         """
         Get a playlist by ID.
-        
+
         Args:
             playlist_id: ID of the playlist to retrieve
-            
+
         Returns:
             The Playlist object, or None if not found
         """
@@ -348,14 +348,14 @@ class PlaylistManager:
                     self._playlists[playlist_id] = playlist
                     return playlist
             except Exception as e:
-                logger.error(f"Error loading playlist {playlist_id}: {str(e)}")
+                logger.error(f"Error loading playlist {playlist_id}: {e!s}")
 
         return None
 
     async def get_all_playlists(self) -> list[Playlist]:
         """
         Get all playlists.
-        
+
         Returns:
             List of all Playlist objects
         """
@@ -368,11 +368,11 @@ class PlaylistManager:
     async def update_playlist(self, playlist_id: str, **updates) -> Playlist | None:
         """
         Update playlist metadata.
-        
+
         Args:
             playlist_id: ID of the playlist to update
             **updates: Fields to update (name, description, is_public, etc.)
-            
+
         Returns:
             The updated Playlist, or None if not found
         """
@@ -393,10 +393,10 @@ class PlaylistManager:
     async def delete_playlist(self, playlist_id: str) -> bool:
         """
         Delete a playlist.
-        
+
         Args:
             playlist_id: ID of the playlist to delete
-            
+
         Returns:
             bool: True if deleted, False if not found
         """
@@ -411,7 +411,7 @@ class PlaylistManager:
             if file_path.exists():
                 file_path.unlink()
         except Exception as e:
-            logger.error(f"Error deleting playlist file {file_path}: {str(e)}")
+            logger.error(f"Error deleting playlist file {file_path}: {e!s}")
             return False
 
         # Remove from cache
@@ -425,12 +425,12 @@ class PlaylistManager:
                                    position: int | None = None) -> bool:
         """
         Add a track to a playlist.
-        
+
         Args:
             playlist_id: ID of the playlist
             track_id: ID of the track to add
             position: Position to insert the track (None = append to end)
-            
+
         Returns:
             bool: True if added, False if already exists or playlist not found
         """
@@ -449,11 +449,11 @@ class PlaylistManager:
     async def remove_track_from_playlist(self, playlist_id: str, track_id: str) -> bool:
         """
         Remove a track from a playlist.
-        
+
         Args:
             playlist_id: ID of the playlist
             track_id: ID of the track to remove
-            
+
         Returns:
             bool: True if removed, False if not found or playlist not found
         """
@@ -473,12 +473,12 @@ class PlaylistManager:
                                        new_position: int) -> bool:
         """
         Reorder a track within a playlist.
-        
+
         Args:
             playlist_id: ID of the playlist
             track_id: ID of the track to move
             new_position: New position (0-based)
-            
+
         Returns:
             bool: True if moved, False if track or playlist not found
         """
@@ -498,12 +498,12 @@ class PlaylistManager:
                              owner_id: str | None = None) -> list[Playlist]:
         """
         Search for playlists by name or description.
-        
+
         Args:
             query: Search query
             limit: Maximum number of results to return
             owner_id: Optional filter by owner ID
-            
+
         Returns:
             List of matching Playlist objects
         """

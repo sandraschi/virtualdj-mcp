@@ -273,13 +273,13 @@ async def show_help() -> str:
 
 [search] For detailed documentation, visit the project's GitHub repository.
 
-Perfect for Sandra's professional DJ automation needs in Vienna! 
+Perfect for Sandra's professional DJ automation needs in Vienna!
 """
         return help_text.strip()
 
     except Exception as e:
         logger.error(f"Error generating help content: {e}", exc_info=True)
-        return f"Error generating help content: {str(e)}"
+        return f"Error generating help content: {e!s}"
         return "Help content temporarily unavailable. Please check docs/HELP_CONTENT.md"
 
 
@@ -743,7 +743,7 @@ async def search_tracks(
             return [track.to_dict() for track in result_tracks]
 
         except Exception as e:
-            console.print(f"[red]Error during search: {str(e)}[/red]")
+            console.print(f"[red]Error during search: {e!s}[/red]")
             return []
         finally:
             progress.update(task, completed=1, visible=False)
@@ -781,7 +781,7 @@ async def analyze_track_audio(track_path: str) -> dict[str, Any]:
         return result
 
     except Exception as e:
-        console.print(f"[red]Error analyzing audio: {str(e)}[/red]")
+        console.print(f"[red]Error analyzing audio: {e!s}[/red]")
         return {"analysis_successful": False, "error": str(e)}
 
 
@@ -895,10 +895,10 @@ async def auto_dj_mode(
         }
 
     except Exception as e:
-        console.print(f"[red]Error creating auto-DJ playlist: {str(e)}[/red]")
+        console.print(f"[red]Error creating auto-DJ playlist: {e!s}[/red]")
         return {
             "status": "error",
-            "message": f"Failed to create auto-DJ playlist: {str(e)}",
+            "message": f"Failed to create auto-DJ playlist: {e!s}",
         }
 
 
@@ -922,7 +922,7 @@ async def main():
 
         # Initialize services
         library_scanner = LibraryScanner()
-        audio_analyzer = AudioAnalyzer()
+        AudioAnalyzer()
         playlist_manager = PlaylistManager()
 
         # Initialize Automation Engine

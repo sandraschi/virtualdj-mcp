@@ -70,16 +70,16 @@ def setup_plex_portmanteau(mcp: FastMCP):
         Examples:
             # Search for ABBA tracks
             vdj_plex("search", query="ABBA", limit=10)
-            
+
             # Search specific artist
             vdj_plex("search", artist="Pink Floyd")
-            
+
             # Get file path for a track
             vdj_plex("get_path", media_id="12345")
-            
+
             # Search and load directly to deck
             vdj_plex("load_from_plex", query="Dancing Queen", deck_id=1)
-            
+
             # List music libraries
             vdj_plex("list_libraries")
         """

@@ -1,4 +1,5 @@
-﻿set windows-shell := ["pwsh.exe", "-NoLogo", "-Command"]
+set windows-shell := ["pwsh.exe", "-NoLogo", "-Command"]
+import 'scripts/just/fleet.just'
 
 # ── Dashboard ─────────────────────────────────────────────────────────────────
 
@@ -35,3 +36,14 @@ audit-deps:
     Set-Location '{{justfile_directory()}}'
     uv run safety check
 
+# ── Tauri Native ───────────────────────────────────────────────────────────────
+
+# Build Tauri native desktop app (full pipeline: frontend + backend)
+build-native:
+    Set-Location '{{justfile_directory()}}\native'
+    $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"
+    npx @tauri-apps/cli build
+
+# Run the CUA smoke test against the installed NSIS app
+cua-nsis-test:
+    uv run python scripts/cua-smoke.py

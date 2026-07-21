@@ -115,14 +115,14 @@ class LibraryScanner:
         self.scan_cancelled = True
         logger.info("Scan cancellation requested")
 
-    async def scan_directory(self, path: str = None, recursive: bool = True) -> list[TrackInfo]:
+    async def scan_directory(self, path: str | None = None, recursive: bool = True) -> list[TrackInfo]:
         """
         Scan a directory for audio files and extract metadata.
-        
+
         Args:
             path: Directory path to scan (defaults to library root)
             recursive: Whether to scan subdirectories
-            
+
         Returns:
             List of TrackInfo objects for found audio files
         """
@@ -182,10 +182,10 @@ class LibraryScanner:
     async def analyze_track(self, file_path: str) -> TrackInfo | None:
         """
         Analyze a single audio file and extract metadata.
-        
+
         Args:
             file_path: Path to the audio file
-            
+
         Returns:
             TrackInfo object with metadata, or None if file is not a supported audio file
         """
@@ -225,17 +225,17 @@ class LibraryScanner:
             return track
 
         except Exception as e:
-            logger.error(f"Error analyzing {file_path}: {str(e)}", exc_info=True)
+            logger.error(f"Error analyzing {file_path}: {e!s}", exc_info=True)
             return None
 
-    async def update_library_database(self, tracks: list[TrackInfo], db_path: str = None) -> dict[str, any]:
+    async def update_library_database(self, tracks: list[TrackInfo], db_path: str | None = None) -> dict[str, any]:
         """
         Update the library database with scanned tracks.
-        
+
         Args:
             tracks: List of TrackInfo objects to add/update
             db_path: Path to the database file (defaults to library root)
-            
+
         Returns:
             Dictionary with update statistics
         """
@@ -255,7 +255,7 @@ class LibraryScanner:
     async def get_library_stats(self) -> dict[str, any]:
         """
         Get statistics about the music library.
-        
+
         Returns:
             Dictionary containing library statistics
         """
@@ -322,7 +322,7 @@ class LibraryScanner:
                     track.key = str(tags['TKEY'])
 
         except Exception as e:
-            logger.warning(f"Error extracting MP3 metadata from {file_path}: {str(e)}")
+            logger.warning(f"Error extracting MP3 metadata from {file_path}: {e!s}")
 
     async def _extract_flac_metadata(self, file_path: Path, track: TrackInfo) -> None:
         """Extract metadata from FLAC files."""
@@ -358,7 +358,7 @@ class LibraryScanner:
                     track.key = str(tags['key'][0])
 
         except Exception as e:
-            logger.warning(f"Error extracting FLAC metadata from {file_path}: {str(e)}")
+            logger.warning(f"Error extracting FLAC metadata from {file_path}: {e!s}")
 
     async def _extract_ogg_metadata(self, file_path: Path, track: TrackInfo) -> None:
         """Extract metadata from Ogg Vorbis files."""
@@ -394,7 +394,7 @@ class LibraryScanner:
                     track.key = str(tags['key'][0])
 
         except Exception as e:
-            logger.warning(f"Error extracting OGG metadata from {file_path}: {str(e)}")
+            logger.warning(f"Error extracting OGG metadata from {file_path}: {e!s}")
 
     async def _extract_generic_metadata(self, file_path: Path, track: TrackInfo) -> None:
         """Extract basic metadata from unsupported audio formats."""
@@ -464,7 +464,7 @@ class LibraryScanner:
                     track.key = key_str
 
         except Exception as e:
-            logger.warning(f"Error extracting generic metadata from {file_path}: {str(e)}")
+            logger.warning(f"Error extracting generic metadata from {file_path}: {e!s}")
 
     async def _extract_metadata_with_mutagen(self, file_path: Path, track: TrackInfo) -> None:
         """Extract metadata using mutagen as a fallback."""
@@ -497,7 +497,7 @@ class LibraryScanner:
                 track.tags['disc_number'] = str(audio.tags['discnumber'][0])
 
         except Exception as e:
-            logger.debug(f"Error in mutagen metadata fallback for {file_path}: {str(e)}")
+            logger.debug(f"Error in mutagen metadata fallback for {file_path}: {e!s}")
 
 # Example usage
 async def example_usage():
@@ -532,7 +532,7 @@ async def example_usage():
     except KeyboardInterrupt:
         print("\nScan cancelled by user")
     except Exception as e:
-        print(f"Error during scan: {str(e)}")
+        print(f"Error during scan: {e!s}")
 
 if __name__ == "__main__":
     import asyncio

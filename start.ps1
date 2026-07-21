@@ -19,4 +19,12 @@ Write-Host 'Starting Standardized Fullstack Hybrid...' -ForegroundColor Green
 Start-Process pwsh -ArgumentList '-NoProfile', '-Command', 'uv run -m virtualdj_mcp' -WindowStyle Hidden
 Set-Location web_sota
 if ($SkipFrontend) { return }
-npm run dev
+$PkgManager = "npm"
+if (Get-Command bun -ErrorAction SilentlyContinue) {
+    $PkgManager = "bun"
+}
+if ($PkgManager -eq "bun") {
+    bun run dev
+} else {
+    npm run dev
+}

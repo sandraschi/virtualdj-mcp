@@ -113,7 +113,7 @@ class AudioAnalyzer:
     def __init__(self, sample_rate: int = 44100, hop_size: int = 1024):
         """
         Initialize the audio analyzer.
-        
+
         Args:
             sample_rate: Sample rate for audio processing (Hz)
             hop_size: Hop size for analysis (samples)
@@ -142,10 +142,10 @@ class AudioAnalyzer:
     async def analyze_file(self, file_path: str | Path) -> AudioFeatures:
         """
         Analyze an audio file and extract features.
-        
+
         Args:
             file_path: Path to the audio file
-            
+
         Returns:
             AudioFeatures object containing analysis results
         """
@@ -173,7 +173,7 @@ class AudioAnalyzer:
             y = y.astype(np.float32)
 
         except Exception as e:
-            logger.error(f"Error loading audio file {file_path}: {str(e)}")
+            logger.error(f"Error loading audio file {file_path}: {e!s}")
             raise
 
         # Extract features
@@ -196,7 +196,7 @@ class AudioAnalyzer:
         # Process results
         for result in results:
             if isinstance(result, Exception):
-                logger.error(f"Error in audio analysis: {str(result)}")
+                logger.error(f"Error in audio analysis: {result!s}")
                 continue
 
             if isinstance(result, tuple) and result[0] == 'bpm':
@@ -249,7 +249,7 @@ class AudioAnalyzer:
             return 'bpm', max(60.0, min(200.0, bpm))  # Clamp to reasonable range
 
         except Exception as e:
-            logger.warning(f"BPM detection failed: {str(e)}")
+            logger.warning(f"BPM detection failed: {e!s}")
             return 'bpm', 120.0  # Default BPM
 
     async def _detect_key(self, y: np.ndarray, sr: int) -> KeyResult:
@@ -287,7 +287,7 @@ class AudioAnalyzer:
             return KeyResult(note_name, mode, max(0.0, min(1.0, confidence)))
 
         except Exception as e:
-            logger.warning(f"Key detection failed: {str(e)}")
+            logger.warning(f"Key detection failed: {e!s}")
             return KeyResult()
 
     async def _analyze_energy(self, y: np.ndarray, sr: int) -> tuple[str, float]:
@@ -299,7 +299,7 @@ class AudioAnalyzer:
             energy_db = 10 * np.log10(energy + 1e-10)
             return 'energy', float(energy_db)
         except Exception as e:
-            logger.warning(f"Energy calculation failed: {str(e)}")
+            logger.warning(f"Energy calculation failed: {e!s}")
             return 'energy', 0.0
 
     async def _analyze_spectral_centroid(self, y: np.ndarray, sr: int) -> tuple[str, float]:
@@ -315,7 +315,7 @@ class AudioAnalyzer:
             normalized_centroid = float(centroid / (sr / 2))
             return 'spectral_centroid', normalized_centroid
         except Exception as e:
-            logger.warning(f"Spectral centroid calculation failed: {str(e)}")
+            logger.warning(f"Spectral centroid calculation failed: {e!s}")
             return 'spectral_centroid', 0.0
 
     async def _analyze_zero_crossing_rate(self, y: np.ndarray, sr: int) -> tuple[str, float]:
@@ -325,7 +325,7 @@ class AudioAnalyzer:
             zcr = float(np.mean(0.5 * np.abs(np.diff(np.sign(y)))))
             return 'zero_crossing_rate', zcr
         except Exception as e:
-            logger.warning(f"Zero-crossing rate calculation failed: {str(e)}")
+            logger.warning(f"Zero-crossing rate calculation failed: {e!s}")
             return 'zero_crossing_rate', 0.0
 
     async def _analyze_onsets(self, y: np.ndarray, sr: int) -> tuple[str, float]:
@@ -336,24 +336,24 @@ class AudioAnalyzer:
             # Return mean onset strength
             return 'onsets', float(np.mean(onset_env))
         except Exception as e:
-            logger.warning(f"Onset analysis failed: {str(e)}")
+            logger.warning(f"Onset analysis failed: {e!s}")
             return 'onsets', 0.0
 
     async def _detect_beats(self, y: np.ndarray, sr: int) -> list[float]:
         """Detect beat positions in the audio."""
         try:
             # Use librosa for beat detection
-            tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
+            _tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
             beat_times = librosa.frames_to_time(beats, sr=sr)
             return [float(t) for t in beat_times]
         except Exception as e:
-            logger.warning(f"Beat detection failed: {str(e)}")
+            logger.warning(f"Beat detection failed: {e!s}")
             return []
 
     def _calculate_danceability(self, bpm: float, energy: float, onset_strength: float) -> float:
         """
         Calculate a simple danceability score.
-        
+
         This is a simplified version that considers BPM, energy, and onset strength.
         A more sophisticated implementation would analyze rhythm patterns.
         """
@@ -369,17 +369,17 @@ class AudioAnalyzer:
             return float(max(0.0, min(1.0, danceability)))
 
         except Exception as e:
-            logger.warning(f"Danceability calculation failed: {str(e)}")
+            logger.warning(f"Danceability calculation failed: {e!s}")
             return 0.5
 
     def get_harmonic_matches(self, key: str, mode: str) -> list[str]:
         """
         Get harmonically compatible keys based on the Camelot wheel.
-        
+
         Args:
             key: Root note (e.g., 'A', 'F#')
             mode: 'major' or 'minor'
-            
+
         Returns:
             List of compatible keys
         """
@@ -410,7 +410,7 @@ class AudioAnalyzer:
             return compatible
 
         except Exception as e:
-            logger.warning(f"Error finding harmonic matches: {str(e)}")
+            logger.warning(f"Error finding harmonic matches: {e!s}")
             return []
 
 # Example usage
@@ -454,7 +454,7 @@ async def example_usage():
                 print(f"\nHarmonically compatible keys: {', '.join(matches)}")
 
     except Exception as e:
-        print(f"Error during analysis: {str(e)}")
+        print(f"Error during analysis: {e!s}")
 
 if __name__ == "__main__":
     import asyncio

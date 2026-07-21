@@ -2,10 +2,10 @@
   "$schema": "https://glama.ai/mcp/schemas/server.json",
   "maintainers": ["sandraschi"],
   "name": "virtualdj-mcp",
-  "description": "FastMCP 2.13.1 server for DJ automation with VirtualDJ. 12 portmanteau tools for mixing, library management, Plex integration, stem separation, and video mixing. Beta status.",
+  "description": "FastMCP 3.4.4 server for DJ automation with VirtualDJ. 12 portmanteau tools for mixing, library management, Plex integration, stem separation, and video mixing.",
   "type": "mcp_server",
   "status": "beta",
-  "framework": "FastMCP 2.13.1",
+  "framework": "FastMCP 3.4.4",
   "tools": 12,
   "transport": ["stdio", "http"],
   "keywords": [

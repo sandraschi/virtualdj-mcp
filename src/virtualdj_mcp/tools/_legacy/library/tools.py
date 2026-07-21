@@ -175,7 +175,7 @@ def setup_library_tools(mcp: FastMCP):
                 return [track.to_dict() for track in result_tracks]
 
             except Exception as e:
-                console.print(f"[red]Error during search: {str(e)}[/red]")
+                console.print(f"[red]Error during search: {e!s}[/red]")
                 return []
             finally:
                 progress.update(task, completed=1, visible=False)
@@ -213,7 +213,7 @@ def setup_library_tools(mcp: FastMCP):
             return result
 
         except Exception as e:
-            console.print(f"[red]Error analyzing audio: {str(e)}[/red]")
+            console.print(f"[red]Error analyzing audio: {e!s}[/red]")
             return {
                 "analysis_successful": False,
                 "error": str(e)

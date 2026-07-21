@@ -118,7 +118,7 @@ def setup_recording_portmanteau(mcp: FastMCP):
                 if service.status == "recording" and service.current_recording:
                     current = service.current_recording.copy()
                     current["is_current"] = True
-                    recordings = [current] + recordings
+                    recordings = [current, *recordings]
 
                 return {
                     "success": True,

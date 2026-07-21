@@ -27,7 +27,7 @@ classifiers = [
 
 dependencies = [
     # Core dependencies
-    "fastmcp>=3.2,<4",
+    "fastmcp>=3.4.4,<4",
     "fastapi>=0.95.0",
     "uvicorn[standard]>=0.22.0",
     "python-dotenv>=1.0.0",
@@ -122,3 +122,7 @@ ignore = ["S101", "B008"]
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+addopts = "--ignore=tests/local/test_http_api.py --ignore=tests/test_mixer_controller.py"

@@ -1,0 +1,22 @@
+# virtualdj-mcp
+
+> **FastMCP 3.4.4 server for VirtualDJ DJ automation & mixing (June 2026 SOTA).** Provides 12 consolidated portmanteau tools for professional deck control, audio effects, stem separation, library management, and Plex integration. Webapp: frontend port **10876**, backend REST API port **10877**.
+
+## Core Server Components
+- [server.py](file:///D:/Dev/repos/virtualdj-mcp/src/virtualdj_mcp/server.py): Main entry point mounting FastAPI routes alongside the FastMCP instance.
+- [vdj_client.py](file:///D:/Dev/repos/virtualdj-mcp/src/virtualdj_mcp/core/vdj_client.py): HTTP API client connecting to VirtualDJ's Network Control Plugin.
+- [mixer_controller.py](file:///D:/Dev/repos/virtualdj-mcp/src/virtualdj_mcp/mixer_controller.py): Advanced mixer backend logic for EQ, effects slots, headphone cue, and volumes.
+- [config.py](file:///D:/Dev/repos/virtualdj-mcp/src/virtualdj_mcp/config.py): Configuration parser for ports, hosts, passwords, and library paths.
+
+## Portmanteau MCP Tools
+- [deck.py](file:///D:/Dev/repos/virtualdj-mcp/src/virtualdj_mcp/tools/portmanteau/deck.py): `vdj_deck` tool handling play, pause, seek, volume, loading, and status (with Prefab UI).
+- [mixer.py](file:///D:/Dev/repos/virtualdj-mcp/src/virtualdj_mcp/tools/portmanteau/mixer.py): `vdj_mixer` tool controlling crossfader, sync, EQ, gains, headphones, volume, and audio effects.
+- [library.py](file:///D:/Dev/repos/virtualdj-mcp/src/virtualdj_mcp/tools/portmanteau/library.py): `vdj_library` tool managing track searches (with Prefab UI results) and audio analysis (BPM, key).
+- [plex.py](file:///D:/Dev/repos/virtualdj-mcp/src/virtualdj_mcp/tools/portmanteau/plex.py): `vdj_plex` tool integrating Plex Media Server search, path retrieval, and direct VDJ deck loading.
+- [stems.py](file:///D:/Dev/repos/virtualdj-mcp/src/virtualdj_mcp/tools/portmanteau/stems.py): `vdj_stems` tool executing real-time stem kills, isolation (vocals, drums), and deck swaps.
+- [system.py](file:///D:/Dev/repos/virtualdj-mcp/src/virtualdj_mcp/tools/portmanteau/system.py): `vdj_system` tool returning dashboard status (with Prefab UI), connections, and help topics.
+- [automation.py](file:///D:/Dev/repos/virtualdj-mcp/src/virtualdj_mcp/tools/portmanteau/automation.py): `vdj_automation` tool managing Auto-DJ fades, track suggestions, and automations.
+- [recording.py](file:///D:/Dev/repos/virtualdj-mcp/src/virtualdj_mcp/tools/portmanteau/recording.py): `vdj_recording` tool controlling recording start, stop, state, and exports.
+- [beatgrid.py](file:///D:/Dev/repos/virtualdj-mcp/src/virtualdj_mcp/tools/portmanteau/beatgrid.py): `vdj_beatgrid` tool querying/setting loops, beatgrids, and sync states.
+- [skin.py](file:///D:/Dev/repos/virtualdj-mcp/src/virtualdj_mcp/tools/portmanteau/skin.py): `vdj_skin` tool executing skin visual toggles, panels, and layout changes.
+- [video.py](file:///D:/Dev/repos/virtualdj-mcp/src/virtualdj_mcp/tools/portmanteau/video.py): `vdj_video` tool controlling video playback, transitions, and video FX.

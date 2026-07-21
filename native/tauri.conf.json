@@ -1,0 +1,47 @@
+{
+	"$schema": "https://schema.tauri.app/config/2",
+	"productName": "VirtualDJ MCP",
+	"version": "0.1.0",
+	"identifier": "ai.fleet.virtualdj-mcp",
+	"build": {
+		"frontendDist": "../web_sota/dist"
+	},
+	"app": {
+		"windows": [
+			{
+				"label": "main",
+				"title": "VirtualDJ MCP",
+				"width": 1280,
+				"height": 860,
+				"resizable": true
+			}
+		],
+		"security": {
+			"csp": null
+		}
+	},
+	"bundle": {
+		"active": true,
+		"targets": ["nsis"],
+		"icon": ["icons/icon.png", "icons/icon.ico"],
+		"resources": [
+			"resources/virtualdj-mcp-backend.exe",
+            "resources/.env",
+			"../scripts/install-mcp-clients.ps1"
+		],
+		"windows": {
+			"webviewInstallMode": {
+				"type": "skip"
+			},
+			"nsis": {
+				"installMode": "currentUser",
+				"installerHooks": "./windows/hooks.nsh"
+			}
+		}
+	},
+	"plugins": {}
+}
+
+
+
+

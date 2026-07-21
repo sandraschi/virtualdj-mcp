@@ -221,7 +221,7 @@ def create_app() -> FastAPI:
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Unexpected error: {str(e)}"
+                detail=f"Unexpected error: {e!s}"
             ) from e
 
     @app.post("/api/v1/deck/{deck_id}/play_pause")
@@ -461,7 +461,7 @@ def create_app() -> FastAPI:
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Search failed: {str(e)}"
+                detail=f"Search failed: {e!s}"
             ) from e
 
     @app.post("/api/v1/audio/analyze")

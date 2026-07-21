@@ -48,7 +48,7 @@ def setup_auto_dj_tools(mcp: FastMCP):
     ) -> dict[str, Any]:
         """
         Start or configure the Auto-DJ mode.
-        
+
         Args:
             duration_minutes: How long to run Auto-DJ (0 for indefinite)
             genre_filter: Optional genre to filter tracks by
@@ -56,7 +56,7 @@ def setup_auto_dj_tools(mcp: FastMCP):
             energy_matching: Whether to match energy between tracks (optional)
             harmonic_mixing: Whether to mix in key (optional)
             genre_sticking: Whether to stay in the same genre (optional)
-            
+
         Returns:
             Dict with status information
         """
@@ -100,7 +100,7 @@ def setup_auto_dj_tools(mcp: FastMCP):
     async def stop_auto_dj() -> dict[str, Any]:
         """
         Stop the Auto-DJ mode.
-        
+
         Returns:
             Dict with status information
         """
@@ -119,7 +119,7 @@ def setup_auto_dj_tools(mcp: FastMCP):
     async def get_auto_dj_status() -> dict[str, Any]:
         """
         Get the current status of the Auto-DJ system.
-        
+
         Returns:
             Dict with status information
         """
@@ -141,12 +141,12 @@ def setup_auto_dj_tools(mcp: FastMCP):
     ) -> dict[str, Any]:
         """
         Get track suggestions based on current playback or specified track.
-        
+
         Args:
             style: Suggestion style ('similar', 'energy_up', 'energy_down', 'genre_switch')
             current_track_id: Optional track ID to base suggestions on
             limit: Maximum number of suggestions to return
-            
+
         Returns:
             Dict with suggested tracks and metadata
         """
@@ -211,14 +211,14 @@ def setup_auto_dj_tools(mcp: FastMCP):
     ) -> dict[str, Any]:
         """
         Update Auto-DJ preferences.
-        
+
         Args:
             fade_time: Crossfade duration in seconds
             energy_matching: Whether to match energy between tracks
             harmonic_mixing: Whether to mix in key
             genre_sticking: Whether to stay in the same genre
             min_energy_variation: Minimum energy variation (0.0-1.0)
-            
+
         Returns:
             Dict with status and updated preferences
         """

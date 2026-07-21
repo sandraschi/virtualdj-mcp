@@ -58,17 +58,17 @@ def setup_all_portmanteau_tools(mcp):
 
 __all__ = [
     "setup_all_portmanteau_tools",
-    "setup_deck_portmanteau",
-    "setup_mixer_portmanteau",
-    "setup_library_portmanteau",
     "setup_automation_portmanteau",
-    "setup_recording_portmanteau",
-    "setup_performance_portmanteau",
-    "setup_stems_portmanteau",
     "setup_beatgrid_portmanteau",
-    "setup_skin_portmanteau",
-    "setup_video_portmanteau",
+    "setup_deck_portmanteau",
+    "setup_library_portmanteau",
+    "setup_mixer_portmanteau",
+    "setup_performance_portmanteau",
     "setup_plex_portmanteau",
+    "setup_recording_portmanteau",
+    "setup_skin_portmanteau",
+    "setup_stems_portmanteau",
     "setup_system_portmanteau",
+    "setup_video_portmanteau",
 ]
 

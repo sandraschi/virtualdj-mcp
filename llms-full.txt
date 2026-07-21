@@ -1,0 +1,206 @@
+# virtualdj-mcp - Full Technical Reference
+
+This manifest contains the complete technical reference for the `virtualdj-mcp` server. It details the server architecture, installation steps, configuration settings, and all 12 consolidated portmanteau tools.
+
+---
+
+## 🖥️ 1. Architecture Overview
+
+`virtualdj-mcp` is built on FastMCP 3.4.4 and FastAPI. It runs on dual interfaces:
+1. **MCP Interface**: Run via stdio transport. Exposes 12 high-fidelity portmanteau tools to local AI assistants (e.g. Claude Desktop, Cursor).
+2. **REST API Interface**: Exposes FastAPI endpoints on port `10877` for the visual React dashboard.
+
+### Communications Layer
+- **Network Control HTTP API**: Relies on the VirtualDJ Network Control Plugin (typically listening on port 80). VDJScript commands are sent as `POST` requests to `/execute` and queries to `/query`.
+- **OSC (OS2V) Control**: Supports OSC UDP controls matching VirtualDJ's OSC settings (default port `40100`).
+
+---
+
+## ⚙️ 2. Configuration & Setup
+
+### Prerequisites
+1. **VirtualDJ Pro License** (required for external API integrations).
+2. **Network Control Plugin** installed:
+   - In VirtualDJ: **Config** → **Extensions** → **Effects** → **Other** → Install **Network Control**.
+   - Enable the plugin in the Master panel effect rack (under the Auto-Start category) and configure the listening port (default: `80`).
+
+### Environment Variables
+Configure the server by defining the following in a `.env` file at the root:
+
+```env
+# VirtualDJ HTTP settings
+VDJ_HTTP_HOST=127.0.0.1
+VDJ_HTTP_PORT=80
+VDJ_HTTP_PASSWORD=your_optional_password
+VDJ_HTTP_TIMEOUT=10.0
+
+# VirtualDJ OSC setting
+VDJ_OSC_PORT=40100
+
+# Library settings
+VDJ_LIBRARY_PATH=C:/Users/username/Music
+
+# Server execution
+VDJ_TOOL_MODE=portmanteau
+```
+
+---
+
+## 🛠️ 3. Portmanteau MCP Tool Specifications
+
+The server consolidates 60+ individual operations into 12 domain-specific tools.
+
+### 3.1 vdj_deck
+Provides comprehensive deck playback and loading controls.
+
+* **Signature**:
+  ```python
+  async def vdj_deck(
+      operation: Literal["play", "pause", "toggle", "stop", "load", "seek", "volume", "status", "load_security"],
+      deck_id: int = 1,
+      track_path: str | None = None,
+      position: float | str | None = None,
+      volume: int | None = None,
+      force: bool = True,
+      security_mode: str | None = None
+  ) -> ToolResult
+  ```
+* **Operations**:
+  - `play`: Start playback.
+  - `pause`: Pause playback.
+  - `toggle`: Toggle play/pause.
+  - `stop`: Stop playback.
+  - `load`: Load track (requires `track_path`). Normalizes slashes.
+  - `seek`: Seek to `position` (seconds as float, or percentage like `"50%"`).
+  - `volume`: Set volume 0-100.
+  - `status`: Returns a Prefab UI status Card showing current track, artist, play status, BPM, key, and volume.
+  - `load_security`: Set load security mode (`off`, `on`, `always`).
+
+---
+
+### 3.2 vdj_mixer
+Controls the mixer channels, EQs, gains, master volume, and audio effects.
+
+* **Signature**:
+  ```python
+  async def vdj_mixer(
+      operation: Literal[
+          "crossfader", "sync", "eq_high", "eq_mid", "eq_low", "gain", "filter",
+          "master_volume", "headphone_volume", "headphone_mix", "effect", "eq_reset"
+      ],
+      position: float | None = None,
+      deck_a: int | None = None,
+      deck_b: int | None = None,
+      deck_id: int | None = None,
+      value: float | None = None,
+      effect_slot: int = 0,
+      effect_type: str | None = None,
+      enable: bool = True,
+      wet_dry: float = 50.0,
+      param1: float = 0.0,
+      param2: float = 0.0
+  ) -> dict[str, Any]
+  ```
+* **Operations**:
+  - `crossfader`: Set position (-100 to +100, where 0 is center).
+  - `sync`: Sync BPM of `deck_b` to `deck_a`.
+  - `eq_high`/`eq_mid`/`eq_low`: Adjust EQ bands (0-100%).
+  - `gain`: Adjust channel gain (0-150%).
+  - `filter`: Set HPF/LPF filter level (0-100%).
+  - `master_volume`: Set master volume (0-100%).
+  - `headphone_volume`: Set headphone volume (0-100%).
+  - `headphone_mix`: Adjust cue/master mix in headphones (0-100%).
+  - `effect`: Configure audio effects. Slot (0-2), name (e.g. `"echo"`), enable status, wet_dry, and parameters.
+  - `eq_reset`: Reset channel EQ back to flat 0dB.
+
+---
+
+### 3.3 vdj_library
+Manages local file discovery and audio analysis.
+
+* **Signature**:
+  ```python
+  async def vdj_library(
+      operation: Literal["search", "analyze"],
+      query: str = "",
+      track_path: str | None = None,
+      limit: int = 50,
+      artist: str | None = None,
+      genre: str | None = None,
+      bpm_min: float | None = None,
+      bpm_max: float | None = None,
+      key: str | None = None,
+      sort_by: str = "relevance",
+      sort_desc: bool = True
+  ) -> ToolResult
+  ```
+* **Operations**:
+  - `search`: Searches local library and returns results in a Prefab UI Table/List containing title, artist, BPM, and key.
+  - `analyze`: Invokes Python analyzer (aubio/librosa) to extract transient features (BPM, key, energy, danceability).
+
+---
+
+### 3.4 vdj_plex
+Searches and loads tracks directly from Plex Media Server.
+
+* **Signature**:
+  ```python
+  async def vdj_plex(
+      operation: Literal["search", "get_path", "load_from_plex", "list_libraries"],
+      query: str | None = None,
+      artist: str | None = None,
+      media_id: str | None = None,
+      deck_id: int = 1
+  ) -> dict[str, Any]
+  ```
+* **Prerequisites**: Configure `PLEX_SERVER_URL` and `PLEX_TOKEN` env variables.
+* **Operations**:
+  - `list_libraries`: List Plex music libraries.
+  - `search`: Search tracks.
+  - `get_path`: Fetch local file path matching a Plex media ID.
+  - `load_from_plex`: Search Plex and immediately load the matching local file onto a VDJ deck.
+
+---
+
+### 3.5 vdj_stems
+Executes stems isolation (Vocals, Instrumentals, Drums, Melody, Bass).
+
+* **Signature**:
+  ```python
+  async def vdj_stems(
+      operation: Literal["kill", "unkill", "volume", "acapella", "instrumental", "isolate_drums", "swap", "reset"],
+      deck_id: int = 1,
+      stem: str | None = None,
+      volume: int | None = None,
+      enable: bool = True,
+      deck_a: int | None = None,
+      deck_b: int | None = None
+  ) -> dict[str, Any]
+  ```
+* **Stems supported**: `vocal`, `instru`, `bass`, `drums`, `hihat`, `kick`, `snare`, `melody`.
+
+---
+
+### 3.6 vdj_system
+Returns system stats, help resources, and runs connection diagnostics.
+
+* **Signature**:
+  ```python
+  async def vdj_system(
+      operation: Literal["status", "help", "connection_test"],
+      topic: str | None = None
+  ) -> ToolResult
+  ```
+* **Operations**:
+  - `status`: Returns a Prefab UI system dashboard indicating FastAPI state, tools, and connection to VirtualDJ.
+  - `help`: Returns detailed markdown tutorials and usage guides.
+  - `connection_test`: Tests network connectivity and returns troubleshooting suggestions if connection fails.
+
+---
+
+### 3.7 Other Tools
+- `vdj_automation`: Start Auto-DJ fade sessions, configure transitions, and get next-track recommendations.
+- `vdj_recording`: Manage mix recordings (start, stop, export history).
+- `vdj_beatgrid`: Control loops, sync triggers, and query beat counts.
+- `vdj_skin`: Query visual skin sizes and execute layout panel switches.
+- `vdj_video`: Control video overlays, visual FX, and video transitions.

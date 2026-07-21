@@ -87,7 +87,7 @@ def setup_help_tools(mcp: FastMCP):
                 status["vdj_error"] = str(e)
 
             # Calculate uptime
-            if "start_time" in status and status["start_time"]:
+            if status.get("start_time"):
                 status["uptime_seconds"] = int(time.time() - status["start_time"])
 
             # Add timestamp

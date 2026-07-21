@@ -29,6 +29,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         { href: '/chat', label: 'Local Intelligence', icon: Bot },
         { href: '/help', label: 'Bridge Guide', icon: HelpCircle },
         { href: '/settings', label: 'Configuration', icon: Settings },
+    { href: '/logs', label: 'Logs', icon: Activity },
     ];
 
     return (
