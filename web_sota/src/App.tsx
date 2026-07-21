@@ -8,6 +8,7 @@ import { Help } from '@/pages/help';
 import { Chat } from '@/pages/chat';
 import { Settings } from '@/pages/settings';
 import Logging from '@/pages/Logging';
+import { MiniController } from '@/pages/overlay';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/chat" element={<Chat />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/logs" element={<Logging />} />
+          <Route path="/overlay" element={<MiniController />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AppLayout>

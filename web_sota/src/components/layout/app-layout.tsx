@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Sidebar } from './sidebar';
 import { Topbar } from './topbar';
 // import { Toaster } from '@/components/ui/toaster';
@@ -9,6 +10,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
     const [collapsed, setCollapsed] = useState(false);
+    const location = useLocation();
 
     // Persist sidebar state
     useEffect(() => {
@@ -21,6 +23,16 @@ export function AppLayout({ children }: AppLayoutProps) {
         setCollapsed(newState);
         localStorage.setItem('sidebar-collapsed', String(newState));
     };
+
+    const isOverlay = location.pathname === '/overlay';
+
+    if (isOverlay) {
+        return (
+            <div className="min-h-screen bg-slate-950 text-slate-50 font-sans p-4 select-none">
+                {children}
+            </div>
+        );
+    }
 
     return (
         <div className="flex min-h-screen flex-col bg-slate-950 text-slate-50 font-sans selection:bg-emerald-500/30">

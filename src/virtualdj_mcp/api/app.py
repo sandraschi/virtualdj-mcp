@@ -84,6 +84,28 @@ class AudioAnalysisResponse(BaseModel):
     analysis_successful: bool
 
 
+class ExecuteRequest(BaseModel):
+    command: str
+
+
+class ShowControlRequest(BaseModel):
+    operation: str
+    address: str | None = None
+    value: Any = None
+    name: str | None = None
+    enable: bool = True
+    host: str = "127.0.0.1"
+    port: int = 7000
+
+
+class StemsRequest(BaseModel):
+    operation: str
+    deck_id: int = 1
+    stem: str | None = None
+    volume: int | None = None
+    enable: bool = True
+
+
 def create_app() -> FastAPI:
     """
     Create and configure the FastAPI application.
@@ -497,6 +519,113 @@ def create_app() -> FastAPI:
         except Exception:
             return AudioAnalysisResponse(
                 analysis_successful=False
+            )
+
+    @app.post("/api/v1/execute")
+    async def execute_vdjscript(request: ExecuteRequest):
+        """Execute a raw VDJScript command on VirtualDJ."""
+        try:
+            client = await get_vdj_client()
+            async with client:
+                result = await client.send_command(request.command)
+                return result
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Command execution failed: {e!s}"
+            )
+
+    @app.post("/api/v1/show_control")
+    async def show_control_api(request: ShowControlRequest):
+        """Show control API for DMX OS2L or Resolume OSC."""
+        try:
+            if request.operation == "osc_send":
+                if not request.address:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="address required for osc_send"
+                    )
+                # Try parsing value to float/int
+                val = request.value
+                if val is not None:
+                    try:
+                        if "." in str(val):
+                            val = float(str(val))
+                        else:
+                            val = int(str(val))
+                    except ValueError:
+                        if str(val).lower() == "true":
+                            val = True
+                        elif str(val).lower() == "false":
+                            val = False
+                
+                from pythonosc.udp_client import SimpleUDPClient
+                udp_client = SimpleUDPClient(request.host, request.port)
+                udp_client.send_message(request.address, val)
+                return {"status": "success", "operation": "osc_send", "address": request.address, "value": val}
+            
+            client = await get_vdj_client()
+            async with client:
+                if request.operation == "os2l_button":
+                    if not request.name:
+                        raise HTTPException(status_code=400, detail="name required for os2l_button")
+                    on_off = "on" if request.enable else "off"
+                    result = await client.send_command(f"os2l_button '{request.name}' {on_off}")
+                elif request.operation == "os2l_fader":
+                    if not request.name or request.value is None:
+                        raise HTTPException(status_code=400, detail="name and value required for os2l_fader")
+                    result = await client.send_command(f"os2l_fader '{request.name}' {request.value}%")
+                elif request.operation == "os2l_cmd":
+                    if not request.name or request.value is None:
+                        raise HTTPException(status_code=400, detail="name and value required for os2l_cmd")
+                    result = await client.send_command(f"os2l_cmd '{request.name}' {request.value}")
+                else:
+                    raise HTTPException(status_code=400, detail=f"Invalid show_control operation: {request.operation}")
+                
+                if result.get("status") != "success":
+                    raise HTTPException(status_code=500, detail=result.get("error", "VDJ execution failed"))
+                return result
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=str(e)
+            )
+
+    @app.post("/api/v1/stems")
+    async def stems_api(request: StemsRequest):
+        """Stems control API."""
+        try:
+            client = await get_vdj_client()
+            async with client:
+                if request.operation == "kill":
+                    if not request.stem:
+                        raise HTTPException(status_code=400, detail="stem required")
+                    result = await client.send_command(f"deck {request.deck_id} stem_kill '{request.stem}'")
+                elif request.operation == "unkill":
+                    if not request.stem:
+                        raise HTTPException(status_code=400, detail="stem required")
+                    result = await client.send_command(f"deck {request.deck_id} stem_unkill '{request.stem}'")
+                elif request.operation == "acapella":
+                    on_off = "stem_kill" if request.enable else "stem_unkill"
+                    result = await client.send_command(f"deck {request.deck_id} {on_off} 'instru'")
+                elif request.operation == "instrumental":
+                    on_off = "stem_kill" if request.enable else "stem_unkill"
+                    result = await client.send_command(f"deck {request.deck_id} {on_off} 'vocal'")
+                elif request.operation == "reset":
+                    stems = ["vocal", "instru", "bass", "drums", "hihat", "kick", "melody"]
+                    for s in stems:
+                        await client.send_command(f"deck {request.deck_id} stem_unkill '{s}'")
+                    result = {"status": "success"}
+                else:
+                    raise HTTPException(status_code=400, detail=f"Invalid stems operation: {request.operation}")
+                
+                if result.get("status") != "success":
+                    raise HTTPException(status_code=500, detail=result.get("error", "VDJ execution failed"))
+                return result
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=str(e)
             )
 
     return app
