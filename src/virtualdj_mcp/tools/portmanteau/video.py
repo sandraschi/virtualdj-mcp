@@ -12,7 +12,7 @@ from rich.console import Console
 
 from ..shared.dependencies import get_vdj_client
 
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 
 def setup_video_portmanteau(mcp: FastMCP):
@@ -20,7 +20,19 @@ def setup_video_portmanteau(mcp: FastMCP):
 
     @mcp.tool()
     async def vdj_video(
-        operation: Literal["crossfader", "transition", "fx", "text", "output", "master", "karaoke", "scratch", "loop", "tempo_sync", "load"],
+        operation: Literal[
+            "crossfader",
+            "transition",
+            "fx",
+            "text",
+            "output",
+            "master",
+            "karaoke",
+            "scratch",
+            "loop",
+            "tempo_sync",
+            "load",
+        ],
         deck_id: int | None = None,
         position: float | None = None,
         transition_type: str = "crossfade",
@@ -37,7 +49,7 @@ def setup_video_portmanteau(mcp: FastMCP):
         mode: str = "auto",
         remove_vocals: bool = True,
         beats: float = 4,
-        video_path: str | None = None
+        video_path: str | None = None,
     ) -> dict[str, Any]:
         """
         Video control for VirtualDJ.
@@ -110,11 +122,19 @@ def setup_video_portmanteau(mcp: FastMCP):
 
             elif operation == "transition":
                 transitions = {
-                    "crossfade": "crossfade", "cut": "cut", "fade": "fade",
-                    "wipe_left": "wipe_left", "wipe_right": "wipe_right",
-                    "wipe_up": "wipe_up", "wipe_down": "wipe_down",
-                    "zoom": "zoom", "spin": "spin", "cube": "cube",
-                    "flip": "flip", "slide_left": "slide_left", "slide_right": "slide_right"
+                    "crossfade": "crossfade",
+                    "cut": "cut",
+                    "fade": "fade",
+                    "wipe_left": "wipe_left",
+                    "wipe_right": "wipe_right",
+                    "wipe_up": "wipe_up",
+                    "wipe_down": "wipe_down",
+                    "zoom": "zoom",
+                    "spin": "spin",
+                    "cube": "cube",
+                    "flip": "flip",
+                    "slide_left": "slide_left",
+                    "slide_right": "slide_right",
                 }
                 vdj_transition = transitions.get(transition_type.lower(), "crossfade")
                 dur = max(0.1, min(10.0, duration))
@@ -136,8 +156,17 @@ def setup_video_portmanteau(mcp: FastMCP):
                     else:
                         await client.send_command(f"deck {deck_id} video_fx 'none'")
 
-                    console.print(f"[green]Deck {deck_id}: Video FX '{effect}' {'enabled' if enabled else 'disabled'}[/green]")
-                    return {"success": True, "operation": "fx", "deck_id": deck_id, "effect": effect, "enabled": enabled, "intensity": intensity}
+                    console.print(
+                        f"[green]Deck {deck_id}: Video FX '{effect}' {'enabled' if enabled else 'disabled'}[/green]"
+                    )
+                    return {
+                        "success": True,
+                        "operation": "fx",
+                        "deck_id": deck_id,
+                        "effect": effect,
+                        "enabled": enabled,
+                        "intensity": intensity,
+                    }
 
             elif operation == "text":
                 if not text:
@@ -169,7 +198,13 @@ def setup_video_portmanteau(mcp: FastMCP):
                         await client.send_command("video_window 'hide'")
 
                     console.print(f"[green]Video output: {'enabled' if enabled else 'disabled'}[/green]")
-                    return {"success": True, "operation": "output", "enabled": enabled, "fullscreen": fullscreen, "monitor": monitor}
+                    return {
+                        "success": True,
+                        "operation": "output",
+                        "enabled": enabled,
+                        "fullscreen": fullscreen,
+                        "monitor": monitor,
+                    }
 
             elif operation == "master":
                 async with client:
@@ -221,8 +256,15 @@ def setup_video_portmanteau(mcp: FastMCP):
                     else:
                         await client.send_command(f"deck {deck_id} video_loop_exit")
 
-                    console.print(f"[green]Deck {deck_id}: Video loop {'set to ' + str(beats) + ' beats' if enabled else 'exited'}[/green]")
-                    return {"success": True, "operation": "loop", "deck_id": deck_id, "beats": beats if enabled else None}
+                    console.print(
+                        f"[green]Deck {deck_id}: Video loop {'set to ' + str(beats) + ' beats' if enabled else 'exited'}[/green]"
+                    )
+                    return {
+                        "success": True,
+                        "operation": "loop",
+                        "deck_id": deck_id,
+                        "beats": beats if enabled else None,
+                    }
 
             elif operation == "tempo_sync":
                 if not deck_id:
@@ -249,4 +291,3 @@ def setup_video_portmanteau(mcp: FastMCP):
         except Exception as e:
             console.print(f"[red]Error in vdj_video: {e}[/red]")
             return {"success": False, "error": str(e)}
-

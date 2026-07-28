@@ -13,7 +13,7 @@ from rich.console import Console
 from ..shared.dependencies import get_vdj_client
 from ..shared.exceptions import VDJError
 
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 
 def setup_mixer_portmanteau(mcp: FastMCP):
@@ -105,12 +105,7 @@ def setup_mixer_portmanteau(mcp: FastMCP):
                         raise VDJError("Failed to set crossfader")
 
                     console.print(f"[green]Crossfader set to {pos}[/green]")
-                    return {
-                        "success": True,
-                        "operation": "crossfader",
-                        "position": pos,
-                        "vdj_value": vdj_position
-                    }
+                    return {"success": True, "operation": "crossfader", "position": pos, "vdj_value": vdj_position}
 
             elif operation == "sync":
                 if not deck_a or not deck_b:
@@ -132,7 +127,7 @@ def setup_mixer_portmanteau(mcp: FastMCP):
                         "deck_a": deck_a,
                         "deck_b": deck_b,
                         "bpm_a": bpm_a.get("result"),
-                        "bpm_b": bpm_b.get("result")
+                        "bpm_b": bpm_b.get("result"),
                     }
 
             elif operation in ("eq_high", "eq_mid", "eq_low"):
@@ -149,12 +144,7 @@ def setup_mixer_portmanteau(mcp: FastMCP):
                         raise VDJError(f"Failed to set {operation}")
 
                     console.print(f"[green]Deck {deck_id} {operation} set to {val}%[/green]")
-                    return {
-                        "success": True,
-                        "operation": operation,
-                        "deck_id": deck_id,
-                        "value": val
-                    }
+                    return {"success": True, "operation": operation, "deck_id": deck_id, "value": val}
 
             elif operation == "gain":
                 if deck_id is None or value is None:
@@ -168,12 +158,7 @@ def setup_mixer_portmanteau(mcp: FastMCP):
                         raise VDJError("Failed to set gain")
 
                     console.print(f"[green]Deck {deck_id} gain set to {val}%[/green]")
-                    return {
-                        "success": True,
-                        "operation": "gain",
-                        "deck_id": deck_id,
-                        "value": val
-                    }
+                    return {"success": True, "operation": "gain", "deck_id": deck_id, "value": val}
 
             elif operation == "filter":
                 if deck_id is None or value is None:
@@ -187,12 +172,7 @@ def setup_mixer_portmanteau(mcp: FastMCP):
                         raise VDJError("Failed to set filter")
 
                     console.print(f"[green]Deck {deck_id} filter set to {val}%[/green]")
-                    return {
-                        "success": True,
-                        "operation": "filter",
-                        "deck_id": deck_id,
-                        "value": val
-                    }
+                    return {"success": True, "operation": "filter", "deck_id": deck_id, "value": val}
 
             elif operation == "master_volume":
                 if value is None:
@@ -206,11 +186,7 @@ def setup_mixer_portmanteau(mcp: FastMCP):
                         raise VDJError("Failed to set master volume")
 
                     console.print(f"[green]Master volume set to {val}%[/green]")
-                    return {
-                        "success": True,
-                        "operation": "master_volume",
-                        "value": val
-                    }
+                    return {"success": True, "operation": "master_volume", "value": val}
 
             elif operation == "headphone_volume":
                 if value is None:
@@ -224,11 +200,7 @@ def setup_mixer_portmanteau(mcp: FastMCP):
                         raise VDJError("Failed to set headphone volume")
 
                     console.print(f"[green]Headphone volume set to {val}%[/green]")
-                    return {
-                        "success": True,
-                        "operation": "headphone_volume",
-                        "value": val
-                    }
+                    return {"success": True, "operation": "headphone_volume", "value": val}
 
             elif operation == "headphone_mix":
                 if value is None:
@@ -242,11 +214,7 @@ def setup_mixer_portmanteau(mcp: FastMCP):
                         raise VDJError("Failed to set headphone mix")
 
                     console.print(f"[green]Headphone mix set to {val}%[/green]")
-                    return {
-                        "success": True,
-                        "operation": "headphone_mix",
-                        "value": val
-                    }
+                    return {"success": True, "operation": "headphone_mix", "value": val}
 
             elif operation == "eq_reset":
                 if deck_id is None:
@@ -258,11 +226,7 @@ def setup_mixer_portmanteau(mcp: FastMCP):
                         raise VDJError("Failed to reset EQ")
 
                     console.print(f"[green]Deck {deck_id} EQ reset[/green]")
-                    return {
-                        "success": True,
-                        "operation": "eq_reset",
-                        "deck_id": deck_id
-                    }
+                    return {"success": True, "operation": "eq_reset", "deck_id": deck_id}
 
             elif operation == "effect":
                 if deck_id is None or effect_type is None:
@@ -280,7 +244,9 @@ def setup_mixer_portmanteau(mcp: FastMCP):
                     if result["status"] != "success":
                         raise VDJError(f"Failed to set effect: {result.get('error', 'Unknown error')}")
 
-                    console.print(f"[green]Deck {deck_id}: Slot {slot} effect '{effect_type}' {on_off} ({wd}% wet/dry)[/green]")
+                    console.print(
+                        f"[green]Deck {deck_id}: Slot {slot} effect '{effect_type}' {on_off} ({wd}% wet/dry)[/green]"
+                    )
                     return {
                         "success": True,
                         "operation": "effect",
@@ -290,7 +256,7 @@ def setup_mixer_portmanteau(mcp: FastMCP):
                         "enabled": enable,
                         "wet_dry": wd,
                         "param1": param1,
-                        "param2": param2
+                        "param2": param2,
                     }
 
             else:

@@ -4,6 +4,7 @@ Playlist Manager for VirtualDJ-MCP
 This module provides functionality to manage playlists, including creation,
 modification, and querying of playlist data.
 """
+
 import asyncio
 import json
 import logging
@@ -16,9 +17,11 @@ from pathlib import Path
 # Configure logging
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class PlaylistTrack:
     """Represents a track within a playlist with additional metadata."""
+
     track_id: str
     position: int
     added_at: float = field(default_factory=lambda: datetime.now().timestamp())
@@ -31,33 +34,35 @@ class PlaylistTrack:
     def to_dict(self) -> dict:
         """Convert to dictionary for serialization."""
         return {
-            'track_id': self.track_id,
-            'position': self.position,
-            'added_at': self.added_at,
-            'played': self.played,
-            'play_count': self.play_count,
-            'last_played': self.last_played,
-            'rating': self.rating,
-            'tags': self.tags
+            "track_id": self.track_id,
+            "position": self.position,
+            "added_at": self.added_at,
+            "played": self.played,
+            "play_count": self.play_count,
+            "last_played": self.last_played,
+            "rating": self.rating,
+            "tags": self.tags,
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'PlaylistTrack':
+    def from_dict(cls, data: dict) -> "PlaylistTrack":
         """Create from dictionary."""
         return cls(
-            track_id=data['track_id'],
-            position=data.get('position', 0),
-            added_at=data.get('added_at', datetime.now().timestamp()),
-            played=data.get('played', False),
-            play_count=data.get('play_count', 0),
-            last_played=data.get('last_played'),
-            rating=data.get('rating', 0),
-            tags=data.get('tags', {})
+            track_id=data["track_id"],
+            position=data.get("position", 0),
+            added_at=data.get("added_at", datetime.now().timestamp()),
+            played=data.get("played", False),
+            play_count=data.get("play_count", 0),
+            last_played=data.get("last_played"),
+            rating=data.get("rating", 0),
+            tags=data.get("tags", {}),
         )
+
 
 @dataclass
 class Playlist:
     """Represents a playlist with tracks and metadata."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     name: str = ""
     description: str = ""
@@ -76,37 +81,37 @@ class Playlist:
     def to_dict(self) -> dict:
         """Convert to dictionary for serialization."""
         return {
-            'id': self.id,
-            'name': self.name,
-            'description': self.description,
-            'created_at': self.created_at,
-            'updated_at': self.updated_at,
-            'tracks': [track.to_dict() for track in self.tracks],
-            'tags': list(self.tags),
-            'is_public': self.is_public,
-            'owner_id': self.owner_id,
-            'cover_art': self.cover_art,
-            'track_count': len(self.tracks),
-            'duration': self.duration
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "tracks": [track.to_dict() for track in self.tracks],
+            "tags": list(self.tags),
+            "is_public": self.is_public,
+            "owner_id": self.owner_id,
+            "cover_art": self.cover_art,
+            "track_count": len(self.tracks),
+            "duration": self.duration,
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'Playlist':
+    def from_dict(cls, data: dict) -> "Playlist":
         """Create from dictionary."""
         playlist = cls(
-            id=data.get('id', str(uuid.uuid4())),
-            name=data.get('name', ''),
-            description=data.get('description', ''),
-            created_at=data.get('created_at', datetime.now().timestamp()),
-            updated_at=data.get('updated_at', datetime.now().timestamp()),
-            tags=set(data.get('tags', [])),
-            is_public=data.get('is_public', False),
-            owner_id=data.get('owner_id'),
-            cover_art=data.get('cover_art')
+            id=data.get("id", str(uuid.uuid4())),
+            name=data.get("name", ""),
+            description=data.get("description", ""),
+            created_at=data.get("created_at", datetime.now().timestamp()),
+            updated_at=data.get("updated_at", datetime.now().timestamp()),
+            tags=set(data.get("tags", [])),
+            is_public=data.get("is_public", False),
+            owner_id=data.get("owner_id"),
+            cover_art=data.get("cover_art"),
         )
 
         # Add tracks
-        for track_data in data.get('tracks', []):
+        for track_data in data.get("tracks", []):
             playlist.tracks.append(PlaylistTrack.from_dict(track_data))
 
         return playlist
@@ -228,6 +233,7 @@ class Playlist:
         track = next((t for t in self.tracks if t.track_id == track_id), None)
         return track.position if track else None
 
+
 class PlaylistManager:
     """Manages playlists for the VirtualDJ-MCP system."""
 
@@ -257,7 +263,7 @@ class PlaylistManager:
 
             for file_path in self.storage_path.glob("*.json"):
                 try:
-                    with open(file_path, encoding='utf-8') as f:
+                    with open(file_path, encoding="utf-8") as f:
                         data = json.load(f)
                         playlist = Playlist.from_dict(data)
                         self._playlists[playlist.id] = playlist
@@ -287,7 +293,7 @@ class PlaylistManager:
 
             # Save to file
             file_path = self.storage_path / f"{playlist.id}.json"
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
 
             # Update cache
@@ -299,8 +305,9 @@ class PlaylistManager:
             logger.error(f"Error saving playlist {playlist.id}: {e!s}")
             raise
 
-    async def create_playlist(self, name: str, description: str = "",
-                            is_public: bool = False, owner_id: str | None = None) -> Playlist:
+    async def create_playlist(
+        self, name: str, description: str = "", is_public: bool = False, owner_id: str | None = None
+    ) -> Playlist:
         """
         Create a new playlist.
 
@@ -313,12 +320,7 @@ class PlaylistManager:
         Returns:
             The created Playlist object
         """
-        playlist = Playlist(
-            name=name,
-            description=description,
-            is_public=is_public,
-            owner_id=owner_id
-        )
+        playlist = Playlist(name=name, description=description, is_public=is_public, owner_id=owner_id)
 
         await self.save_playlist(playlist)
         logger.info(f"Created new playlist: {name} ({playlist.id})")
@@ -342,7 +344,7 @@ class PlaylistManager:
         file_path = self.storage_path / f"{playlist_id}.json"
         if file_path.exists():
             try:
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     data = json.load(f)
                     playlist = Playlist.from_dict(data)
                     self._playlists[playlist_id] = playlist
@@ -421,8 +423,7 @@ class PlaylistManager:
         logger.info(f"Deleted playlist: {playlist.name} ({playlist_id})")
         return True
 
-    async def add_track_to_playlist(self, playlist_id: str, track_id: str,
-                                   position: int | None = None) -> bool:
+    async def add_track_to_playlist(self, playlist_id: str, track_id: str, position: int | None = None) -> bool:
         """
         Add a track to a playlist.
 
@@ -469,8 +470,7 @@ class PlaylistManager:
 
         return result
 
-    async def reorder_track_in_playlist(self, playlist_id: str, track_id: str,
-                                       new_position: int) -> bool:
+    async def reorder_track_in_playlist(self, playlist_id: str, track_id: str, new_position: int) -> bool:
         """
         Reorder a track within a playlist.
 
@@ -494,8 +494,7 @@ class PlaylistManager:
 
         return result
 
-    async def search_playlists(self, query: str, limit: int = 50,
-                             owner_id: str | None = None) -> list[Playlist]:
+    async def search_playlists(self, query: str, limit: int = 50, owner_id: str | None = None) -> list[Playlist]:
         """
         Search for playlists by name or description.
 
@@ -520,9 +519,11 @@ class PlaylistManager:
                 continue
 
             # Check if query matches name or description
-            if (query in playlist.name.lower() or
-                query in playlist.description.lower() or
-                any(query in tag.lower() for tag in playlist.tags)):
+            if (
+                query in playlist.name.lower()
+                or query in playlist.description.lower()
+                or any(query in tag.lower() for tag in playlist.tags)
+            ):
                 results.append(playlist)
 
             # Limit results
@@ -530,6 +531,7 @@ class PlaylistManager:
                 break
 
         return results
+
 
 # Example usage
 async def example_usage():
@@ -549,14 +551,11 @@ async def example_usage():
             name="My Favorite Tracks",
             description="A collection of my favorite tracks",
             is_public=True,
-            owner_id="user123"
+            owner_id="user123",
         )
 
         playlist2 = await manager.create_playlist(
-            name="Workout Mix",
-            description="High-energy tracks for working out",
-            is_public=False,
-            owner_id="user123"
+            name="Workout Mix", description="High-energy tracks for working out", is_public=False, owner_id="user123"
         )
 
         # Add some tracks to the first playlist
@@ -582,7 +581,7 @@ async def example_usage():
         updated = await manager.get_playlist(playlist1.id)
         print(f"\nUpdated track order in {updated.name}:")
         for i, track in enumerate(updated.tracks):
-            print(f"{i+1}. {track.track_id}")
+            print(f"{i + 1}. {track.track_id}")
 
         # Clean up
         await manager.delete_playlist(playlist1.id)
@@ -592,6 +591,8 @@ async def example_usage():
         # Clean up temporary directory
         shutil.rmtree(temp_dir, ignore_errors=True)
 
+
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(example_usage())

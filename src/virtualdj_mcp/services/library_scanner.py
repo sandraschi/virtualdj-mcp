@@ -4,6 +4,7 @@ Library Scanner for VirtualDJ-MCP
 This module provides functionality to scan and manage the music library,
 including track metadata extraction and library statistics.
 """
+
 import asyncio
 import hashlib
 import logging
@@ -21,9 +22,11 @@ from mutagen.oggvorbis import OggVorbis
 # Configure logging
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class TrackInfo:
     """Dataclass to store track information."""
+
     file_path: str
     file_hash: str
     title: str = ""
@@ -48,49 +51,48 @@ class TrackInfo:
     def to_dict(self) -> dict[str, any]:
         """Convert TrackInfo to dictionary."""
         return {
-            'file_path': self.file_path,
-            'file_hash': self.file_hash,
-            'title': self.title,
-            'artist': self.artist,
-            'album': self.album,
-            'genre': self.genre,
-            'year': self.year,
-            'bpm': self.bpm,
-            'key': self.key,
-            'duration': self.duration,
-            'bitrate': self.bitrate,
-            'sample_rate': self.sample_rate,
-            'channels': self.channels,
-            'file_size': self.file_size,
-            'last_modified': self.last_modified,
-            'date_added': self.date_added,
-            'play_count': self.play_count,
-            'last_played': self.last_played,
-            'rating': self.rating,
-            'tags': self.tags
+            "file_path": self.file_path,
+            "file_hash": self.file_hash,
+            "title": self.title,
+            "artist": self.artist,
+            "album": self.album,
+            "genre": self.genre,
+            "year": self.year,
+            "bpm": self.bpm,
+            "key": self.key,
+            "duration": self.duration,
+            "bitrate": self.bitrate,
+            "sample_rate": self.sample_rate,
+            "channels": self.channels,
+            "file_size": self.file_size,
+            "last_modified": self.last_modified,
+            "date_added": self.date_added,
+            "play_count": self.play_count,
+            "last_played": self.last_played,
+            "rating": self.rating,
+            "tags": self.tags,
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, any]) -> 'TrackInfo':
+    def from_dict(cls, data: dict[str, any]) -> "TrackInfo":
         """Create TrackInfo from dictionary."""
-        track = cls(
-            file_path=data['file_path'],
-            file_hash=data['file_hash']
-        )
+        track = cls(file_path=data["file_path"], file_hash=data["file_hash"])
         for key, value in data.items():
             if hasattr(track, key):
                 setattr(track, key, value)
         return track
 
+
 class LibraryScanner:
     """Handles scanning and managing the music library."""
 
     # Supported audio file extensions
-    SUPPORTED_EXTENSIONS = {'.mp3', '.wav', '.flac', '.ogg', '.aac', '.m4a', '.wma', '.aiff', '.aif'}
+    SUPPORTED_EXTENSIONS = {".mp3", ".wav", ".flac", ".ogg", ".aac", ".m4a", ".wma", ".aiff", ".aif"}
 
     def __init__(self, library_path: str | None = None):
         """Initialize the library scanner with the path to the music library."""
         from ..config import VDJConfig
+
         config = VDJConfig.from_env()
 
         if library_path is None:
@@ -142,13 +144,13 @@ class LibraryScanner:
                 if self.scan_cancelled:
                     logger.info("Scan was cancelled")
                     return []
-                audio_files.extend(scan_path.glob(f'**/*{ext}'))
+                audio_files.extend(scan_path.glob(f"**/*{ext}"))
         else:
             for ext in self.SUPPORTED_EXTENSIONS:
                 if self.scan_cancelled:
                     logger.info("Scan was cancelled")
                     return []
-                audio_files.extend(scan_path.glob(f'*{ext}'))
+                audio_files.extend(scan_path.glob(f"*{ext}"))
 
         logger.info(f"Found {len(audio_files)} audio files to process")
 
@@ -161,7 +163,7 @@ class LibraryScanner:
                 logger.info("Scan was cancelled during processing")
                 return tracks
 
-            chunk = audio_files[i:i+chunk_size]
+            chunk = audio_files[i : i + chunk_size]
             tasks = [self.analyze_track(str(file)) for file in chunk]
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -202,18 +204,15 @@ class LibraryScanner:
 
             # Create track info with basic file data
             track = TrackInfo(
-                file_path=str(file_path),
-                file_hash=file_hash,
-                file_size=stat.st_size,
-                last_modified=stat.st_mtime
+                file_path=str(file_path), file_hash=file_hash, file_size=stat.st_size, last_modified=stat.st_mtime
             )
 
             # Extract metadata based on file type
-            if file_path.suffix.lower() == '.mp3':
+            if file_path.suffix.lower() == ".mp3":
                 await self._extract_mp3_metadata(file_path, track)
-            elif file_path.suffix.lower() == '.flac':
+            elif file_path.suffix.lower() == ".flac":
                 await self._extract_flac_metadata(file_path, track)
-            elif file_path.suffix.lower() == '.ogg':
+            elif file_path.suffix.lower() == ".ogg":
                 await self._extract_ogg_metadata(file_path, track)
             else:
                 # Fallback for other formats
@@ -243,10 +242,10 @@ class LibraryScanner:
         # In a real implementation, this would update an SQLite or other database
 
         stats = {
-            'total_tracks': len(tracks),
-            'new_tracks': len(tracks),  # Simplified for this implementation
-            'updated_tracks': 0,
-            'failed_tracks': 0
+            "total_tracks": len(tracks),
+            "new_tracks": len(tracks),  # Simplified for this implementation
+            "updated_tracks": 0,
+            "failed_tracks": 0,
         }
 
         logger.info(f"Updated library database with {len(tracks)} tracks")
@@ -263,19 +262,19 @@ class LibraryScanner:
         # In a real implementation, this would query the database
 
         return {
-            'total_tracks': 0,
-            'total_duration': 0,
-            'total_size': 0,
-            'artists': {},
-            'genres': {},
-            'years': {},
-            'last_updated': datetime.now().isoformat()
+            "total_tracks": 0,
+            "total_duration": 0,
+            "total_size": 0,
+            "artists": {},
+            "genres": {},
+            "years": {},
+            "last_updated": datetime.now().isoformat(),
         }
 
     def _calculate_file_hash(self, file_path: Path) -> str:
         """Calculate SHA-256 hash of a file."""
         hash_sha256 = hashlib.sha256()
-        with file_path.open('rb') as f:
+        with file_path.open("rb") as f:
             for chunk in iter(lambda: f.read(4096), b""):
                 hash_sha256.update(chunk)
         return hash_sha256.hexdigest()
@@ -290,36 +289,36 @@ class LibraryScanner:
             track.channels = 2 if audio.info.channels == 2 else 1
 
             # Extract ID3 tags if available
-            if hasattr(audio, 'tags') and audio.tags is not None:
+            if hasattr(audio, "tags") and audio.tags is not None:
                 tags = audio.tags
-                track.title = str(tags.get('TIT2', [''])[0] or '')
-                track.artist = str(tags.get('TPE1', [''])[0] or '')
-                track.album = str(tags.get('TALB', [''])[0] or '')
-                track.genre = str(tags.get('TCON', [''])[0] or '')
+                track.title = str(tags.get("TIT2", [""])[0] or "")
+                track.artist = str(tags.get("TPE1", [""])[0] or "")
+                track.album = str(tags.get("TALB", [""])[0] or "")
+                track.genre = str(tags.get("TCON", [""])[0] or "")
 
                 # Try to get year from TDRC (ID3v2.4) or TYER (ID3v2.3)
-                year = ''
-                if 'TDRC' in tags:
-                    year = str(tags['TDRC'])
-                elif 'TDRC:' in str(tags):
+                year = ""
+                if "TDRC" in tags:
+                    year = str(tags["TDRC"])
+                elif "TDRC:" in str(tags):
                     # Handle TDRC with text encoding
-                    year = str(tags.get('TDRC', [''])[0] or '')
-                elif 'TYER' in tags:
-                    year = str(tags['TYER'])
+                    year = str(tags.get("TDRC", [""])[0] or "")
+                elif "TYER" in tags:
+                    year = str(tags["TYER"])
 
                 if year and year.isdigit():
                     track.year = int(year)
 
                 # Try to get BPM if available
-                if 'TBPM' in tags:
+                if "TBPM" in tags:
                     try:
-                        track.bpm = float(tags['TBPM'].text[0])
+                        track.bpm = float(tags["TBPM"].text[0])
                     except (ValueError, IndexError, AttributeError):
                         pass
 
                 # Try to get musical key if available
-                if 'TKEY' in tags:
-                    track.key = str(tags['TKEY'])
+                if "TKEY" in tags:
+                    track.key = str(tags["TKEY"])
 
         except Exception as e:
             logger.warning(f"Error extracting MP3 metadata from {file_path}: {e!s}")
@@ -334,28 +333,28 @@ class LibraryScanner:
             track.channels = audio.info.channels
 
             # Extract Vorbis comments
-            if hasattr(audio, 'tags') and audio.tags is not None:
+            if hasattr(audio, "tags") and audio.tags is not None:
                 tags = audio.tags
-                track.title = str(tags.get('title', [''])[0] or '')
-                track.artist = str(tags.get('artist', [''])[0] or '')
-                track.album = str(tags.get('album', [''])[0] or '')
-                track.genre = str(tags.get('genre', [''])[0] or '')
+                track.title = str(tags.get("title", [""])[0] or "")
+                track.artist = str(tags.get("artist", [""])[0] or "")
+                track.album = str(tags.get("album", [""])[0] or "")
+                track.genre = str(tags.get("genre", [""])[0] or "")
 
                 # Get year
-                year = tags.get('date', [''])[0] or tags.get('year', [''])[0] or ''
+                year = tags.get("date", [""])[0] or tags.get("year", [""])[0] or ""
                 if year and year.isdigit() and len(year) >= 4:
                     track.year = int(year[:4])
 
                 # Try to get BPM if available
-                if 'bpm' in tags:
+                if "bpm" in tags:
                     try:
-                        track.bpm = float(tags['bpm'][0])
+                        track.bpm = float(tags["bpm"][0])
                     except (ValueError, IndexError):
                         pass
 
                 # Try to get musical key if available
-                if 'key' in tags:
-                    track.key = str(tags['key'][0])
+                if "key" in tags:
+                    track.key = str(tags["key"][0])
 
         except Exception as e:
             logger.warning(f"Error extracting FLAC metadata from {file_path}: {e!s}")
@@ -370,28 +369,28 @@ class LibraryScanner:
             track.channels = audio.info.channels
 
             # Extract Vorbis comments
-            if hasattr(audio, 'tags') and audio.tags is not None:
+            if hasattr(audio, "tags") and audio.tags is not None:
                 tags = audio.tags
-                track.title = str(tags.get('title', [''])[0] or '')
-                track.artist = str(tags.get('artist', [''])[0] or '')
-                track.album = str(tags.get('album', [''])[0] or '')
-                track.genre = str(tags.get('genre', [''])[0] or '')
+                track.title = str(tags.get("title", [""])[0] or "")
+                track.artist = str(tags.get("artist", [""])[0] or "")
+                track.album = str(tags.get("album", [""])[0] or "")
+                track.genre = str(tags.get("genre", [""])[0] or "")
 
                 # Get year
-                year = tags.get('date', [''])[0] or tags.get('year', [''])[0] or ''
+                year = tags.get("date", [""])[0] or tags.get("year", [""])[0] or ""
                 if year and year.isdigit() and len(year) >= 4:
                     track.year = int(year[:4])
 
                 # Try to get BPM if available
-                if 'bpm' in tags:
+                if "bpm" in tags:
                     try:
-                        track.bpm = float(tags['bpm'][0])
+                        track.bpm = float(tags["bpm"][0])
                     except (ValueError, IndexError):
                         pass
 
                 # Try to get musical key if available
-                if 'key' in tags:
-                    track.key = str(tags['key'][0])
+                if "key" in tags:
+                    track.key = str(tags["key"][0])
 
         except Exception as e:
             logger.warning(f"Error extracting OGG metadata from {file_path}: {e!s}")
@@ -405,26 +404,26 @@ class LibraryScanner:
                 return
 
             # Get basic audio properties
-            if hasattr(audio.info, 'length'):
+            if hasattr(audio.info, "length"):
                 track.duration = audio.info.length
-            if hasattr(audio.info, 'bitrate'):
+            if hasattr(audio.info, "bitrate"):
                 track.bitrate = audio.info.bitrate // 1000  # Convert to kbps
-            if hasattr(audio.info, 'sample_rate'):
+            if hasattr(audio.info, "sample_rate"):
                 track.sample_rate = audio.info.sample_rate
-            if hasattr(audio.info, 'channels'):
+            if hasattr(audio.info, "channels"):
                 track.channels = audio.info.channels
 
             # Try to get common tags
-            if hasattr(audio, 'tags') and audio.tags is not None:
+            if hasattr(audio, "tags") and audio.tags is not None:
                 tags = audio.tags
 
                 # Common tag mappings
                 tag_mappings = {
-                    'title': ['title', 'TIT2', 'TITLE'],
-                    'artist': ['artist', 'TPE1', 'ARTIST'],
-                    'album': ['album', 'TALB', 'ALBUM'],
-                    'genre': ['genre', 'TCON', 'GENRE'],
-                    'year': ['year', 'date', 'TDRC', 'TYER', 'DATE']
+                    "title": ["title", "TIT2", "TITLE"],
+                    "artist": ["artist", "TPE1", "ARTIST"],
+                    "album": ["album", "TALB", "ALBUM"],
+                    "genre": ["genre", "TCON", "GENRE"],
+                    "year": ["year", "date", "TDRC", "TYER", "DATE"],
                 }
 
                 # Helper to get the first available tag value
@@ -435,23 +434,23 @@ class LibraryScanner:
                         if key in tags:
                             value = tags[key]
                             if isinstance(value, list):
-                                value = value[0] if value else ''
+                                value = value[0] if value else ""
                             return str(value)
-                    return ''
+                    return ""
 
                 # Map common tags
-                track.title = get_tag_value(tag_mappings['title']) or track.title
-                track.artist = get_tag_value(tag_mappings['artist']) or track.artist
-                track.album = get_tag_value(tag_mappings['album']) or track.album
-                track.genre = get_tag_value(tag_mappings['genre']) or track.genre
+                track.title = get_tag_value(tag_mappings["title"]) or track.title
+                track.artist = get_tag_value(tag_mappings["artist"]) or track.artist
+                track.album = get_tag_value(tag_mappings["album"]) or track.album
+                track.genre = get_tag_value(tag_mappings["genre"]) or track.genre
 
                 # Handle year specially
-                year_str = get_tag_value(tag_mappings['year'])
+                year_str = get_tag_value(tag_mappings["year"])
                 if year_str and year_str.isdigit() and len(year_str) >= 4:
                     track.year = int(year_str[:4])
 
                 # Try to get BPM if available
-                bpm_str = get_tag_value(['bpm', 'BPM', 'TBPM'])
+                bpm_str = get_tag_value(["bpm", "BPM", "TBPM"])
                 if bpm_str:
                     try:
                         track.bpm = float(bpm_str)
@@ -459,7 +458,7 @@ class LibraryScanner:
                         pass
 
                 # Try to get musical key if available
-                key_str = get_tag_value(['key', 'KEY', 'TKEY'])
+                key_str = get_tag_value(["key", "KEY", "TKEY"])
                 if key_str:
                     track.key = key_str
 
@@ -477,27 +476,28 @@ class LibraryScanner:
                 return
 
             # Only update fields that haven't been set yet
-            if not track.title and 'title' in audio.tags:
-                track.title = str(audio.tags['title'][0])
-            if not track.artist and 'artist' in audio.tags:
-                track.artist = str(audio.tags['artist'][0])
-            if not track.album and 'album' in audio.tags:
-                track.album = str(audio.tags['album'][0])
-            if not track.genre and 'genre' in audio.tags:
-                track.genre = str(audio.tags['genre'][0])
+            if not track.title and "title" in audio.tags:
+                track.title = str(audio.tags["title"][0])
+            if not track.artist and "artist" in audio.tags:
+                track.artist = str(audio.tags["artist"][0])
+            if not track.album and "album" in audio.tags:
+                track.album = str(audio.tags["album"][0])
+            if not track.genre and "genre" in audio.tags:
+                track.genre = str(audio.tags["genre"][0])
 
             # Additional metadata that might be useful
-            if 'comment' in audio.tags:
-                track.tags['comment'] = str(audio.tags['comment'][0])
-            if 'composer' in audio.tags:
-                track.tags['composer'] = str(audio.tags['composer'][0])
-            if 'tracknumber' in audio.tags:
-                track.tags['track_number'] = str(audio.tags['tracknumber'][0])
-            if 'discnumber' in audio.tags:
-                track.tags['disc_number'] = str(audio.tags['discnumber'][0])
+            if "comment" in audio.tags:
+                track.tags["comment"] = str(audio.tags["comment"][0])
+            if "composer" in audio.tags:
+                track.tags["composer"] = str(audio.tags["composer"][0])
+            if "tracknumber" in audio.tags:
+                track.tags["track_number"] = str(audio.tags["tracknumber"][0])
+            if "discnumber" in audio.tags:
+                track.tags["disc_number"] = str(audio.tags["discnumber"][0])
 
         except Exception as e:
             logger.debug(f"Error in mutagen metadata fallback for {file_path}: {e!s}")
+
 
 # Example usage
 async def example_usage():
@@ -534,6 +534,8 @@ async def example_usage():
     except Exception as e:
         print(f"Error during scan: {e!s}")
 
+
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(example_usage())

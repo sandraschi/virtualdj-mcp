@@ -10,7 +10,7 @@ from typing import Any, Literal
 from fastmcp import FastMCP
 from rich.console import Console
 
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 _automation_engine = None
 
@@ -20,6 +20,7 @@ async def get_automation_engine():
     global _automation_engine
     if _automation_engine is None:
         from ...services.automation_engine import AutomationEngine
+
         _automation_engine = AutomationEngine()
     return _automation_engine
 
@@ -39,7 +40,7 @@ def setup_automation_portmanteau(mcp: FastMCP):
         min_energy_variation: float | None = None,
         suggestion_style: str = "similar",
         current_track_id: str | None = None,
-        limit: int = 5
+        limit: int = 5,
     ) -> dict[str, Any]:
         """
         Auto-DJ control for VirtualDJ.
@@ -84,21 +85,18 @@ def setup_automation_portmanteau(mcp: FastMCP):
                 # Update preferences if provided
                 prefs = {}
                 if fade_time is not None:
-                    prefs['fade_time'] = fade_time
+                    prefs["fade_time"] = fade_time
                 if energy_matching is not None:
-                    prefs['energy_matching'] = energy_matching
+                    prefs["energy_matching"] = energy_matching
                 if harmonic_mixing is not None:
-                    prefs['harmonic_mixing'] = harmonic_mixing
+                    prefs["harmonic_mixing"] = harmonic_mixing
                 if genre_sticking is not None:
-                    prefs['genre_sticking'] = genre_sticking
+                    prefs["genre_sticking"] = genre_sticking
 
                 if prefs:
                     engine.set_auto_dj_preferences(**prefs)
 
-                success = await engine.start_auto_dj(
-                    duration_minutes=duration_minutes,
-                    genre_filter=genre_filter
-                )
+                success = await engine.start_auto_dj(duration_minutes=duration_minutes, genre_filter=genre_filter)
 
                 if not success:
                     return {"success": False, "error": "Failed to start Auto-DJ"}
@@ -110,25 +108,17 @@ def setup_automation_portmanteau(mcp: FastMCP):
                     "operation": "start",
                     "duration_minutes": duration_minutes,
                     "genre_filter": genre_filter,
-                    **status
+                    **status,
                 }
 
             elif operation == "stop":
                 success = await engine.stop_auto_dj()
                 console.print("[green]Auto-DJ stopped[/green]")
-                return {
-                    "success": True,
-                    "operation": "stop",
-                    "was_running": success
-                }
+                return {"success": True, "operation": "stop", "was_running": success}
 
             elif operation == "status":
                 status = await engine.get_auto_dj_status()
-                return {
-                    "success": True,
-                    "operation": "status",
-                    **status
-                }
+                return {"success": True, "operation": "status", **status}
 
             elif operation == "suggest":
                 if current_track_id:
@@ -140,10 +130,7 @@ def setup_automation_portmanteau(mcp: FastMCP):
                     if not current_track:
                         return {"success": False, "error": "No track currently playing"}
 
-                suggestions = await engine.suggest_next_track(
-                    current_track=current_track,
-                    style=suggestion_style
-                )
+                suggestions = await engine.suggest_next_track(current_track=current_track, style=suggestion_style)
                 suggestions = suggestions[:limit]
 
                 return {
@@ -155,7 +142,7 @@ def setup_automation_portmanteau(mcp: FastMCP):
                         "title": current_track.get("title"),
                         "artist": current_track.get("artist"),
                         "bpm": current_track.get("bpm"),
-                        "key": current_track.get("key")
+                        "key": current_track.get("key"),
                     },
                     "suggestions": [
                         {
@@ -165,24 +152,24 @@ def setup_automation_portmanteau(mcp: FastMCP):
                             "bpm": t.get("bpm"),
                             "key": t.get("key"),
                             "energy": t.get("energy"),
-                            "compatibility_score": t.get("compatibility_score")
+                            "compatibility_score": t.get("compatibility_score"),
                         }
                         for t in suggestions
-                    ]
+                    ],
                 }
 
             elif operation == "preferences":
                 prefs = {}
                 if fade_time is not None:
-                    prefs['fade_time'] = fade_time
+                    prefs["fade_time"] = fade_time
                 if energy_matching is not None:
-                    prefs['energy_matching'] = energy_matching
+                    prefs["energy_matching"] = energy_matching
                 if harmonic_mixing is not None:
-                    prefs['harmonic_mixing'] = harmonic_mixing
+                    prefs["harmonic_mixing"] = harmonic_mixing
                 if genre_sticking is not None:
-                    prefs['genre_sticking'] = genre_sticking
+                    prefs["genre_sticking"] = genre_sticking
                 if min_energy_variation is not None:
-                    prefs['min_energy_variation'] = min_energy_variation
+                    prefs["min_energy_variation"] = min_energy_variation
 
                 if not prefs:
                     return {"success": False, "error": "No preferences provided"}
@@ -199,8 +186,8 @@ def setup_automation_portmanteau(mcp: FastMCP):
                         "energy_matching": engine.preferences.energy_matching,
                         "harmonic_mixing": engine.preferences.harmonic_mixing,
                         "genre_sticking": engine.preferences.genre_sticking,
-                        "min_energy_variation": engine.preferences.min_energy_variation
-                    }
+                        "min_energy_variation": engine.preferences.min_energy_variation,
+                    },
                 }
 
             else:
@@ -209,4 +196,3 @@ def setup_automation_portmanteau(mcp: FastMCP):
         except Exception as e:
             console.print(f"[red]Error in vdj_automation: {e}[/red]")
             return {"success": False, "error": str(e)}
-

@@ -10,17 +10,14 @@ from rich.console import Console
 from ..shared.dependencies import get_vdj_client
 from ..shared.exceptions import VDJError
 
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 
 def setup_beatgrid_tools(mcp: FastMCP):
     """Set up beatgrid MCP tools."""
 
     @mcp.tool()
-    async def set_bpm(
-        deck_id: int,
-        bpm: float
-    ) -> dict:
+    async def set_bpm(deck_id: int, bpm: float) -> dict:
         """
         Manually set the BPM of a track.
 
@@ -42,11 +39,7 @@ def setup_beatgrid_tools(mcp: FastMCP):
 
                 if result["status"] == "success":
                     console.print(f"[green]Deck {deck_id}: BPM set to {bpm}[/green]")
-                    return {
-                        "success": True,
-                        "deck": deck_id,
-                        "bpm": bpm
-                    }
+                    return {"success": True, "deck": deck_id, "bpm": bpm}
                 else:
                     raise VDJError(f"Failed to set BPM: {result.get('error')}")
 
@@ -83,10 +76,7 @@ def setup_beatgrid_tools(mcp: FastMCP):
             return {"success": False, "error": str(e)}
 
     @mcp.tool()
-    async def beatgrid_adjust(
-        deck_id: int,
-        adjustment: float
-    ) -> dict:
+    async def beatgrid_adjust(deck_id: int, adjustment: float) -> dict:
         """
         Adjust the beatgrid position (shift beats left/right).
 
@@ -109,11 +99,7 @@ def setup_beatgrid_tools(mcp: FastMCP):
                 if result["status"] == "success":
                     direction = "right" if adjustment > 0 else "left"
                     console.print(f"[green]Deck {deck_id}: Beatgrid shifted {abs(adjustment)}ms {direction}[/green]")
-                    return {
-                        "success": True,
-                        "deck": deck_id,
-                        "adjustment_ms": adjustment
-                    }
+                    return {"success": True, "deck": deck_id, "adjustment_ms": adjustment}
                 else:
                     raise VDJError(f"Failed to adjust beatgrid: {result.get('error')}")
 
@@ -150,11 +136,7 @@ def setup_beatgrid_tools(mcp: FastMCP):
             return {"success": False, "error": str(e)}
 
     @mcp.tool()
-    async def pitch_bend(
-        deck_id: int,
-        direction: str,
-        amount: float = 4.0
-    ) -> dict:
+    async def pitch_bend(deck_id: int, direction: str, amount: float = 4.0) -> dict:
         """
         Temporarily bend the pitch (speed up or slow down).
 
@@ -179,12 +161,7 @@ def setup_beatgrid_tools(mcp: FastMCP):
 
                 if result["status"] == "success":
                     console.print(f"[green]Deck {deck_id}: Pitch bend {direction} {amount}%[/green]")
-                    return {
-                        "success": True,
-                        "deck": deck_id,
-                        "direction": direction,
-                        "amount": amount
-                    }
+                    return {"success": True, "deck": deck_id, "direction": direction, "amount": amount}
                 else:
                     raise VDJError(f"Failed to pitch bend: {result.get('error')}")
 
@@ -221,10 +198,7 @@ def setup_beatgrid_tools(mcp: FastMCP):
             return {"success": False, "error": str(e)}
 
     @mcp.tool()
-    async def beat_jump(
-        deck_id: int,
-        beats: int
-    ) -> dict:
+    async def beat_jump(deck_id: int, beats: int) -> dict:
         """
         Jump forward or backward by a number of beats.
 
@@ -245,11 +219,7 @@ def setup_beatgrid_tools(mcp: FastMCP):
                 if result["status"] == "success":
                     direction = "forward" if beats > 0 else "backward"
                     console.print(f"[green]Deck {deck_id}: Jumped {abs(beats)} beats {direction}[/green]")
-                    return {
-                        "success": True,
-                        "deck": deck_id,
-                        "beats": beats
-                    }
+                    return {"success": True, "deck": deck_id, "beats": beats}
                 else:
                     raise VDJError(f"Failed to beat jump: {result.get('error')}")
 
@@ -258,10 +228,7 @@ def setup_beatgrid_tools(mcp: FastMCP):
             return {"success": False, "error": str(e)}
 
     @mcp.tool()
-    async def loop_roll(
-        deck_id: int,
-        beats: float
-    ) -> dict:
+    async def loop_roll(deck_id: int, beats: float) -> dict:
         """
         Start a loop roll (temporary loop that returns to original position when released).
 
@@ -281,11 +248,7 @@ def setup_beatgrid_tools(mcp: FastMCP):
 
                 if result["status"] == "success":
                     console.print(f"[green]Deck {deck_id}: Loop roll {beats} beats[/green]")
-                    return {
-                        "success": True,
-                        "deck": deck_id,
-                        "beats": beats
-                    }
+                    return {"success": True, "deck": deck_id, "beats": beats}
                 else:
                     raise VDJError(f"Failed to start loop roll: {result.get('error')}")
 
@@ -294,10 +257,7 @@ def setup_beatgrid_tools(mcp: FastMCP):
             return {"success": False, "error": str(e)}
 
     @mcp.tool()
-    async def loop_set(
-        deck_id: int,
-        beats: float
-    ) -> dict:
+    async def loop_set(deck_id: int, beats: float) -> dict:
         """
         Set a loop of specified beat length.
 
@@ -317,11 +277,7 @@ def setup_beatgrid_tools(mcp: FastMCP):
 
                 if result["status"] == "success":
                     console.print(f"[green]Deck {deck_id}: Loop set to {beats} beats[/green]")
-                    return {
-                        "success": True,
-                        "deck": deck_id,
-                        "beats": beats
-                    }
+                    return {"success": True, "deck": deck_id, "beats": beats}
                 else:
                     raise VDJError(f"Failed to set loop: {result.get('error')}")
 
@@ -356,4 +312,3 @@ def setup_beatgrid_tools(mcp: FastMCP):
         except Exception as e:
             console.print(f"[red]Error in loop_exit: {e}[/red]")
             return {"success": False, "error": str(e)}
-

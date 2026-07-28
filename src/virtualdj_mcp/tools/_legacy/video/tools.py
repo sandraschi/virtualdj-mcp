@@ -47,17 +47,10 @@ def setup_video_tools(mcp: FastMCP):
 
         await vdj.send_command(f"video_crossfader {vdj_pos}%")
 
-        return {
-            "success": True,
-            "video_crossfader": position,
-            "vdj_value": vdj_pos
-        }
+        return {"success": True, "video_crossfader": position, "vdj_value": vdj_pos}
 
     @mcp.tool()
-    async def video_transition(
-        transition_type: str = "crossfade",
-        duration: float = 1.0
-    ) -> dict:
+    async def video_transition(transition_type: str = "crossfade", duration: float = 1.0) -> dict:
         """
         Set the video transition effect between decks.
 
@@ -96,7 +89,7 @@ def setup_video_tools(mcp: FastMCP):
             "cube": "cube",
             "flip": "flip",
             "slide_left": "slide_left",
-            "slide_right": "slide_right"
+            "slide_right": "slide_right",
         }
 
         vdj_transition = transitions.get(transition_type.lower(), "crossfade")
@@ -105,19 +98,10 @@ def setup_video_tools(mcp: FastMCP):
         await vdj.send_command(f"video_transition '{vdj_transition}'")
         await vdj.send_command(f"video_transition_time {int(duration * 1000)}ms")
 
-        return {
-            "success": True,
-            "transition": vdj_transition,
-            "duration_seconds": duration
-        }
+        return {"success": True, "transition": vdj_transition, "duration_seconds": duration}
 
     @mcp.tool()
-    async def video_fx(
-        deck_id: int,
-        effect: str,
-        enabled: bool = True,
-        intensity: int = 50
-    ) -> dict:
+    async def video_fx(deck_id: int, effect: str, enabled: bool = True, intensity: int = 50) -> dict:
         """
         Apply video effects to a deck.
 
@@ -167,7 +151,7 @@ def setup_video_tools(mcp: FastMCP):
             "edge": "video_fx 'edge'",
             "emboss": "video_fx 'emboss'",
             "vhs": "video_fx 'vhs'",
-            "glitch": "video_fx 'glitch'"
+            "glitch": "video_fx 'glitch'",
         }
 
         fx_cmd = effects.get(effect.lower(), f"video_fx '{effect}'")
@@ -178,21 +162,11 @@ def setup_video_tools(mcp: FastMCP):
         else:
             await vdj.send_command(f"deck {deck_id} video_fx 'none'")
 
-        return {
-            "success": True,
-            "deck": deck_id,
-            "effect": effect,
-            "enabled": enabled,
-            "intensity": intensity
-        }
+        return {"success": True, "deck": deck_id, "effect": effect, "enabled": enabled, "intensity": intensity}
 
     @mcp.tool()
     async def video_text_overlay(
-        text: str,
-        position: str = "bottom",
-        duration: float = 5.0,
-        font_size: int = 48,
-        color: str = "white"
+        text: str, position: str = "bottom", duration: float = 5.0, font_size: int = 48, color: str = "white"
     ) -> dict:
         """
         Display text overlay on the video output.
@@ -238,15 +212,11 @@ def setup_video_tools(mcp: FastMCP):
             "position": position,
             "duration": duration if duration > 0 else "permanent",
             "font_size": font_size,
-            "color": color
+            "color": color,
         }
 
     @mcp.tool()
-    async def video_output(
-        enabled: bool = True,
-        fullscreen: bool = True,
-        monitor: int = 2
-    ) -> dict:
+    async def video_output(enabled: bool = True, fullscreen: bool = True, monitor: int = 2) -> dict:
         """
         Control the external video output window.
 
@@ -275,18 +245,10 @@ def setup_video_tools(mcp: FastMCP):
         else:
             await vdj.send_command("video_window 'hide'")
 
-        return {
-            "success": True,
-            "enabled": enabled,
-            "fullscreen": fullscreen,
-            "monitor": monitor
-        }
+        return {"success": True, "enabled": enabled, "fullscreen": fullscreen, "monitor": monitor}
 
     @mcp.tool()
-    async def video_master_output(
-        deck_id: int | None = None,
-        mode: str = "auto"
-    ) -> dict:
+    async def video_master_output(deck_id: int | None = None, mode: str = "auto") -> dict:
         """
         Set which deck's video appears on the master output.
 
@@ -314,18 +276,10 @@ def setup_video_tools(mcp: FastMCP):
         elif mode == "deck" and deck_id:
             await vdj.send_command(f"video_master 'deck' {deck_id}")
 
-        return {
-            "success": True,
-            "mode": mode,
-            "deck": deck_id if mode == "deck" else "auto"
-        }
+        return {"success": True, "mode": mode, "deck": deck_id if mode == "deck" else "auto"}
 
     @mcp.tool()
-    async def karaoke_mode(
-        deck_id: int,
-        enabled: bool = True,
-        remove_vocals: bool = True
-    ) -> dict:
+    async def karaoke_mode(deck_id: int, enabled: bool = True, remove_vocals: bool = True) -> dict:
         """
         Enable karaoke mode on a deck.
 
@@ -358,14 +312,11 @@ def setup_video_tools(mcp: FastMCP):
             "success": True,
             "deck": deck_id,
             "karaoke_mode": enabled,
-            "vocals_removed": remove_vocals if enabled else False
+            "vocals_removed": remove_vocals if enabled else False,
         }
 
     @mcp.tool()
-    async def video_scratch(
-        deck_id: int,
-        enabled: bool = True
-    ) -> dict:
+    async def video_scratch(deck_id: int, enabled: bool = True) -> dict:
         """
         Enable video scratching - video follows audio scratch movements.
 
@@ -386,18 +337,10 @@ def setup_video_tools(mcp: FastMCP):
         state = "on" if enabled else "off"
         await vdj.send_command(f"deck {deck_id} video_scratch {state}")
 
-        return {
-            "success": True,
-            "deck": deck_id,
-            "video_scratch": enabled
-        }
+        return {"success": True, "deck": deck_id, "video_scratch": enabled}
 
     @mcp.tool()
-    async def video_loop(
-        deck_id: int,
-        beats: float = 4,
-        enabled: bool = True
-    ) -> dict:
+    async def video_loop(deck_id: int, beats: float = 4, enabled: bool = True) -> dict:
         """
         Set a video loop on a deck.
 
@@ -421,18 +364,10 @@ def setup_video_tools(mcp: FastMCP):
         else:
             await vdj.send_command(f"deck {deck_id} video_loop_exit")
 
-        return {
-            "success": True,
-            "deck": deck_id,
-            "video_loop": enabled,
-            "beats": beats if enabled else None
-        }
+        return {"success": True, "deck": deck_id, "video_loop": enabled, "beats": beats if enabled else None}
 
     @mcp.tool()
-    async def video_tempo_sync(
-        deck_id: int,
-        enabled: bool = True
-    ) -> dict:
+    async def video_tempo_sync(deck_id: int, enabled: bool = True) -> dict:
         """
         Sync video playback speed to audio tempo.
 
@@ -453,17 +388,10 @@ def setup_video_tools(mcp: FastMCP):
         state = "on" if enabled else "off"
         await vdj.send_command(f"deck {deck_id} video_tempo_sync {state}")
 
-        return {
-            "success": True,
-            "deck": deck_id,
-            "video_tempo_sync": enabled
-        }
+        return {"success": True, "deck": deck_id, "video_tempo_sync": enabled}
 
     @mcp.tool()
-    async def load_video_to_deck(
-        deck_id: int,
-        video_path: str
-    ) -> dict:
+    async def load_video_to_deck(deck_id: int, video_path: str) -> dict:
         """
         Load a video file to a deck.
 
@@ -487,6 +415,5 @@ def setup_video_tools(mcp: FastMCP):
             "success": True,
             "deck": deck_id,
             "video_path": video_path,
-            "message": f"Video loaded to Deck {deck_id}"
+            "message": f"Video loaded to Deck {deck_id}",
         }
-

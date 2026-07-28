@@ -28,6 +28,7 @@ async def get_recording_service():
 
         from ...config import VDJConfig
         from ...services.recording_service import RecordingService
+
         config = VDJConfig.from_env()
         output_dir = os.path.join(config.data_dir, "recordings")
         _recording_service = RecordingService(output_dir=output_dir)
@@ -43,10 +44,7 @@ def setup_recording_tools(mcp: FastMCP):
     """
 
     @mcp.tool()
-    async def start_recording(
-        name: str | None = None,
-        format: str = "wav"
-    ) -> dict[str, Any]:
+    async def start_recording(name: str | None = None, format: str = "wav") -> dict[str, Any]:
         """
         Start recording the current mix.
 
@@ -62,10 +60,7 @@ def setup_recording_tools(mcp: FastMCP):
             return await service.start_recording(name, format)
         except Exception as e:
             logger.error(f"Error starting recording: {e}", exc_info=True)
-            return {
-                "status": "error",
-                "message": f"Failed to start recording: {e!s}"
-            }
+            return {"status": "error", "message": f"Failed to start recording: {e!s}"}
 
     @mcp.tool()
     async def stop_recording() -> dict[str, Any]:
@@ -80,10 +75,7 @@ def setup_recording_tools(mcp: FastMCP):
             return await service.stop_recording()
         except Exception as e:
             logger.error(f"Error stopping recording: {e}", exc_info=True)
-            return {
-                "status": "error",
-                "message": f"Failed to stop recording: {e!s}"
-            }
+            return {"status": "error", "message": f"Failed to stop recording: {e!s}"}
 
     @mcp.tool()
     async def get_recording_status(recording_id: str | None = None) -> dict[str, Any]:
@@ -101,10 +93,7 @@ def setup_recording_tools(mcp: FastMCP):
             return await service.get_recording_status(recording_id)
         except Exception as e:
             logger.error(f"Error getting recording status: {e}", exc_info=True)
-            return {
-                "status": "error",
-                "message": f"Failed to get recording status: {e!s}"
-            }
+            return {"status": "error", "message": f"Failed to get recording status: {e!s}"}
 
     @mcp.tool()
     async def list_recordings(limit: int = 10, offset: int = 0) -> dict[str, Any]:
@@ -121,7 +110,7 @@ def setup_recording_tools(mcp: FastMCP):
         try:
             service = await get_recording_service()
             # Get all recordings except the current one (if any)
-            recordings = service.recordings[offset:offset + limit]
+            recordings = service.recordings[offset : offset + limit]
 
             # If there's a current recording, include it at the beginning
             if service.status == "recording" and service.current_recording:
@@ -134,20 +123,14 @@ def setup_recording_tools(mcp: FastMCP):
                 "recordings": recordings,
                 "total": len(service.recordings) + (1 if service.status == "recording" else 0),
                 "limit": limit,
-                "offset": offset
+                "offset": offset,
             }
         except Exception as e:
             logger.error(f"Error listing recordings: {e}", exc_info=True)
-            return {
-                "status": "error",
-                "message": f"Failed to list recordings: {e!s}"
-            }
+            return {"status": "error", "message": f"Failed to list recordings: {e!s}"}
 
     @mcp.tool()
-    async def export_mix_history(
-        output_format: str = "json",
-        include_tracklist: bool = True
-    ) -> dict[str, Any]:
+    async def export_mix_history(output_format: str = "json", include_tracklist: bool = True) -> dict[str, Any]:
         """
         Export the mix history in the specified format.
 
@@ -177,10 +160,7 @@ def setup_recording_tools(mcp: FastMCP):
 
         except Exception as e:
             logger.error(f"Error exporting mix history: {e}", exc_info=True)
-            return {
-                "status": "error",
-                "message": f"Failed to export mix history: {e!s}"
-            }
+            return {"status": "error", "message": f"Failed to export mix history: {e!s}"}
 
     @mcp.tool()
     async def delete_recording(recording_id: str) -> dict[str, Any]:
@@ -197,16 +177,15 @@ def setup_recording_tools(mcp: FastMCP):
             service = await get_recording_service()
             # Find the recording
             recording = None
+            found_idx = None
             for i, rec in enumerate(service.recordings):
                 if rec["id"] == recording_id:
                     recording = rec
+                    found_idx = i
                     break
 
-            if not recording:
-                return {
-                    "status": "error",
-                    "message": f"Recording not found: {recording_id}"
-                }
+            if not recording or found_idx is None:
+                return {"status": "error", "message": f"Recording not found: {recording_id}"}
 
             # Delete the file
             try:
@@ -217,18 +196,11 @@ def setup_recording_tools(mcp: FastMCP):
                 logger.warning(f"Could not delete recording file: {e}")
 
             # Remove from recordings list
-            service.recordings.pop(i)
+            service.recordings.pop(found_idx)
             service._save_recordings()
 
-            return {
-                "status": "success",
-                "message": f"Recording deleted: {recording_id}",
-                "recording_id": recording_id
-            }
+            return {"status": "success", "message": f"Recording deleted: {recording_id}", "recording_id": recording_id}
 
         except Exception as e:
             logger.error(f"Error deleting recording: {e}", exc_info=True)
-            return {
-                "status": "error",
-                "message": f"Failed to delete recording: {e!s}"
-            }
+            return {"status": "error", "message": f"Failed to delete recording: {e!s}"}

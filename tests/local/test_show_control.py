@@ -1,7 +1,8 @@
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
 from fastmcp import FastMCP
+
 from virtualdj_mcp.tools.portmanteau.show_control import setup_show_control_portmanteau
 
 
@@ -33,15 +34,13 @@ async def test_show_control_osc_send(mock_get_vdj_client, mock_udp_client, mcp_i
             "address": "/composition/layers/1/clips/1/connect",
             "value": 1.0,
             "host": "127.0.0.1",
-            "port": 7000
-        }
+            "port": 7000,
+        },
     )
 
     assert result is not None
     mock_udp_client.assert_called_once_with("127.0.0.1", 7000)
-    mock_client_instance.send_message.assert_called_once_with(
-        "/composition/layers/1/clips/1/connect", 1.0
-    )
+    mock_client_instance.send_message.assert_called_once_with("/composition/layers/1/clips/1/connect", 1.0)
 
 
 @pytest.mark.asyncio
@@ -53,24 +52,14 @@ async def test_show_control_os2l(mock_get_vdj_client, mcp_instance):
 
     # Test OS2L Button
     result_button = await mcp_instance.call_tool(
-        "vdj_show_control",
-        arguments={
-            "operation": "os2l_button",
-            "name": "fog",
-            "enable": True
-        }
+        "vdj_show_control", arguments={"operation": "os2l_button", "name": "fog", "enable": True}
     )
     assert result_button is not None
     mock_client.send_command.assert_any_call("os2l_button 'fog' on")
 
     # Test OS2L Fader
     result_fader = await mcp_instance.call_tool(
-        "vdj_show_control",
-        arguments={
-            "operation": "os2l_fader",
-            "name": "stroberate",
-            "value": 50.0
-        }
+        "vdj_show_control", arguments={"operation": "os2l_fader", "name": "stroberate", "value": 50.0}
     )
     assert result_fader is not None
     mock_client.send_command.assert_any_call("os2l_fader 'stroberate' 50.0%")

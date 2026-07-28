@@ -56,7 +56,7 @@ _system_status = {
     "vdj_connected": False,
     "last_health_check": None,
     "tools_loaded": 0,
-    "uptime_seconds": 0
+    "uptime_seconds": 0,
 }
 
 
@@ -66,6 +66,7 @@ def update_system_status(key: str, value: Any):
     if key == "server_started" and value:
         _system_status["last_health_check"] = datetime.now().isoformat()
         import time
+
         _system_status["start_time"] = time.time()
 
 

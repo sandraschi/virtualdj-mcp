@@ -4,6 +4,7 @@ Audio Analysis Service for VirtualDJ-MCP
 This module provides audio analysis capabilities including BPM detection,
 key detection, and other audio feature extraction.
 """
+
 import asyncio
 import logging
 from dataclasses import dataclass
@@ -17,6 +18,7 @@ import soundfile as sf
 # Try to import aubio - optional dependency
 try:
     import aubio
+
     AUBIO_AVAILABLE = True
 except ImportError:
     AUBIO_AVAILABLE = False
@@ -24,14 +26,18 @@ except ImportError:
 # Configure logging
 logger = logging.getLogger(__name__)
 
+
 class KeyMode(Enum):
     """Musical key modes."""
+
     MAJOR = "major"
     MINOR = "minor"
     UNKNOWN = "unknown"
 
+
 class KeyResult:
     """Container for key detection results."""
+
     def __init__(self, key: str = "C", mode: KeyMode = KeyMode.MAJOR, confidence: float = 0.0):
         self.key = key
         self.mode = mode
@@ -42,15 +48,13 @@ class KeyResult:
 
     def to_dict(self) -> dict[str, str | float]:
         """Convert to dictionary for serialization."""
-        return {
-            'key': self.key,
-            'mode': self.mode.value,
-            'confidence': self.confidence
-        }
+        return {"key": self.key, "mode": self.mode.value, "confidence": self.confidence}
+
 
 @dataclass
 class AudioFeatures:
     """Container for audio analysis features."""
+
     bpm: float = 0.0
     key: KeyResult = None
     energy: float = 0.0
@@ -73,17 +77,18 @@ class AudioFeatures:
     def to_dict(self) -> dict:
         """Convert to dictionary for serialization."""
         return {
-            'bpm': self.bpm,
-            'key': self.key.to_dict(),
-            'energy': self.energy,
-            'danceability': self.danceability,
-            'loudness': self.loudness,
-            'spectral_centroid': self.spectral_centroid,
-            'zero_crossing_rate': self.zero_crossing_rate,
-            'onset_strength': self.onset_strength,
-            'beats': self.beats,
-            'segments': self.segments
+            "bpm": self.bpm,
+            "key": self.key.to_dict(),
+            "energy": self.energy,
+            "danceability": self.danceability,
+            "loudness": self.loudness,
+            "spectral_centroid": self.spectral_centroid,
+            "zero_crossing_rate": self.zero_crossing_rate,
+            "onset_strength": self.onset_strength,
+            "beats": self.beats,
+            "segments": self.segments,
         }
+
 
 class AudioAnalyzer:
     """Handles audio analysis tasks."""
@@ -92,22 +97,22 @@ class AudioAnalyzer:
     A4_FREQ = 440.0
 
     # Note names for key detection
-    NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+    NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
     # Camelot wheel mapping for harmonic mixing
     CAMELOT_WHEEL = {
-        'A': {'1A': 'B', '1B': 'A'},
-        'B': {'1A': 'A', '1B': 'B', '2A': 'A#', '2B': 'C'},
-        'C': {'1A': 'A#', '1B': 'C', '2A': 'B', '2B': 'C#'},
-        'C#': {'1A': 'B', '1B': 'C#', '2A': 'C', '2B': 'D'},
-        'D': {'1A': 'C#', '1B': 'D', '2A': 'C#', '2B': 'D#'},
-        'D#': {'1A': 'D', '1B': 'D#', '2A': 'D', '2B': 'E'},
-        'E': {'1A': 'D#', '1B': 'E', '2A': 'D#', '2B': 'F#'},
-        'F': {'1A': 'E', '1B': 'F#', '2A': 'F', '2B': 'G'},
-        'F#': {'1A': 'F', '1B': 'F#', '2A': 'F#', '2B': 'G#'},
-        'G': {'1A': 'F#', '1B': 'G', '2A': 'G', '2B': 'A'},
-        'G#': {'1A': 'G', '1B': 'G#', '2A': 'G#', '2B': 'A#'},
-        'A#': {'1A': 'A', '1B': 'A#', '2A': 'A#', '2B': 'C'}
+        "A": {"1A": "B", "1B": "A"},
+        "B": {"1A": "A", "1B": "B", "2A": "A#", "2B": "C"},
+        "C": {"1A": "A#", "1B": "C", "2A": "B", "2B": "C#"},
+        "C#": {"1A": "B", "1B": "C#", "2A": "C", "2B": "D"},
+        "D": {"1A": "C#", "1B": "D", "2A": "C#", "2B": "D#"},
+        "D#": {"1A": "D", "1B": "D#", "2A": "D", "2B": "E"},
+        "E": {"1A": "D#", "1B": "E", "2A": "D#", "2B": "F#"},
+        "F": {"1A": "E", "1B": "F#", "2A": "F", "2B": "G"},
+        "F#": {"1A": "F", "1B": "F#", "2A": "F#", "2B": "G#"},
+        "G": {"1A": "F#", "1B": "G", "2A": "G", "2B": "A"},
+        "G#": {"1A": "G", "1B": "G#", "2A": "G#", "2B": "A#"},
+        "A#": {"1A": "A", "1B": "A#", "2A": "A#", "2B": "C"},
     }
 
     def __init__(self, sample_rate: int = 44100, hop_size: int = 1024):
@@ -187,7 +192,7 @@ class AudioAnalyzer:
             self._analyze_spectral_centroid(y, sr),
             self._analyze_zero_crossing_rate(y, sr),
             self._analyze_onsets(y, sr),
-            self._detect_beats(y, sr)
+            self._detect_beats(y, sr),
         ]
 
         # Run all analyses concurrently
@@ -199,27 +204,23 @@ class AudioAnalyzer:
                 logger.error(f"Error in audio analysis: {result!s}")
                 continue
 
-            if isinstance(result, tuple) and result[0] == 'bpm':
+            if isinstance(result, tuple) and result[0] == "bpm":
                 features.bpm = result[1]
             elif isinstance(result, KeyResult):
                 features.key = result
-            elif isinstance(result, tuple) and result[0] == 'energy':
+            elif isinstance(result, tuple) and result[0] == "energy":
                 features.energy = result[1]
-            elif isinstance(result, tuple) and result[0] == 'spectral_centroid':
+            elif isinstance(result, tuple) and result[0] == "spectral_centroid":
                 features.spectral_centroid = result[1]
-            elif isinstance(result, tuple) and result[0] == 'zero_crossing_rate':
+            elif isinstance(result, tuple) and result[0] == "zero_crossing_rate":
                 features.zero_crossing_rate = result[1]
-            elif isinstance(result, tuple) and result[0] == 'onsets':
+            elif isinstance(result, tuple) and result[0] == "onsets":
                 features.onset_strength = result[1]
             elif isinstance(result, list):
                 features.beats = result
 
         # Calculate danceability (simplified)
-        features.danceability = self._calculate_danceability(
-            features.bpm,
-            features.energy,
-            features.onset_strength
-        )
+        features.danceability = self._calculate_danceability(features.bpm, features.energy, features.onset_strength)
 
         logger.info(f"Completed analysis of {file_path}")
         return features
@@ -234,7 +235,7 @@ class AudioAnalyzer:
                 self._tempo.reset()
                 frames = range(0, len(y), self.hop_size)
                 for i in frames:
-                    samples = y[i:i+self.hop_size]
+                    samples = y[i : i + self.hop_size]
                     if len(samples) < self.hop_size:
                         break
                     self._tempo(samples)
@@ -246,11 +247,11 @@ class AudioAnalyzer:
                 onset_env = librosa.onset.onset_strength(y=y, sr=sr)
                 bpm = float(librosa.beat.tempo(onset_envelope=onset_env, sr=sr)[0])
 
-            return 'bpm', max(60.0, min(200.0, bpm))  # Clamp to reasonable range
+            return "bpm", max(60.0, min(200.0, bpm))  # Clamp to reasonable range
 
         except Exception as e:
             logger.warning(f"BPM detection failed: {e!s}")
-            return 'bpm', 120.0  # Default BPM
+            return "bpm", 120.0  # Default BPM
 
     async def _detect_key(self, y: np.ndarray, sr: int) -> KeyResult:
         """Detect the musical key of the audio using chroma features."""
@@ -297,10 +298,10 @@ class AudioAnalyzer:
             energy = np.sqrt(np.mean(y**2))
             # Convert to dB
             energy_db = 10 * np.log10(energy + 1e-10)
-            return 'energy', float(energy_db)
+            return "energy", float(energy_db)
         except Exception as e:
             logger.warning(f"Energy calculation failed: {e!s}")
-            return 'energy', 0.0
+            return "energy", 0.0
 
     async def _analyze_spectral_centroid(self, y: np.ndarray, sr: int) -> tuple[str, float]:
         """Calculate the spectral centroid (brightness) of the audio."""
@@ -313,20 +314,20 @@ class AudioAnalyzer:
             )
             # Normalize by Nyquist frequency
             normalized_centroid = float(centroid / (sr / 2))
-            return 'spectral_centroid', normalized_centroid
+            return "spectral_centroid", normalized_centroid
         except Exception as e:
             logger.warning(f"Spectral centroid calculation failed: {e!s}")
-            return 'spectral_centroid', 0.0
+            return "spectral_centroid", 0.0
 
     async def _analyze_zero_crossing_rate(self, y: np.ndarray, sr: int) -> tuple[str, float]:
         """Calculate the zero-crossing rate of the audio."""
         try:
             # Calculate zero-crossing rate
             zcr = float(np.mean(0.5 * np.abs(np.diff(np.sign(y)))))
-            return 'zero_crossing_rate', zcr
+            return "zero_crossing_rate", zcr
         except Exception as e:
             logger.warning(f"Zero-crossing rate calculation failed: {e!s}")
-            return 'zero_crossing_rate', 0.0
+            return "zero_crossing_rate", 0.0
 
     async def _analyze_onsets(self, y: np.ndarray, sr: int) -> tuple[str, float]:
         """Analyze the onset strength of the audio."""
@@ -334,10 +335,10 @@ class AudioAnalyzer:
             # Calculate onset envelope
             onset_env = librosa.onset.onset_strength(y=y, sr=sr)
             # Return mean onset strength
-            return 'onsets', float(np.mean(onset_env))
+            return "onsets", float(np.mean(onset_env))
         except Exception as e:
             logger.warning(f"Onset analysis failed: {e!s}")
-            return 'onsets', 0.0
+            return "onsets", 0.0
 
     async def _detect_beats(self, y: np.ndarray, sr: int) -> list[float]:
         """Detect beat positions in the audio."""
@@ -384,12 +385,12 @@ class AudioAnalyzer:
             List of compatible keys
         """
         try:
-            if not key or not mode or mode not in ['major', 'minor']:
+            if not key or not mode or mode not in ["major", "minor"]:
                 return []
 
             # Normalize key (remove 'b' and '#' for lookup)
             base_key = key[0].upper()
-            if len(key) > 1 and key[1] in ['#', 'b']:
+            if len(key) > 1 and key[1] in ["#", "b"]:
                 base_key += key[1]
 
             if base_key not in self.CAMELOT_WHEEL:
@@ -402,8 +403,7 @@ class AudioAnalyzer:
             compatible = []
             for pos, comp_key in wheel_pos.items():
                 # Skip if the position doesn't match our mode
-                if (mode == 'major' and pos.endswith('B')) or \
-                   (mode == 'minor' and pos.endswith('A')):
+                if (mode == "major" and pos.endswith("B")) or (mode == "minor" and pos.endswith("A")):
                     continue
                 compatible.append(comp_key)
 
@@ -412,6 +412,7 @@ class AudioAnalyzer:
         except Exception as e:
             logger.warning(f"Error finding harmonic matches: {e!s}")
             return []
+
 
 # Example usage
 async def example_usage():
@@ -446,16 +447,15 @@ async def example_usage():
 
         # Get harmonic matches
         if features.key.key and features.key.mode != KeyMode.UNKNOWN:
-            matches = analyzer.get_harmonic_matches(
-                features.key.key,
-                features.key.mode.value
-            )
+            matches = analyzer.get_harmonic_matches(features.key.key, features.key.mode.value)
             if matches:
                 print(f"\nHarmonically compatible keys: {', '.join(matches)}")
 
     except Exception as e:
         print(f"Error during analysis: {e!s}")
 
+
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(example_usage())

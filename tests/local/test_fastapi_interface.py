@@ -87,7 +87,7 @@ async def test_fastapi_endpoints():
             "/api/v1/deck/{deck_id}/play_pause",
             "/api/v1/deck/{deck_id}/load",
             "/api/v1/library/search",
-            "/api/v1/audio/analyze"
+            "/api/v1/audio/analyze",
         ]
 
         for endpoint in expected_endpoints:
@@ -124,8 +124,8 @@ async def test_cors_configuration():
             headers={
                 "Origin": "http://localhost:3000",
                 "Access-Control-Request-Method": "GET",
-                "Access-Control-Request-Headers": "Content-Type"
-            }
+                "Access-Control-Request-Headers": "Content-Type",
+            },
         )
 
         # Check CORS headers
@@ -150,7 +150,7 @@ async def generate_postman_collection():
         "info": {
             "name": "VirtualDJ-MCP API",
             "description": "REST API endpoints for VirtualDJ automation",
-            "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+            "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         },
         "item": [
             {
@@ -158,12 +158,8 @@ async def generate_postman_collection():
                 "request": {
                     "method": "GET",
                     "header": [],
-                    "url": {
-                        "raw": "{{base_url}}/health",
-                        "host": ["{{base_url}}"],
-                        "path": ["health"]
-                    }
-                }
+                    "url": {"raw": "{{base_url}}/health", "host": ["{{base_url}}"], "path": ["health"]},
+                },
             },
             {
                 "name": "Get Deck Status",
@@ -173,47 +169,30 @@ async def generate_postman_collection():
                     "url": {
                         "raw": "{{base_url}}/api/v1/deck/1/status",
                         "host": ["{{base_url}}"],
-                        "path": ["api", "v1", "deck", "1", "status"]
-                    }
-                }
+                        "path": ["api", "v1", "deck", "1", "status"],
+                    },
+                },
             },
             {
                 "name": "Search Library",
                 "request": {
                     "method": "POST",
-                    "header": [
-                        {
-                            "key": "Content-Type",
-                            "value": "application/json"
-                        }
-                    ],
-                    "body": {
-                        "mode": "raw",
-                        "raw": json.dumps({
-                            "query": "house",
-                            "limit": 10
-                        })
-                    },
+                    "header": [{"key": "Content-Type", "value": "application/json"}],
+                    "body": {"mode": "raw", "raw": json.dumps({"query": "house", "limit": 10})},
                     "url": {
                         "raw": "{{base_url}}/api/v1/library/search",
                         "host": ["{{base_url}}"],
-                        "path": ["api", "v1", "library", "search"]
-                    }
-                }
-            }
+                        "path": ["api", "v1", "library", "search"],
+                    },
+                },
+            },
         ],
-        "variable": [
-            {
-                "key": "base_url",
-                "value": "http://localhost:8000",
-                "type": "string"
-            }
-        ]
+        "variable": [{"key": "base_url", "value": "http://localhost:8000", "type": "string"}],
     }
 
     # Save collection to file
     output_path = Path(__file__).parent / "VirtualDJ-MCP_API.postman_collection.json"
-    with open(output_path, 'w') as f:
+    with open(output_path, "w") as f:
         json.dump(collection, f, indent=2)
 
     print(f"✅ Postman collection generated: {output_path}")
@@ -248,5 +227,3 @@ async def main():
 if __name__ == "__main__":
     exit_code = asyncio.run(main())
     sys.exit(exit_code)
-
-

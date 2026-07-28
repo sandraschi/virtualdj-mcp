@@ -5,7 +5,6 @@ Provides tools for managing VirtualDJ skins, panels, and interface customization
 Uses HTTP Network Control Plugin API.
 """
 
-
 from fastmcp import FastMCP
 from rich.console import Console
 
@@ -13,7 +12,7 @@ from ..shared.dependencies import get_vdj_client
 from .models import SkinInfo, SkinOperationResult
 
 # Initialize console for logging
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 
 def setup_skin_tools(mcp: FastMCP):
@@ -67,12 +66,8 @@ def setup_skin_tools(mcp: FastMCP):
             console.print(f"[red]Error in get_skin_info: {e}[/red]")
             return SkinInfo()
 
-
     @mcp.tool()
-    async def load_skin(
-        skin_name: str,
-        variation: str | None = None
-    ) -> SkinOperationResult:
+    async def load_skin(skin_name: str, variation: str | None = None) -> SkinOperationResult:
         """
         Load a VirtualDJ skin or skin variation.
 
@@ -113,21 +108,16 @@ def setup_skin_tools(mcp: FastMCP):
                     return SkinOperationResult(
                         success=True,
                         message=f"Successfully loaded skin: {skin_name}" + (f" ({variation})" if variation else ""),
-                        skin_info=skin_info
+                        skin_info=skin_info,
                     )
                 else:
                     return SkinOperationResult(
-                        success=False,
-                        message=f"Failed to load skin: {skin_name}. Skin may not exist."
+                        success=False, message=f"Failed to load skin: {skin_name}. Skin may not exist."
                     )
 
         except Exception as e:
             console.print(f"[red]Error in load_skin: {e}[/red]")
-            return SkinOperationResult(
-                success=False,
-                message=f"Error loading skin: {e!s}"
-            )
-
+            return SkinOperationResult(success=False, message=f"Error loading skin: {e!s}")
 
     @mcp.tool()
     async def switch_skin_variation(variation: str) -> SkinOperationResult:
@@ -151,29 +141,20 @@ def setup_skin_tools(mcp: FastMCP):
                     console.print(f"[green]Switched to skin variation: {variation}[/green]")
                     skin_info = await get_skin_info()
                     return SkinOperationResult(
-                        success=True,
-                        message=f"Switched to variation: {variation}",
-                        skin_info=skin_info
+                        success=True, message=f"Switched to variation: {variation}", skin_info=skin_info
                     )
                 else:
                     return SkinOperationResult(
                         success=False,
-                        message=f"Failed to switch variation. '{variation}' may not exist in current skin."
+                        message=f"Failed to switch variation. '{variation}' may not exist in current skin.",
                     )
 
         except Exception as e:
             console.print(f"[red]Error in switch_skin_variation: {e}[/red]")
-            return SkinOperationResult(
-                success=False,
-                message=f"Error switching variation: {e!s}"
-            )
-
+            return SkinOperationResult(success=False, message=f"Error switching variation: {e!s}")
 
     @mcp.tool()
-    async def set_skin_panel(
-        panel_name: str,
-        visible: bool = True
-    ) -> SkinOperationResult:
+    async def set_skin_panel(panel_name: str, visible: bool = True) -> SkinOperationResult:
         """
         Show or hide a panel on the VirtualDJ skin.
 
@@ -200,29 +181,20 @@ def setup_skin_tools(mcp: FastMCP):
                 if result["status"] == "success" and result.get("result", "").lower() == "true":
                     action = "shown" if visible else "hidden"
                     console.print(f"[green]Panel '{panel_name}' {action}[/green]")
-                    return SkinOperationResult(
-                        success=True,
-                        message=f"Panel '{panel_name}' {action}"
-                    )
+                    return SkinOperationResult(success=True, message=f"Panel '{panel_name}' {action}")
                 else:
                     return SkinOperationResult(
                         success=False,
-                        message=f"Failed to modify panel '{panel_name}'. Panel may not exist in current skin."
+                        message=f"Failed to modify panel '{panel_name}'. Panel may not exist in current skin.",
                     )
 
         except Exception as e:
             console.print(f"[red]Error in set_skin_panel: {e}[/red]")
-            return SkinOperationResult(
-                success=False,
-                message=f"Error modifying panel: {e!s}"
-            )
-
+            return SkinOperationResult(success=False, message=f"Error modifying panel: {e!s}")
 
     @mcp.tool()
     async def set_skin_panel_group(
-        group_name: str,
-        panel_name: str | None = None,
-        index: int | None = None
+        group_name: str, panel_name: str | None = None, index: int | None = None
     ) -> SkinOperationResult:
         """
         Switch which panel is shown in a skin panel group.
@@ -248,39 +220,23 @@ def setup_skin_tools(mcp: FastMCP):
                 elif index is not None:
                     cmd = f"skin_panelgroup '{group_name}' {index}"
                 else:
-                    return SkinOperationResult(
-                        success=False,
-                        message="Either panel_name or index must be provided"
-                    )
+                    return SkinOperationResult(success=False, message="Either panel_name or index must be provided")
 
                 result = await client.send_command(cmd)
 
                 if result["status"] == "success" and result.get("result", "").lower() == "true":
                     target = panel_name if panel_name else f"index {index}"
                     console.print(f"[green]Panel group '{group_name}' switched to {target}[/green]")
-                    return SkinOperationResult(
-                        success=True,
-                        message=f"Panel group '{group_name}' switched to {target}"
-                    )
+                    return SkinOperationResult(success=True, message=f"Panel group '{group_name}' switched to {target}")
                 else:
-                    return SkinOperationResult(
-                        success=False,
-                        message=f"Failed to switch panel group '{group_name}'"
-                    )
+                    return SkinOperationResult(success=False, message=f"Failed to switch panel group '{group_name}'")
 
         except Exception as e:
             console.print(f"[red]Error in set_skin_panel_group: {e}[/red]")
-            return SkinOperationResult(
-                success=False,
-                message=f"Error switching panel group: {e!s}"
-            )
-
+            return SkinOperationResult(success=False, message=f"Error switching panel group: {e!s}")
 
     @mcp.tool()
-    async def toggle_skin_window(
-        window_name: str,
-        visible: bool | None = None
-    ) -> SkinOperationResult:
+    async def toggle_skin_window(window_name: str, visible: bool | None = None) -> SkinOperationResult:
         """
         Show or hide a window on skins with multiple windows.
 
@@ -308,20 +264,13 @@ def setup_skin_tools(mcp: FastMCP):
 
                 if result["status"] == "success" and result.get("result", "").lower() == "true":
                     console.print(f"[green]Window '{window_name}' toggled[/green]")
-                    return SkinOperationResult(
-                        success=True,
-                        message=f"Window '{window_name}' toggled successfully"
-                    )
+                    return SkinOperationResult(success=True, message=f"Window '{window_name}' toggled successfully")
                 else:
                     return SkinOperationResult(
                         success=False,
-                        message=f"Failed to toggle window '{window_name}'. Window may not exist or skin doesn't support multiple windows."
+                        message=f"Failed to toggle window '{window_name}'. Window may not exist or skin doesn't support multiple windows.",
                     )
 
         except Exception as e:
             console.print(f"[red]Error in toggle_skin_window: {e}[/red]")
-            return SkinOperationResult(
-                success=False,
-                message=f"Error toggling window: {e!s}"
-            )
-
+            return SkinOperationResult(success=False, message=f"Error toggling window: {e!s}")

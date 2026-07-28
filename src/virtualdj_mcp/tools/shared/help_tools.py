@@ -3,6 +3,7 @@ Help and Status Tools for VirtualDJ-MCP
 
 Provides multilevel help system and system status monitoring.
 """
+
 import time
 from datetime import datetime
 from typing import Any
@@ -13,7 +14,7 @@ from rich.console import Console
 from .dependencies import get_vdj_client
 
 # Initialize console for logging
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 
 def setup_help_tools(mcp: FastMCP):
@@ -97,10 +98,7 @@ def setup_help_tools(mcp: FastMCP):
 
         except Exception as e:
             console.print(f"[red]Error getting system status: {e}[/red]")
-            return {
-                "error": str(e),
-                "timestamp": datetime.now().isoformat()
-            }
+            return {"error": str(e), "timestamp": datetime.now().isoformat()}
 
 
 def _get_overview_help() -> str:
@@ -210,7 +208,6 @@ def _get_category_help(category: str) -> str:
 • Start playing: `play_pause_deck(1, "play")`
 • Check status: `get_deck_status(1)`
 """,
-
         "mixing": """
 [fader]️ **Mixing Tools**
 
@@ -236,7 +233,6 @@ def _get_category_help(category: str) -> str:
 • Sync decks: `auto_sync_decks(1, 2)`
 • Kill bass: `set_eq_band(1, "low", 0, True)`
 """,
-
         "automation": """
 🤖 **Automation Tools**
 
@@ -259,7 +255,6 @@ def _get_category_help(category: str) -> str:
 • Get suggestions: `suggest_next_track("House", "track123", 5)`
 • Start recording: `start_recording("MyMix", "mp3")`
 """,
-
         "performance": """
 📊 **Performance Monitoring Tools**
 
@@ -287,7 +282,6 @@ def _get_category_help(category: str) -> str:
 • Get advice: `get_recommendations()`
 • Analyze trends: `analyze_trends(24, "bpm")`
 """,
-
         "library": """
 🎵 **Library Management Tools**
 
@@ -305,7 +299,6 @@ def _get_category_help(category: str) -> str:
 • Search tracks: `search_tracks("Techno", {"bpm_min": 128, "bpm_max": 135})`
 • Get info: `get_track_info("track123")`
 """,
-
         "system": """
 🔧 **System Tools**
 
@@ -321,7 +314,7 @@ def _get_category_help(category: str) -> str:
 **Examples:**
 • Get help: `show_help("categories", "deck_control")`
 • System status: `get_system_status()`
-"""
+""",
     }
 
     return category_helps.get(category, f"Unknown category: {category}")
@@ -347,7 +340,6 @@ Control playback on a specific deck.
 • `play_pause_deck(2, "pause")` - Pause deck 2
 • `play_pause_deck(1, "toggle")` - Toggle deck 1 playback
 """,
-
         "load_track_to_deck": """
 🎵 **load_track_to_deck(deck_id: int, track_path: str) -> DeckStatus**
 
@@ -364,7 +356,6 @@ Load an audio track to a specific deck.
 • `load_track_to_deck(1, "C:/Music/techno/track.mp3")`
 • `load_track_to_deck(2, "C:/Users/name/Music/house/song.wav")`
 """,
-
         "get_recommendations": """
 📊 **get_recommendations() -> Dict[str, Any]**
 
@@ -382,7 +373,7 @@ Get AI-powered recommendations for improving DJ performance.
 result = get_recommendations()
 # Returns actionable DJ improvement tips
 ```
-"""
+""",
     }
 
     return tool_helps.get(tool_name, f"Detailed help for '{tool_name}' not available yet.")
@@ -417,7 +408,6 @@ await load_track_to_deck(2, "C:/Music/track2.mp3")
 await play_pause_deck(2, "play")
 ```
 """,
-
         "load_track_to_deck": """
 🎵 **load_track_to_deck Examples:**
 
@@ -445,7 +435,6 @@ if status.track.title:
     print("Track loaded successfully!")
 ```
 """,
-
         "get_recommendations": """
 📊 **get_recommendations Examples:**
 
@@ -482,10 +471,7 @@ if advice['energy_suggestions']:
   }]
 }
 ```
-"""
+""",
     }
 
     return examples.get(tool_name, f"Examples for '{tool_name}' not available yet.")
-
-
-

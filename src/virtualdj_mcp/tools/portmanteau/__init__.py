@@ -34,8 +34,8 @@ from .mixer import setup_mixer_portmanteau
 from .performance import setup_performance_portmanteau
 from .plex import setup_plex_portmanteau
 from .recording import setup_recording_portmanteau
-from .skin import setup_skin_portmanteau
 from .show_control import setup_show_control_portmanteau
+from .skin import setup_skin_portmanteau
 from .stems import setup_stems_portmanteau
 from .system import setup_system_portmanteau
 from .video import setup_video_portmanteau
@@ -68,10 +68,9 @@ __all__ = [
     "setup_performance_portmanteau",
     "setup_plex_portmanteau",
     "setup_recording_portmanteau",
-    "setup_skin_portmanteau",
     "setup_show_control_portmanteau",
+    "setup_skin_portmanteau",
     "setup_stems_portmanteau",
     "setup_system_portmanteau",
     "setup_video_portmanteau",
 ]
-

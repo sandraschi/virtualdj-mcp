@@ -11,7 +11,7 @@ from typing import Any, Literal
 from fastmcp import FastMCP
 from rich.console import Console
 
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 
 def setup_performance_portmanteau(mcp: FastMCP):
@@ -25,7 +25,7 @@ def setup_performance_portmanteau(mcp: FastMCP):
         hours: int = 24,
         metric: str = "energy",
         export_format: str = "json",
-        filename: str | None = None
+        filename: str | None = None,
     ) -> dict[str, Any]:
         """
         Performance analytics for DJ sessions.
@@ -71,7 +71,7 @@ def setup_performance_portmanteau(mcp: FastMCP):
                     "beat_match_quality": 0.88,
                     "crowd_energy": 0.75,
                     "transition_smoothness": 0.92,
-                    "timestamp": timestamp
+                    "timestamp": timestamp,
                 }
 
             elif operation == "stats":
@@ -86,7 +86,7 @@ def setup_performance_portmanteau(mcp: FastMCP):
                     "energy_trend": [],
                     "crowd_response": {},
                     "top_genres": [],
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now().isoformat(),
                 }
 
             elif operation == "trends":
@@ -103,7 +103,7 @@ def setup_performance_portmanteau(mcp: FastMCP):
                     "average_value": 0.75,
                     "peak_value": 0.92,
                     "data_points": [],
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now().isoformat(),
                 }
 
             elif operation == "recommendations":
@@ -114,7 +114,7 @@ def setup_performance_portmanteau(mcp: FastMCP):
                     "energy_suggestions": ["Current energy is stable - good for maintaining crowd"],
                     "transition_tips": ["Use longer crossfades for smoother genre transitions"],
                     "crowd_engagement": ["Try adding vocal tracks to increase sing-along moments"],
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now().isoformat(),
                 }
 
             elif operation == "export":
@@ -132,7 +132,7 @@ def setup_performance_portmanteau(mcp: FastMCP):
                     "file_path": f"{filename}.{export_format}",
                     "record_count": 0,
                     "file_size": 0,
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now().isoformat(),
                 }
 
             else:
@@ -141,4 +141,3 @@ def setup_performance_portmanteau(mcp: FastMCP):
         except Exception as e:
             console.print(f"[red]Error in vdj_performance: {e}[/red]")
             return {"success": False, "error": str(e)}
-

@@ -13,7 +13,7 @@ from rich.console import Console
 from ..shared.dependencies import get_vdj_client
 from ..shared.exceptions import VDJError
 
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 
 def setup_show_control_portmanteau(mcp: FastMCP):
@@ -93,7 +93,7 @@ def setup_show_control_portmanteau(mcp: FastMCP):
                         "host": host,
                         "port": port,
                         "address": address,
-                        "value": val
+                        "value": val,
                     }
                 except Exception as exc:
                     return {"success": False, "error": f"Failed to transmit OSC packet: {exc}"}

@@ -14,7 +14,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 
-
 async def test_mcp_tools():
     """Test MCP tool registration and basic functionality"""
     print("🧪 Testing VirtualDJ-MCP Interface")
@@ -62,11 +61,6 @@ async def test_stdio_protocol():
     print("\n4. Testing stdio protocol...")
     try:
         # Test basic JSON-RPC communication
-        test_request = {
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "tools/list"
-        }
 
         # In a real test, we'd send this via stdio and check the response
         # For now, just verify the format

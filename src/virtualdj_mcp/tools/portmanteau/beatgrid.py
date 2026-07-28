@@ -13,7 +13,7 @@ from rich.console import Console
 from ..shared.dependencies import get_vdj_client
 from ..shared.exceptions import VDJError
 
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 
 def setup_beatgrid_portmanteau(mcp: FastMCP):
@@ -142,7 +142,13 @@ def setup_beatgrid_portmanteau(mcp: FastMCP):
                     result = await client.send_command(cmd)
                     if result["status"] == "success":
                         console.print(f"[green]Deck {deck_id}: Pitch bend {direction} {amount}%[/green]")
-                        return {"success": True, "operation": "pitch_bend", "deck_id": deck_id, "direction": direction, "amount": amount}
+                        return {
+                            "success": True,
+                            "operation": "pitch_bend",
+                            "deck_id": deck_id,
+                            "direction": direction,
+                            "amount": amount,
+                        }
                     else:
                         raise VDJError(f"Failed to pitch bend: {result.get('error')}")
 

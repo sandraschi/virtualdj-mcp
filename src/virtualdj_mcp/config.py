@@ -15,8 +15,7 @@ class VDJConfig(BaseModel):
 
     # VirtualDJ Application Settings
     virtualdj_path: str = Field(
-        default="C:/Program Files/VirtualDJ/virtualdj.exe",
-        description="Path to VirtualDJ executable"
+        default="C:/Program Files/VirtualDJ/virtualdj.exe", description="Path to VirtualDJ executable"
     )
 
     # HTTP Network Control Plugin Settings
@@ -38,10 +37,7 @@ class VDJConfig(BaseModel):
     cli_timeout: int = Field(default=30, description="CLI command timeout in seconds")
 
     # Library Settings
-    music_library_path: str | None = Field(
-        default=None,
-        description="Path to music library root directory"
-    )
+    music_library_path: str | None = Field(default=None, description="Path to music library root directory")
     auto_scan_library: bool = Field(default=True, description="Automatically scan library on startup")
 
     # Audio Settings
@@ -59,10 +55,7 @@ class VDJConfig(BaseModel):
     update_interval: float = Field(default=0.5, description="Status update interval in seconds")
 
     # Recording Settings
-    recording_path: str = Field(
-        default="./recordings",
-        description="Default path for mix recordings"
-    )
+    recording_path: str = Field(default="./recordings", description="Default path for mix recordings")
     recording_format: str = Field(default="mp3", description="Default recording format")
     recording_quality: str = Field(default="320", description="Recording quality (kbps)")
 
@@ -83,9 +76,7 @@ class VDJConfig(BaseModel):
         try:
             osc_port = int(str(raw_osc).strip(), 10)
         except ValueError as e:
-            raise ValueError(
-                "VDJ_OSC_PORT must be an integer UDP port in the range 1–65535."
-            ) from e
+            raise ValueError("VDJ_OSC_PORT must be an integer UDP port in the range 1–65535.") from e
 
         return cls(
             virtualdj_path=os.getenv("VDJ_PATH", cls.model_fields["virtualdj_path"].default),
@@ -112,4 +103,3 @@ class VDJConfig(BaseModel):
         Path(self.recording_path).mkdir(parents=True, exist_ok=True)
 
         return True
-

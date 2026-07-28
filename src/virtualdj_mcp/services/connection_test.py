@@ -46,9 +46,7 @@ async def run_connection_tests(config: VDJConfig) -> dict:
             else:
                 http_message = f"HTTP {response.status_code}: {response.text[:200]}"
     except httpx.ConnectError:
-        http_message = (
-            "Cannot connect - is VirtualDJ running and the Network Control Plugin enabled?"
-        )
+        http_message = "Cannot connect - is VirtualDJ running and the Network Control Plugin enabled?"
     except httpx.TimeoutException:
         http_message = "Connection timed out."
     except Exception as e:

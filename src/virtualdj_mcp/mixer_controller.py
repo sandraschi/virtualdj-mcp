@@ -17,14 +17,18 @@ logger = logging.getLogger(__name__)
 # Initialize console for logging
 console = Console()
 
+
 class EQBand(Enum):
     """EQ frequency bands"""
+
     LOW = "low"
     MID = "mid"
     HIGH = "high"
 
+
 class EffectType(Enum):
     """Available effect types"""
+
     FILTER = "filter"
     FLANGER = "flanger"
     ECHO = "echo"
@@ -34,11 +38,13 @@ class EffectType(Enum):
     ROLL = "roll"
     TRANSFORM = "transform"
 
+
 @dataclass
 class EQSettings:
     """EQ settings for a single deck or master"""
+
     low: float = 0.0  # -24dB to +12dB
-    mid: float = 0.0   # -24dB to +12dB
+    mid: float = 0.0  # -24dB to +12dB
     high: float = 0.0  # -24dB to +12dB
     kill_low: bool = False
     kill_mid: bool = False
@@ -52,17 +58,19 @@ class EQSettings:
             "high": self.high,
             "kill_low": self.kill_low,
             "kill_mid": self.kill_mid,
-            "kill_high": self.kill_high
+            "kill_high": self.kill_high,
         }
+
 
 @dataclass
 class EffectSettings:
     """Effect settings for a single effect"""
+
     effect_type: EffectType
     enabled: bool = False
     wet_dry: float = 50.0  # 0-100%
-    param1: float = 0.0     # Effect-specific parameter 1
-    param2: float = 0.0     # Effect-specific parameter 2
+    param1: float = 0.0  # Effect-specific parameter 1
+    param2: float = 0.0  # Effect-specific parameter 2
 
     def to_dict(self) -> dict[str, str | float | bool]:
         """Convert to dictionary for serialization"""
@@ -71,8 +79,9 @@ class EffectSettings:
             "enabled": self.enabled,
             "wet_dry": self.wet_dry,
             "param1": self.param1,
-            "param2": self.param2
+            "param2": self.param2,
         }
+
 
 class MixerController:
     """
@@ -102,7 +111,7 @@ class MixerController:
             self.effects[deck_id] = [
                 EffectSettings(EffectType.FILTER),
                 EffectSettings(EffectType.FLANGER),
-                EffectSettings(EffectType.ECHO)
+                EffectSettings(EffectType.ECHO),
             ]
 
     async def set_eq_band(self, deck_id: int, band: EQBand, value: float) -> bool:
@@ -202,9 +211,16 @@ class MixerController:
             logger.error(f"Error resetting EQ: {e}")
             return False
 
-    async def set_effect(self, deck_id: int, effect_slot: int, effect_type: EffectType,
-                        enabled: bool = True, wet_dry: float = 50.0,
-                        param1: float = 0.0, param2: float = 0.0) -> bool:
+    async def set_effect(
+        self,
+        deck_id: int,
+        effect_slot: int,
+        effect_type: EffectType,
+        enabled: bool = True,
+        wet_dry: float = 50.0,
+        param1: float = 0.0,
+        param2: float = 0.0,
+    ) -> bool:
         """Configure an effect for a specific deck.
 
         Args:
@@ -227,7 +243,7 @@ class MixerController:
                     enabled=enabled,
                     wet_dry=max(0.0, min(100.0, wet_dry)),
                     param1=param1,
-                    param2=param2
+                    param2=param2,
                 )
 
                 # Send command to VirtualDJ
@@ -369,10 +385,7 @@ class MixerController:
             Dict containing the mixer state
         """
         eq_settings = self.eq_settings.get(deck_id, EQSettings())
-        effect_states = [
-            effect.to_dict()
-            for effect in self.effects.get(deck_id, [])
-        ]
+        effect_states = [effect.to_dict() for effect in self.effects.get(deck_id, [])]
 
         return {
             "deck_id": deck_id,
@@ -381,5 +394,5 @@ class MixerController:
             "crossfader": self.crossfader_curve,
             "master_volume": self.master_volume,
             "headphone_volume": self.headphone_volume,
-            "headphone_mix": self.headphone_mix
+            "headphone_mix": self.headphone_mix,
         }

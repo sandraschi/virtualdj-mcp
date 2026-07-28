@@ -14,6 +14,7 @@ import psutil
 
 class VDJError(Exception):
     """VirtualDJ operation error"""
+
     pass
 
 
@@ -47,14 +48,13 @@ class VirtualDJClient:
         """Check if VirtualDJ is running and Network Control Plugin is responding"""
         try:
             # First check process
-            for proc in psutil.process_iter(['pid', 'name']):
-                if proc.info['name'] and 'virtualdj' in proc.info['name'].lower():
+            for proc in psutil.process_iter(["pid", "name"]):
+                if proc.info["name"] and "virtualdj" in proc.info["name"].lower():
                     # Process running, check HTTP API
                     try:
                         async with httpx.AsyncClient(timeout=2.0) as client:
                             response = await client.get(
-                                f"{self.base_url}/execute?script=nop",
-                                headers=self._get_headers()
+                                f"{self.base_url}/execute?script=nop", headers=self._get_headers()
                             )
                             return response.status_code == 200
                     except Exception:
@@ -81,11 +81,7 @@ class VirtualDJClient:
 
             try:
                 # Use POST for complex scripts (handles special chars better)
-                response = await client.post(
-                    f"{self.base_url}/{endpoint}",
-                    content=script,
-                    headers=self._get_headers()
-                )
+                response = await client.post(f"{self.base_url}/{endpoint}", content=script, headers=self._get_headers())
 
                 if response.status_code == 200:
                     result = response.text.strip()
@@ -95,10 +91,7 @@ class VirtualDJClient:
                         return {"status": "success", "result": result}
                     else:
                         success = result.lower() == "true"
-                        return {
-                            "status": "success" if success else "error",
-                            "result": result
-                        }
+                        return {"status": "success" if success else "error", "result": result}
                 elif response.status_code == 401:
                     return {"status": "error", "error": "Authentication failed - check password"}
                 else:
@@ -132,7 +125,7 @@ class VirtualDJClient:
                 return {
                     "status": "running",
                     "details": "VirtualDJ Network Control Plugin responding",
-                    "current_track": result.get("result", "Unknown")
+                    "current_track": result.get("result", "Unknown"),
                 }
             else:
                 return {"status": "running", "details": "VirtualDJ process found but plugin not responding"}

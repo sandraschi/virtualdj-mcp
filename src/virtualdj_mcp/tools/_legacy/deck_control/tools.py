@@ -14,7 +14,7 @@ from ..shared.exceptions import VDJError
 from .models import DeckStatus
 
 # Initialize console for logging
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 
 def setup_deck_control_tools(mcp: FastMCP):
@@ -26,10 +26,7 @@ def setup_deck_control_tools(mcp: FastMCP):
     """
 
     @mcp.tool()
-    async def play_pause_deck(
-        deck_id: int,
-        action: str = "toggle"
-    ) -> DeckStatus:
+    async def play_pause_deck(deck_id: int, action: str = "toggle") -> DeckStatus:
         """
         Control playback on a specific deck
 
@@ -63,13 +60,8 @@ def setup_deck_control_tools(mcp: FastMCP):
             console.print(f"[red]Error in play_pause_deck: {e}[/red]")
             raise VDJError(str(e))
 
-
     @mcp.tool()
-    async def load_track_to_deck(
-        deck_id: int,
-        track_path: str,
-        force: bool = True
-    ) -> DeckStatus:
+    async def load_track_to_deck(deck_id: int, track_path: str, force: bool = True) -> DeckStatus:
         """
         Load a track to a specific deck
 
@@ -107,6 +99,7 @@ def setup_deck_control_tools(mcp: FastMCP):
                             console.print(f"[yellow]Deck {deck_id} is playing, stopping first...[/yellow]")
                             await client.send_command(f"deck {deck_id} stop")
                             import asyncio
+
                             await asyncio.sleep(0.2)  # Brief pause for stop to take effect
 
                 cmd = f"deck {deck_id} load '{normalized_path}'"
@@ -119,6 +112,7 @@ def setup_deck_control_tools(mcp: FastMCP):
 
                 # Wait a moment for track to load before getting status
                 import asyncio
+
                 await asyncio.sleep(1)
 
                 return await get_deck_status(deck_id)
@@ -127,12 +121,8 @@ def setup_deck_control_tools(mcp: FastMCP):
             console.print(f"[red]Error in load_track_to_deck: {e}[/red]")
             raise VDJError(str(e))
 
-
     @mcp.tool()
-    async def seek_deck(
-        deck_id: int,
-        position: float | str
-    ) -> DeckStatus:
+    async def seek_deck(deck_id: int, position: float | str) -> DeckStatus:
         """
         Seek to a specific position on a deck
 
@@ -147,7 +137,7 @@ def setup_deck_control_tools(mcp: FastMCP):
             client = await get_vdj_client()
 
             # Handle percentage or absolute positioning
-            if isinstance(position, str) and position.endswith('%'):
+            if isinstance(position, str) and position.endswith("%"):
                 percentage = float(position[:-1])
                 cmd = f"deck {deck_id} goto {percentage}%"
             else:
@@ -166,12 +156,8 @@ def setup_deck_control_tools(mcp: FastMCP):
             console.print(f"[red]Error in seek_deck: {e}[/red]")
             raise VDJError(str(e))
 
-
     @mcp.tool()
-    async def set_deck_volume(
-        deck_id: int,
-        volume: int
-    ) -> DeckStatus:
+    async def set_deck_volume(deck_id: int, volume: int) -> DeckStatus:
         """
         Set volume for a specific deck
 
@@ -203,7 +189,6 @@ def setup_deck_control_tools(mcp: FastMCP):
             console.print(f"[red]Error in set_deck_volume: {e}[/red]")
             raise VDJError(str(e))
 
-
     @mcp.tool()
     async def get_deck_status(deck_id: int) -> DeckStatus:
         """
@@ -231,7 +216,7 @@ def setup_deck_control_tools(mcp: FastMCP):
                     "bpm": f"deck {deck_id} get_bpm",
                     "key": f"deck {deck_id} get_key",
                     "volume": f"deck {deck_id} get_volume",
-                    "pitch": f"deck {deck_id} get_pitch"
+                    "pitch": f"deck {deck_id} get_pitch",
                 }
 
                 results = {}
@@ -255,26 +240,22 @@ def setup_deck_control_tools(mcp: FastMCP):
 
                 return DeckStatus(
                     deck_id=deck_id,
-                    is_playing=results.get('is_playing', '0') == '1' or results.get('is_playing', '').lower() == 'true',
-                    track_path=results.get('filepath'),
-                    track_title=results.get('title') or 'No Track',
-                    track_artist=results.get('artist') or 'Unknown Artist',
-                    position=safe_float(results.get('position')),
-                    duration=safe_float(results.get('duration')),
-                    bpm=safe_float(results.get('bpm')) if results.get('bpm') else None,
-                    key=results.get('key') or None,
-                    volume=safe_int(results.get('volume'), 100),
-                    pitch=safe_float(results.get('pitch'))
+                    is_playing=results.get("is_playing", "0") == "1" or results.get("is_playing", "").lower() == "true",
+                    track_path=results.get("filepath"),
+                    track_title=results.get("title") or "No Track",
+                    track_artist=results.get("artist") or "Unknown Artist",
+                    position=safe_float(results.get("position")),
+                    duration=safe_float(results.get("duration")),
+                    bpm=safe_float(results.get("bpm")) if results.get("bpm") else None,
+                    key=results.get("key") or None,
+                    volume=safe_int(results.get("volume"), 100),
+                    pitch=safe_float(results.get("pitch")),
                 )
 
         except Exception as e:
             console.print(f"[red]Error in get_deck_status: {e}[/red]")
             # Return a default deck status on error
-            return DeckStatus(
-                deck_id=deck_id,
-                is_playing=False
-            )
-
+            return DeckStatus(deck_id=deck_id, is_playing=False)
 
     @mcp.tool()
     async def set_load_security(mode: str) -> dict:
@@ -299,21 +280,11 @@ def setup_deck_control_tools(mcp: FastMCP):
             client = await get_vdj_client()
 
             # Normalize mode names
-            mode_map = {
-                "off": "off",
-                "none": "off",
-                "on": "on",
-                "ask": "on",
-                "always": "always",
-                "block": "always"
-            }
+            mode_map = {"off": "off", "none": "off", "on": "on", "ask": "on", "always": "always", "block": "always"}
 
             normalized_mode = mode_map.get(mode.lower())
             if not normalized_mode:
-                return {
-                    "success": False,
-                    "error": f"Invalid mode '{mode}'. Use: off, on, or always"
-                }
+                return {"success": False, "error": f"Invalid mode '{mode}'. Use: off, on, or always"}
 
             async with client:
                 # Set the loadSecurity setting
@@ -330,17 +301,11 @@ def setup_deck_control_tools(mcp: FastMCP):
                         "success": True,
                         "mode": normalized_mode,
                         "current_setting": current,
-                        "message": f"Load security set to '{normalized_mode}'"
+                        "message": f"Load security set to '{normalized_mode}'",
                     }
                 else:
-                    return {
-                        "success": False,
-                        "error": result.get("error", "Failed to set load security")
-                    }
+                    return {"success": False, "error": result.get("error", "Failed to set load security")}
 
         except Exception as e:
             console.print(f"[red]Error in set_load_security: {e}[/red]")
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            return {"success": False, "error": str(e)}

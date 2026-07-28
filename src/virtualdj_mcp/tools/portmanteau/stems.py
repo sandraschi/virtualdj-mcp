@@ -14,7 +14,7 @@ from rich.console import Console
 from ..shared.dependencies import get_vdj_client
 from ..shared.exceptions import VDJError
 
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 
 def setup_stems_portmanteau(mcp: FastMCP):
@@ -109,7 +109,13 @@ def setup_stems_portmanteau(mcp: FastMCP):
                     result = await client.send_command(f"deck {deck_id} stem_unkill '{stem}'")
                     if result["status"] == "success":
                         console.print(f"[green]Deck {deck_id}: {stem} restored[/green]")
-                        return {"success": True, "operation": "unkill", "deck_id": deck_id, "stem": stem, "killed": False}
+                        return {
+                            "success": True,
+                            "operation": "unkill",
+                            "deck_id": deck_id,
+                            "stem": stem,
+                            "killed": False,
+                        }
                     else:
                         raise VDJError(f"Failed to unkill stem: {result.get('error')}")
 
@@ -181,7 +187,7 @@ def setup_stems_portmanteau(mcp: FastMCP):
                         "operation": "swap",
                         "stem": stem,
                         "source_deck": deck_a,
-                        "target_deck": deck_b
+                        "target_deck": deck_b,
                     }
 
             elif operation == "reset":
@@ -215,7 +221,7 @@ def setup_stems_portmanteau(mcp: FastMCP):
                         "operation": "sample_stem",
                         "deck_id": deck_id,
                         "sampler_slot": slot,
-                        "duration_seconds": 4.0
+                        "duration_seconds": 4.0,
                     }
 
             else:

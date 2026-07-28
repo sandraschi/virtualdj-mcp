@@ -119,7 +119,7 @@ def create_app() -> FastAPI:
         version="1.0.0",
         docs_url="/api/docs",
         redoc_url="/api/redoc",
-        openapi_url="/api/openapi.json"
+        openapi_url="/api/openapi.json",
     )
 
     # Configure CORS
@@ -143,8 +143,7 @@ def create_app() -> FastAPI:
         if vdj_client is None:
             if not config.validate_paths():
                 raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="VirtualDJ path validation failed"
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="VirtualDJ path validation failed"
                 )
 
             vdj_client = VirtualDJClient(config)
@@ -153,8 +152,7 @@ def create_app() -> FastAPI:
             async with vdj_client:
                 if not await vdj_client.start_virtualdj():
                     raise HTTPException(
-                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                        detail="Failed to start VirtualDJ"
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to start VirtualDJ"
                     )
 
         return vdj_client
@@ -163,11 +161,7 @@ def create_app() -> FastAPI:
     @app.get("/health", response_model=HealthResponse)
     async def health_check():
         """Health check endpoint"""
-        return HealthResponse(
-            timestamp=datetime.utcnow().isoformat(),
-            version="1.0.0",
-            service="VirtualDJ-MCP"
-        )
+        return HealthResponse(timestamp=datetime.utcnow().isoformat(), version="1.0.0", service="VirtualDJ-MCP")
 
     @app.get("/settings", response_model=SettingsResponse)
     async def get_public_settings():
@@ -211,7 +205,7 @@ def create_app() -> FastAPI:
                     f"get_var 'deck{deck_id}_bpm'",
                     f"get_var 'deck{deck_id}_key'",
                     f"get_var 'deck{deck_id}_volume'",
-                    f"get_var 'deck{deck_id}_pitch'"
+                    f"get_var 'deck{deck_id}_pitch'",
                 ]
 
                 results = {}
@@ -224,26 +218,22 @@ def create_app() -> FastAPI:
                 # Parse results into DeckStatusResponse
                 return DeckStatusResponse(
                     deck_id=deck_id,
-                    is_playing=results.get(f'deck{deck_id}_play', '0') == '1',
-                    track_title=results.get(f'deck{deck_id}_title', 'No Track'),
-                    track_artist=results.get(f'deck{deck_id}_artist', 'Unknown Artist'),
-                    position=float(results.get(f'deck{deck_id}_position', 0)),
-                    duration=float(results.get(f'deck{deck_id}_duration', 0)),
-                    bpm=float(results.get(f'deck{deck_id}_bpm', 0)) if results.get(f'deck{deck_id}_bpm') else None,
-                    key=results.get(f'deck{deck_id}_key'),
-                    volume=int(results.get(f'deck{deck_id}_volume', 100)),
-                    pitch=float(results.get(f'deck{deck_id}_pitch', 0))
+                    is_playing=results.get(f"deck{deck_id}_play", "0") == "1",
+                    track_title=results.get(f"deck{deck_id}_title", "No Track"),
+                    track_artist=results.get(f"deck{deck_id}_artist", "Unknown Artist"),
+                    position=float(results.get(f"deck{deck_id}_position", 0)),
+                    duration=float(results.get(f"deck{deck_id}_duration", 0)),
+                    bpm=float(results.get(f"deck{deck_id}_bpm", 0)) if results.get(f"deck{deck_id}_bpm") else None,
+                    key=results.get(f"deck{deck_id}_key"),
+                    volume=int(results.get(f"deck{deck_id}_volume", 100)),
+                    pitch=float(results.get(f"deck{deck_id}_pitch", 0)),
                 )
 
         except VDJError as e:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=str(e)
-            ) from e
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
         except Exception as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Unexpected error: {e!s}"
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Unexpected error: {e!s}"
             ) from e
 
     @app.post("/api/v1/deck/{deck_id}/play_pause")
@@ -273,17 +263,13 @@ def create_app() -> FastAPI:
 
                 if result["status"] != "success":
                     raise HTTPException(
-                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                        detail=f"Failed to {action} deck {deck_id}"
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to {action} deck {deck_id}"
                     )
 
                 return {"status": "success", "message": f"Deck {deck_id} {action}ed"}
 
         except VDJError as e:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=str(e)
-            ) from e
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
 
     @app.post("/api/v1/deck/{deck_id}/load")
     async def load_track_api(deck_id: int, track_path: str):
@@ -298,11 +284,11 @@ def create_app() -> FastAPI:
             Success status
         """
         from pathlib import Path
+
         try:
             if not Path(track_path).exists():
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Track file not found: {track_path}"
+                    status_code=status.HTTP_400_BAD_REQUEST, detail=f"Track file not found: {track_path}"
                 )
 
             client = await get_vdj_client()
@@ -315,16 +301,13 @@ def create_app() -> FastAPI:
                 if result["status"] != "success":
                     raise HTTPException(
                         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                        detail=f"Failed to load track to deck {deck_id}"
+                        detail=f"Failed to load track to deck {deck_id}",
                     )
 
                 return {"status": "success", "message": f"Track loaded to deck {deck_id}"}
 
         except VDJError as e:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=str(e)
-            ) from e
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
 
     @app.post("/api/v1/deck/{deck_id}/sync")
     async def sync_deck_api(deck_id: int):
@@ -338,15 +321,11 @@ def create_app() -> FastAPI:
                 result = await client.send_command(cmd)
                 if result["status"] != "success":
                     raise HTTPException(
-                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                        detail=f"Failed to sync deck {deck_id}"
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to sync deck {deck_id}"
                     )
                 return {"status": "success", "message": f"Deck {deck_id} synced"}
         except VDJError as e:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=str(e)
-            ) from e
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
 
     @app.post("/api/v1/deck/{deck_id}/cue")
     async def cue_deck_api(deck_id: int, mode: str = "start"):
@@ -371,14 +350,11 @@ def create_app() -> FastAPI:
                 if result["status"] != "success":
                     raise HTTPException(
                         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                        detail=f"Failed cue operation on deck {deck_id}"
+                        detail=f"Failed cue operation on deck {deck_id}",
                     )
                 return {"status": "success", "message": f"Deck {deck_id} cue mode {mode} applied"}
         except VDJError as e:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=str(e)
-            ) from e
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
 
     @app.post("/api/v1/library/search")
     async def search_tracks_api(request: TrackSearchRequest):
@@ -398,25 +374,27 @@ def create_app() -> FastAPI:
             # Convert to dict format for JSON serialization
             track_infos = []
             for track in tracks:
-                track_infos.append({
-                    "path": track.file_path,
-                    "title": track.title or Path(track.file_path).stem,
-                    "artist": track.artist or "Unknown Artist",
-                    "album": track.album,
-                    "genre": track.genre,
-                    "bpm": track.bpm,
-                    "key": track.key,
-                    "duration": track.duration,
-                    "year": track.year,
-                    "bitrate": track.bitrate,
-                    "sample_rate": track.sample_rate,
-                    "channels": track.channels,
-                    "file_size": track.file_size,
-                    "last_modified": track.last_modified,
-                    "play_count": track.play_count,
-                    "rating": track.rating,
-                    "tags": track.tags
-                })
+                track_infos.append(
+                    {
+                        "path": track.file_path,
+                        "title": track.title or Path(track.file_path).stem,
+                        "artist": track.artist or "Unknown Artist",
+                        "album": track.album,
+                        "genre": track.genre,
+                        "bpm": track.bpm,
+                        "key": track.key,
+                        "duration": track.duration,
+                        "year": track.year,
+                        "bitrate": track.bitrate,
+                        "sample_rate": track.sample_rate,
+                        "channels": track.channels,
+                        "file_size": track.file_size,
+                        "last_modified": track.last_modified,
+                        "play_count": track.play_count,
+                        "rating": track.rating,
+                        "tags": track.tags,
+                    }
+                )
 
             # Apply filters
             filtered_tracks = []
@@ -442,15 +420,20 @@ def create_app() -> FastAPI:
                     continue
                 if request.duration_max is not None and track["duration"] > request.duration_max:
                     continue
-                if request.energy_min is not None and (track.get("energy") is None or track["energy"] < request.energy_min):
+                if request.energy_min is not None and (
+                    track.get("energy") is None or track["energy"] < request.energy_min
+                ):
                     continue
-                if request.energy_max is not None and (track.get("energy") is None or track["energy"] > request.energy_max):
+                if request.energy_max is not None and (
+                    track.get("energy") is None or track["energy"] > request.energy_max
+                ):
                     continue
 
                 filtered_tracks.append(track)
 
             # Sort results
             if request.sort_by == "relevance" and request.query:
+
                 def relevance_score(track: dict[str, Any]) -> int:
                     score = 0
                     if request.query.lower() in (track.get("title") or "").lower():
@@ -482,8 +465,7 @@ def create_app() -> FastAPI:
 
         except Exception as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Search failed: {e!s}"
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Search failed: {e!s}"
             ) from e
 
     @app.post("/api/v1/audio/analyze")
@@ -511,15 +493,13 @@ def create_app() -> FastAPI:
                 zero_crossing_rate=features.zero_crossing_rate,
                 onset_strength=features.onset_strength,
                 beats=features.beats[:100],  # Limit number of beats to return
-                analysis_successful=True
+                analysis_successful=True,
             )
 
             return result
 
         except Exception:
-            return AudioAnalysisResponse(
-                analysis_successful=False
-            )
+            return AudioAnalysisResponse(analysis_successful=False)
 
     @app.post("/api/v1/execute")
     async def execute_vdjscript(request: ExecuteRequest):
@@ -531,8 +511,7 @@ def create_app() -> FastAPI:
                 return result
         except Exception as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Command execution failed: {e!s}"
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Command execution failed: {e!s}"
             )
 
     @app.post("/api/v1/show_control")
@@ -541,10 +520,7 @@ def create_app() -> FastAPI:
         try:
             if request.operation == "osc_send":
                 if not request.address:
-                    raise HTTPException(
-                        status_code=status.HTTP_400_BAD_REQUEST,
-                        detail="address required for osc_send"
-                    )
+                    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="address required for osc_send")
                 # Try parsing value to float/int
                 val = request.value
                 if val is not None:
@@ -558,12 +534,13 @@ def create_app() -> FastAPI:
                             val = True
                         elif str(val).lower() == "false":
                             val = False
-                
+
                 from pythonosc.udp_client import SimpleUDPClient
+
                 udp_client = SimpleUDPClient(request.host, request.port)
                 udp_client.send_message(request.address, val)
                 return {"status": "success", "operation": "osc_send", "address": request.address, "value": val}
-            
+
             client = await get_vdj_client()
             async with client:
                 if request.operation == "os2l_button":
@@ -581,15 +558,12 @@ def create_app() -> FastAPI:
                     result = await client.send_command(f"os2l_cmd '{request.name}' {request.value}")
                 else:
                     raise HTTPException(status_code=400, detail=f"Invalid show_control operation: {request.operation}")
-                
+
                 if result.get("status") != "success":
                     raise HTTPException(status_code=500, detail=result.get("error", "VDJ execution failed"))
                 return result
         except Exception as e:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=str(e)
-            )
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
     @app.post("/api/v1/stems")
     async def stems_api(request: StemsRequest):
@@ -618,16 +592,11 @@ def create_app() -> FastAPI:
                     result = {"status": "success"}
                 else:
                     raise HTTPException(status_code=400, detail=f"Invalid stems operation: {request.operation}")
-                
+
                 if result.get("status") != "success":
                     raise HTTPException(status_code=500, detail=result.get("error", "VDJ execution failed"))
                 return result
         except Exception as e:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=str(e)
-            )
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
     return app
-
-

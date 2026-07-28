@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 class TrackInfo(BaseModel):
     """Information about a music track with extended metadata"""
+
     path: str = Field(..., description="File path to track")
     title: str = Field(..., description="Track title")
     artist: str = Field(..., description="Artist name")
@@ -30,16 +31,14 @@ class TrackInfo(BaseModel):
     tags: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     class Config:
-        json_encoders = {
-            'datetime': lambda v: v.isoformat() if v else None
-        }
+        json_encoders = {"datetime": lambda v: v.isoformat() if v else None}
 
     @classmethod
-    def from_scanner_track(cls, track) -> 'TrackInfo':
+    def from_scanner_track(cls, track) -> "TrackInfo":
         """Create from LibraryScanner's TrackInfo"""
         return cls(
             path=track.file_path,
-            title=track.title or track.file_path.split('/')[-1].split('\\')[-1].rsplit('.', 1)[0],
+            title=track.title or track.file_path.split("/")[-1].split("\\")[-1].rsplit(".", 1)[0],
             artist=track.artist or "Unknown Artist",
             album=track.album,
             genre=track.genre,
@@ -54,14 +53,11 @@ class TrackInfo(BaseModel):
             last_modified=track.last_modified,
             play_count=track.play_count,
             rating=track.rating,
-            tags=track.tags
+            tags=track.tags,
         )
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary with proper serialization"""
         import json
+
         return json.loads(self.json())
-
-
-
-

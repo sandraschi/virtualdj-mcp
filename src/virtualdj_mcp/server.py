@@ -26,7 +26,7 @@ from rich.console import Console
 
 from .api.app import create_app
 from .config import VDJConfig
-from .tools.shared.dependencies import update_system_status
+from .tools.shared.dependencies import get_system_status, update_system_status
 
 # Add current directory to path for proper imports
 current_dir = Path(__file__).parent
@@ -73,20 +73,14 @@ try:
         setup_all_portmanteau_tools(mcp)
 
         tools_loaded = 13
-        console.print(
-            "[green]Portmanteau tools: vdj_deck, vdj_mixer, vdj_library, vdj_automation,[/green]"
-        )
-        console.print(
-            "[green]  vdj_recording, vdj_performance, vdj_stems, vdj_beatgrid, vdj_show_control,[/green]"
-        )
+        console.print("[green]Portmanteau tools: vdj_deck, vdj_mixer, vdj_library, vdj_automation,[/green]")
+        console.print("[green]  vdj_recording, vdj_performance, vdj_stems, vdj_beatgrid, vdj_show_control,[/green]")
         console.print("[green]  vdj_skin, vdj_video, vdj_plex, vdj_system[/green]")
 
     else:
         # INDIVIDUAL MODE: Legacy tools (archived in _legacy/)
         # Use portmanteau mode for new development
-        console.print(
-            "[yellow]INDIVIDUAL mode deprecated - using PORTMANTEAU instead[/yellow]"
-        )
+        console.print("[yellow]INDIVIDUAL mode deprecated - using PORTMANTEAU instead[/yellow]")
         console.print("[yellow]Legacy tools archived in tools/_legacy/[/yellow]")
 
         from .tools.portmanteau import setup_all_portmanteau_tools
@@ -100,9 +94,7 @@ try:
     update_system_status("tools_loaded", tools_loaded)
     update_system_status("tool_mode", TOOL_MODE)
 
-    console.print(
-        f"[green]VirtualDJ-MCP: {tools_loaded} tools registered successfully[/green]"
-    )
+    console.print(f"[green]VirtualDJ-MCP: {tools_loaded} tools registered successfully[/green]")
 
 except Exception as e:
     console.print(f"[red]Error registering tools: {e}[/red]")
@@ -180,6 +172,39 @@ async def api_health_alias():
     return await health_check()
 
 
+@fastapi_app.get("/api/v1/diagnostics")
+async def diagnostics():
+    """Diagnostics endpoint for CUA smoke test and fleet health checks."""
+    status = get_system_status()
+    import time
+
+    uptime = int(time.time() - status.get("start_time", time.time())) if status.get("start_time") else 0
+    return {
+        "status": "ok",
+        "server": "VirtualDJ-MCP",
+        "version": "2.0.0b1",
+        "uptime_seconds": uptime,
+        "tool_count": status.get("tools_loaded", 13),
+        "tools": [
+            {"name": "vdj_deck"},
+            {"name": "vdj_mixer"},
+            {"name": "vdj_library"},
+            {"name": "vdj_automation"},
+            {"name": "vdj_recording"},
+            {"name": "vdj_performance"},
+            {"name": "vdj_stems"},
+            {"name": "vdj_beatgrid"},
+            {"name": "vdj_show_control"},
+            {"name": "vdj_skin"},
+            {"name": "vdj_video"},
+            {"name": "vdj_plex"},
+            {"name": "vdj_system"},
+        ],
+        "system": {"windows": True},
+        "errors": [],
+    }
+
+
 @fastapi_app.get("/api/settings")
 async def api_settings_alias():
     cfg = VDJConfig.from_env()
@@ -228,9 +253,7 @@ async def run_fastapi():
     console.print("[blue]Available at: http://localhost:10877/api/docs[/blue]")
 
     try:
-        config = uvicorn.Config(
-            fastapi_app, host="127.0.0.1", port=10877, log_level="info"
-        )
+        config = uvicorn.Config(fastapi_app, host="127.0.0.1", port=10877, log_level="info")
         server = uvicorn.Server(config)
         await server.serve()
     except KeyboardInterrupt:

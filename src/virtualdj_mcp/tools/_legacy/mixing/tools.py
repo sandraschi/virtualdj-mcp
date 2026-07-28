@@ -12,7 +12,7 @@ from ..shared.exceptions import VDJError
 from .models import MixerStatus
 
 # Initialize console for logging
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 
 def setup_mixing_tools(mcp: FastMCP):
@@ -58,13 +58,12 @@ def setup_mixing_tools(mcp: FastMCP):
                     crossfader_position=position,
                     master_volume=100,  # TODO: Get actual values
                     headphone_volume=75,
-                    headphone_cue="master"
+                    headphone_cue="master",
                 )
 
         except Exception as e:
             console.print(f"[red]Error in set_crossfader_position: {e}[/red]")
             raise VDJError(str(e))
-
 
     @mcp.tool()
     async def auto_sync_decks(deck_a: int, deck_b: int) -> dict[str, Any]:
@@ -92,6 +91,7 @@ def setup_mixing_tools(mcp: FastMCP):
 
                 # Get both deck statuses to confirm sync
                 from ..deck_control.tools import get_deck_status
+
                 deck_a_status = await get_deck_status(deck_a)
                 deck_b_status = await get_deck_status(deck_b)
 
@@ -101,12 +101,11 @@ def setup_mixing_tools(mcp: FastMCP):
                     "status": "success",
                     "deck_a": deck_a_status.model_dump(),
                     "deck_b": deck_b_status.model_dump(),
-                    "bpm_difference": abs(deck_a_status.bpm - deck_b_status.bpm) if deck_a_status.bpm and deck_b_status.bpm else None
+                    "bpm_difference": abs(deck_a_status.bpm - deck_b_status.bpm)
+                    if deck_a_status.bpm and deck_b_status.bpm
+                    else None,
                 }
 
         except Exception as e:
             console.print(f"[red]Error in auto_sync_decks: {e}[/red]")
-            return {
-                "status": "error",
-                "message": str(e)
-            }
+            return {"status": "error", "message": str(e)}

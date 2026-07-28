@@ -16,7 +16,7 @@ from rich.console import Console
 
 from ..shared.dependencies import get_vdj_client
 
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 logger = logging.getLogger(__name__)
 
 HELP_CONTENT = {
@@ -219,10 +219,7 @@ def setup_system_portmanteau(mcp: FastMCP):
     """Register vdj_system portmanteau tool."""
 
     @mcp.tool()
-    async def vdj_system(
-        operation: Literal["status", "help", "connection_test"],
-        topic: str | None = None
-    ) -> Any:
+    async def vdj_system(operation: Literal["status", "help", "connection_test"], topic: str | None = None) -> Any:
         """
         System status and help for VirtualDJ-MCP.
 
@@ -267,7 +264,9 @@ def setup_system_portmanteau(mcp: FastMCP):
                 server_ver = "2.0.0"
                 fastmcp_ver = "FastMCP 3.4.4"
 
-                with Card(css_class="max-w-lg border border-neutral-700 bg-neutral-900 rounded-lg shadow-lg p-4") as view:
+                with Card(
+                    css_class="max-w-lg border border-neutral-700 bg-neutral-900 rounded-lg shadow-lg p-4"
+                ) as view:
                     with CardHeader():
                         CardTitle("🖥️ VirtualDJ-MCP System Dashboard", css_class="text-lg font-bold text-white")
                     with CardContent(css_class="mt-2 space-y-2"):
@@ -285,8 +284,7 @@ def setup_system_portmanteau(mcp: FastMCP):
                 text_summary = f"System Status: Server: VirtualDJ-MCP v{server_ver} ({fastmcp_ver}), VirtualDJ Connection: {vdj_status_str} (Host: 127.0.0.1:80)"
 
                 return ToolResult(
-                    content=text_summary,
-                    structured_content=PrefabApp(view=view, title="System Status Dashboard")
+                    content=text_summary, structured_content=PrefabApp(view=view, title="System Status Dashboard")
                 )
 
             elif operation == "help":
@@ -295,18 +293,14 @@ def setup_system_portmanteau(mcp: FastMCP):
 
                 if not content:
                     available = list(HELP_CONTENT.keys())
-                    return {
-                        "success": False,
-                        "error": f"Unknown topic: {topic}",
-                        "available_topics": available
-                    }
+                    return {"success": False, "error": f"Unknown topic: {topic}", "available_topics": available}
 
                 return {
                     "success": True,
                     "operation": "help",
                     "topic": topic_key,
                     "content": content,
-                    "available_topics": list(HELP_CONTENT.keys())
+                    "available_topics": list(HELP_CONTENT.keys()),
                 }
 
             elif operation == "connection_test":
@@ -326,14 +320,10 @@ def setup_system_portmanteau(mcp: FastMCP):
                                 "operation": "connection_test",
                                 "connected": True,
                                 "message": "VirtualDJ Network Control Plugin responding",
-                                "deck_1_track": deck_result.get("result", "No track loaded")
+                                "deck_1_track": deck_result.get("result", "No track loaded"),
                             }
                         else:
-                            return {
-                                "success": False,
-                                "connected": False,
-                                "error": "VirtualDJ not responding"
-                            }
+                            return {"success": False, "connected": False, "error": "VirtualDJ not responding"}
 
                 except Exception as e:
                     console.print(f"[red]Connection failed: {e}[/red]")
@@ -346,8 +336,8 @@ def setup_system_portmanteau(mcp: FastMCP):
                             "1. Ensure VirtualDJ is running",
                             "2. Install Network Control Plugin (Config → Extensions → Effects → Other)",
                             "3. Enable plugin in Master panel → Master Effect → Auto-Start",
-                            "4. Check port 80 is not blocked"
-                        ]
+                            "4. Check port 80 is not blocked",
+                        ],
                     }
 
             else:
@@ -356,4 +346,3 @@ def setup_system_portmanteau(mcp: FastMCP):
         except Exception as e:
             console.print(f"[red]Error in vdj_system: {e}[/red]")
             return {"success": False, "error": str(e)}
-

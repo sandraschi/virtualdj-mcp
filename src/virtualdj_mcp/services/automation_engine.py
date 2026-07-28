@@ -20,16 +20,20 @@ _secure_rng = SystemRandom()
 # Initialize console for logging
 console = Console()
 
+
 class AutoDJStatus(Enum):
     """Status of the Auto-DJ system"""
+
     STOPPED = "stopped"
     RUNNING = "running"
     PAUSED = "paused"
     TRANSITIONING = "transitioning"
 
+
 @dataclass
 class AutoDJPreferences:
     """User preferences for Auto-DJ behavior"""
+
     fade_time: int = 8  # seconds
     energy_matching: bool = True
     harmonic_mixing: bool = True
@@ -37,9 +41,11 @@ class AutoDJPreferences:
     max_track_age: int = 60  # minutes
     min_energy_variation: float = 0.2
 
+
 @dataclass
 class AutoDJState:
     """Current state of the Auto-DJ system"""
+
     status: AutoDJStatus = AutoDJStatus.STOPPED
     current_genre: str | None = None
     current_energy: float = 0.5  # 0.0 to 1.0
@@ -47,6 +53,7 @@ class AutoDJState:
     current_key: str | None = None
     next_track: dict | None = None
     history: list[dict] = field(default_factory=list)
+
 
 class AutomationEngine:
     """
@@ -88,10 +95,7 @@ class AutomationEngine:
             logger.warning("Auto-DJ is already running")
             return False
 
-        self.state = AutoDJState(
-            status=AutoDJStatus.RUNNING,
-            current_genre=genre_filter
-        )
+        self.state = AutoDJState(status=AutoDJStatus.RUNNING, current_genre=genre_filter)
         self._stop_event.clear()
 
         # Start the Auto-DJ task
@@ -131,7 +135,7 @@ class AutomationEngine:
             "current_bpm": self.state.current_bpm,
             "current_key": self.state.current_key,
             "next_track": self.state.next_track["title"] if self.state.next_track else None,
-            "history": [t["title"] for t in self.state.history[-5:]]  # Last 5 tracks
+            "history": [t["title"] for t in self.state.history[-5:]],  # Last 5 tracks
         }
 
     def set_auto_dj_preferences(self, **prefs) -> bool:
@@ -154,14 +158,10 @@ class AutomationEngine:
         """Main Auto-DJ event loop."""
         try:
             end_time = (
-                asyncio.get_event_loop().time() + (duration_minutes * 60)
-                if duration_minutes > 0
-                else float('inf')
+                asyncio.get_event_loop().time() + (duration_minutes * 60) if duration_minutes > 0 else float("inf")
             )
 
-            while (asyncio.get_event_loop().time() < end_time and
-                   not self._stop_event.is_set()):
-
+            while asyncio.get_event_loop().time() < end_time and not self._stop_event.is_set():
                 if self.state.status != AutoDJStatus.RUNNING:
                     await asyncio.sleep(1)
                     continue
@@ -202,7 +202,7 @@ class AutomationEngine:
             "time_elapsed": 180,  # seconds
             "time_remaining": 60,  # seconds
             "genre": "House",
-            "deck_id": 1
+            "deck_id": 1,
         }
 
     async def _select_next_track(self, current_track: dict | None = None) -> dict:
@@ -222,13 +222,17 @@ class AutomationEngine:
             filters["genre"] = self.state.current_genre
 
         if self.preferences.energy_matching and current_track:
-            target_energy = max(0.1, min(0.9,
-                current_track.get("energy", 0.5) +
-                _secure_rng.uniform(
-                    -self.preferences.min_energy_variation,
-                    self.preferences.min_energy_variation,
-                )
-            ))
+            target_energy = max(
+                0.1,
+                min(
+                    0.9,
+                    current_track.get("energy", 0.5)
+                    + _secure_rng.uniform(
+                        -self.preferences.min_energy_variation,
+                        self.preferences.min_energy_variation,
+                    ),
+                ),
+            )
             filters["energy"] = (target_energy - 0.1, target_energy + 0.1)
 
         if current_track and self.preferences.harmonic_mixing:
@@ -312,14 +316,14 @@ class AutomationEngine:
         # In a real implementation, you'd want a more sophisticated system
         compatibility = {
             # Key: [Compatible keys]
-            'Amin': ['C', 'F', 'G', 'Dmin', 'Emin'],
-            'C': ['Amin', 'F', 'G', 'Dmin', 'Emin'],
-            'G': ['Emin', 'C', 'D', 'Amin', 'Bmin'],
-            'Emin': ['G', 'C', 'D', 'Amin', 'Bmin'],
-            'F': ['Amin', 'C', 'Dmin', 'Bb', 'Gmin'],
-            'Dmin': ['F', 'Bb', 'C', 'Amin', 'Gmin'],
-            'D': ['Bmin', 'G', 'A', 'Emin', 'F#min'],
-            'Bmin': ['D', 'G', 'A', 'Emin', 'F#min']
+            "Amin": ["C", "F", "G", "Dmin", "Emin"],
+            "C": ["Amin", "F", "G", "Dmin", "Emin"],
+            "G": ["Emin", "C", "D", "Amin", "Bmin"],
+            "Emin": ["G", "C", "D", "Amin", "Bmin"],
+            "F": ["Amin", "C", "Dmin", "Bb", "Gmin"],
+            "Dmin": ["F", "Bb", "C", "Amin", "Gmin"],
+            "D": ["Bmin", "G", "A", "Emin", "F#min"],
+            "Bmin": ["D", "G", "A", "Emin", "F#min"],
         }
 
         return compatibility.get(key, [])

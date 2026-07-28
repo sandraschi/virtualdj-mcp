@@ -11,7 +11,7 @@ from rich.progress import Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 from .models import TrackInfo
 
 # Initialize console for logging
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 
 # Global scanner and analyzer instances
@@ -24,6 +24,7 @@ async def get_library_scanner():
     global _library_scanner
     if _library_scanner is None:
         from ...services.library_scanner import LibraryScanner
+
         _library_scanner = LibraryScanner()
     return _library_scanner
 
@@ -33,6 +34,7 @@ async def get_audio_analyzer():
     global _audio_analyzer
     if _audio_analyzer is None:
         from ...services.audio_analysis import AudioAnalyzer
+
         _audio_analyzer = AudioAnalyzer()
     return _audio_analyzer
 
@@ -61,7 +63,7 @@ def setup_library_tools(mcp: FastMCP):
         energy_min: float | None = None,
         energy_max: float | None = None,
         sort_by: str = "relevance",
-        sort_desc: bool = True
+        sort_desc: bool = True,
     ) -> list[dict[str, Any]]:
         """
         Search the music library with advanced filtering and sorting.
@@ -98,7 +100,7 @@ def setup_library_tools(mcp: FastMCP):
             TextColumn("[progress.description]{task.description}"),
             TimeElapsedColumn(),
             transient=True,
-            console=console
+            console=console,
         ) as progress:
             task = progress.add_task("Searching library...", total=None)
 
@@ -180,7 +182,6 @@ def setup_library_tools(mcp: FastMCP):
             finally:
                 progress.update(task, completed=1, visible=False)
 
-
     @mcp.tool()
     async def analyze_track_audio(track_path: str) -> dict[str, Any]:
         """
@@ -207,14 +208,11 @@ def setup_library_tools(mcp: FastMCP):
                 "zero_crossing_rate": features.zero_crossing_rate,
                 "onset_strength": features.onset_strength,
                 "beats": features.beats[:100],  # Limit number of beats to return
-                "analysis_successful": True
+                "analysis_successful": True,
             }
 
             return result
 
         except Exception as e:
             console.print(f"[red]Error analyzing audio: {e!s}[/red]")
-            return {
-                "analysis_successful": False,
-                "error": str(e)
-            }
+            return {"analysis_successful": False, "error": str(e)}

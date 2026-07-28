@@ -7,6 +7,9 @@ Provides 20+ tools for deck control, mixing, library management, and AI-assisted
 
 import asyncio
 import json
+
+# Initialize console and logger for logging (redirect to stderr for MCP compatibility)
+import logging
 import os
 import sys
 from datetime import datetime
@@ -14,22 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from fastmcp import FastMCP
-from pydantic import BaseModel, ConfigDict, Field
-
-# ... (rest of imports)
-
-
-class TrackInfo(BaseModel):
-    """Information about a music track with extended metadata"""
-
-    model_config = ConfigDict(arbitrary_types_allowed=True, populate_by_name=True)
-
-    path: str = Field(..., description="File path to track")
-
-
-# Initialize console and logger for logging (redirect to stderr for MCP compatibility)
-import logging
-
+from pydantic import BaseModel, Field
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
@@ -120,9 +108,7 @@ class TrackInfo(BaseModel):
     key: str | None = Field(None, description="Musical key")
     duration: float = Field(0.0, description="Duration in seconds")
     energy: float | None = Field(None, description="Energy level (0.0-1.0)")
-    danceability: float | None = Field(
-        None, description="Danceability score (0.0-1.0)"
-    )
+    danceability: float | None = Field(None, description="Danceability score (0.0-1.0)")
     year: int | None = Field(None, description="Release year")
     bitrate: int | None = Field(None, description="Audio bitrate (kbps)")
     sample_rate: int | None = Field(None, description="Sample rate (Hz)")
@@ -131,9 +117,7 @@ class TrackInfo(BaseModel):
     last_modified: float | None = Field(None, description="Last modified timestamp")
     play_count: int = Field(0, description="Number of times played")
     rating: int = Field(0, description="User rating (0-5)")
-    tags: dict[str, Any] = Field(
-        default_factory=dict, description="Additional metadata"
-    )
+    tags: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     class Config:
         json_encoders = {"datetime": lambda v: v.isoformat() if v else None}
@@ -172,9 +156,7 @@ class MixerStatus(BaseModel):
     crossfader_position: float = Field(description="Crossfader position (-100 to +100)")
     master_volume: int = Field(description="Master volume (0-100)")
     headphone_volume: int = Field(description="Headphone volume (0-100)")
-    headphone_cue: str = Field(
-        description="Headphone cue selection (deck1, deck2, master)"
-    )
+    headphone_cue: str = Field(description="Headphone cue selection (deck1, deck2, master)")
 
 
 class AutoDJStatus(BaseModel):
@@ -312,9 +294,7 @@ async def play_pause_deck(deck_id: int, action: str = "toggle") -> DeckStatus:
             result = await client.send_command(cmd)
 
             if result["status"] != "success":
-                raise VDJError(
-                    f"Failed to {action} deck {deck_id}: {result.get('error', 'Unknown error')}"
-                )
+                raise VDJError(f"Failed to {action} deck {deck_id}: {result.get('error', 'Unknown error')}")
 
             console.print(f"[green]Deck {deck_id}: {action}[/green]")
             # Get updated deck status
@@ -350,13 +330,9 @@ async def load_track_to_deck(deck_id: int, track_path: str) -> DeckStatus:
             result = await client.send_command(cmd)
 
             if result["status"] != "success":
-                raise VDJError(
-                    f"Failed to load track to deck {deck_id}: {result.get('error', 'Unknown error')}"
-                )
+                raise VDJError(f"Failed to load track to deck {deck_id}: {result.get('error', 'Unknown error')}")
 
-            console.print(
-                f"[green]Loaded '{Path(track_path).name}' to deck {deck_id}[/green]"
-            )
+            console.print(f"[green]Loaded '{Path(track_path).name}' to deck {deck_id}[/green]")
             return await get_deck_status(deck_id)
 
     except Exception as e:
@@ -390,9 +366,7 @@ async def seek_deck(deck_id: int, position: float | str) -> DeckStatus:
             result = await client.send_command(cmd)
 
             if result["status"] != "success":
-                raise VDJError(
-                    f"Failed to seek deck {deck_id}: {result.get('error', 'Unknown error')}"
-                )
+                raise VDJError(f"Failed to seek deck {deck_id}: {result.get('error', 'Unknown error')}")
 
             console.print(f"[green]Deck {deck_id} seeked to {position}[/green]")
             return await get_deck_status(deck_id)
@@ -426,9 +400,7 @@ async def set_deck_volume(deck_id: int, volume: int) -> DeckStatus:
             result = await client.send_command(cmd)
 
             if result["status"] != "success":
-                raise VDJError(
-                    f"Failed to set deck {deck_id} volume: {result.get('error', 'Unknown error')}"
-                )
+                raise VDJError(f"Failed to set deck {deck_id} volume: {result.get('error', 'Unknown error')}")
 
             console.print(f"[green]Deck {deck_id} volume set to {volume}%[/green]")
             return await get_deck_status(deck_id)
@@ -481,9 +453,7 @@ async def get_deck_status(deck_id: int) -> DeckStatus:
                 track_artist=results.get(f"deck{deck_id}_artist", "Unknown Artist"),
                 position=float(results.get(f"deck{deck_id}_position", 0)),
                 duration=float(results.get(f"deck{deck_id}_duration", 0)),
-                bpm=float(results.get(f"deck{deck_id}_bpm", 0))
-                if results.get(f"deck{deck_id}_bpm")
-                else None,
+                bpm=float(results.get(f"deck{deck_id}_bpm", 0)) if results.get(f"deck{deck_id}_bpm") else None,
                 key=results.get(f"deck{deck_id}_key"),
                 volume=int(results.get(f"deck{deck_id}_volume", 100)),
                 pitch=float(results.get(f"deck{deck_id}_pitch", 0)),
@@ -533,9 +503,7 @@ async def set_crossfader_position(position: float) -> MixerStatus:
             result = await client.send_command(cmd)
 
             if result["status"] != "success":
-                raise VDJError(
-                    f"Failed to set crossfader: {result.get('error', 'Unknown error')}"
-                )
+                raise VDJError(f"Failed to set crossfader: {result.get('error', 'Unknown error')}")
 
             console.print(f"[green]Crossfader set to {position}[/green]")
 
@@ -574,9 +542,7 @@ async def auto_sync_decks(deck_a: int, deck_b: int) -> dict[str, Any]:
             result = await client.send_command(cmd)
 
             if result["status"] != "success":
-                raise VDJError(
-                    f"Failed to sync decks: {result.get('error', 'Unknown error')}"
-                )
+                raise VDJError(f"Failed to sync decks: {result.get('error', 'Unknown error')}")
 
             # Get both deck statuses to confirm sync
             deck_a_status = await get_deck_status(deck_a)
@@ -667,10 +633,7 @@ async def search_tracks(
             filtered_tracks = []
             for track in track_infos:
                 # Skip if any filter doesn't match
-                if (
-                    query
-                    and query.lower() not in (track.title + " " + track.artist).lower()
-                ):
+                if query and query.lower() not in (track.title + " " + track.artist).lower():
                     continue
                 if artist and artist.lower() not in (track.artist or "").lower():
                     continue
@@ -682,25 +645,17 @@ async def search_tracks(
                     continue
                 if key and track.key and key.upper() != track.key.upper():
                     continue
-                if year_min is not None and (
-                    track.year is None or track.year < year_min
-                ):
+                if year_min is not None and (track.year is None or track.year < year_min):
                     continue
-                if year_max is not None and (
-                    track.year is None or track.year > year_max
-                ):
+                if year_max is not None and (track.year is None or track.year > year_max):
                     continue
                 if duration_min is not None and track.duration < duration_min:
                     continue
                 if duration_max is not None and track.duration > duration_max:
                     continue
-                if energy_min is not None and (
-                    track.energy is None or track.energy < energy_min
-                ):
+                if energy_min is not None and (track.energy is None or track.energy < energy_min):
                     continue
-                if energy_max is not None and (
-                    track.energy is None or track.energy > energy_max
-                ):
+                if energy_max is not None and (track.energy is None or track.energy > energy_max):
                     continue
 
                 filtered_tracks.append(track)
@@ -720,13 +675,9 @@ async def search_tracks(
 
                 filtered_tracks.sort(key=relevance_score, reverse=not sort_desc)
             elif sort_by == "title":
-                filtered_tracks.sort(
-                    key=lambda x: (x.title or "").lower(), reverse=sort_desc
-                )
+                filtered_tracks.sort(key=lambda x: (x.title or "").lower(), reverse=sort_desc)
             elif sort_by == "artist":
-                filtered_tracks.sort(
-                    key=lambda x: (x.artist or "").lower(), reverse=sort_desc
-                )
+                filtered_tracks.sort(key=lambda x: (x.artist or "").lower(), reverse=sort_desc)
             elif sort_by == "bpm":
                 filtered_tracks.sort(key=lambda x: x.bpm or 0, reverse=sort_desc)
             elif sort_by == "year":
@@ -932,9 +883,7 @@ async def main():
             playlist_manager=playlist_manager,
         )
 
-        recording_service = RecordingService(
-            output_dir=os.path.join(config.data_dir, "recordings")
-        )
+        recording_service = RecordingService(output_dir=os.path.join(config.data_dir, "recordings"))
 
         # Set up Tools
         from .tools.auto_dj_tools import setup_auto_dj_tools

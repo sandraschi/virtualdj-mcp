@@ -18,7 +18,7 @@ from rich.console import Console
 from ..shared.dependencies import get_vdj_client
 from ..shared.exceptions import VDJError
 
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 
 def setup_deck_portmanteau(mcp: FastMCP):
@@ -26,13 +26,15 @@ def setup_deck_portmanteau(mcp: FastMCP):
 
     @mcp.tool()
     async def vdj_deck(
-        operation: Literal["play", "pause", "toggle", "stop", "load", "seek", "volume", "status", "load_security", "edit_lyrics"],
+        operation: Literal[
+            "play", "pause", "toggle", "stop", "load", "seek", "volume", "status", "load_security", "edit_lyrics"
+        ],
         deck_id: int = 1,
         track_path: str | None = None,
         position: float | str | None = None,
         volume: int | None = None,
         force: bool = True,
-        security_mode: str | None = None
+        security_mode: str | None = None,
     ) -> Any:
         """
         Comprehensive deck control for VirtualDJ.
@@ -134,18 +136,13 @@ def setup_deck_portmanteau(mcp: FastMCP):
                     console.print(f"[green]Loaded '{path.name}' to deck {deck_id}[/green]")
                     await asyncio.sleep(1)
 
-                    return {
-                        "success": True,
-                        "operation": "load",
-                        "deck_id": deck_id,
-                        "track": path.name
-                    }
+                    return {"success": True, "operation": "load", "deck_id": deck_id, "track": path.name}
 
             elif operation == "seek":
                 if position is None:
                     return {"success": False, "error": "position required for seek operation"}
 
-                if isinstance(position, str) and position.endswith('%'):
+                if isinstance(position, str) and position.endswith("%"):
                     cmd = f"deck {deck_id} goto {position}"
                 else:
                     cmd = f"deck {deck_id} goto {position}s"
@@ -181,7 +178,7 @@ def setup_deck_portmanteau(mcp: FastMCP):
                         "bpm": f"deck {deck_id} get_bpm",
                         "key": f"deck {deck_id} get_key",
                         "volume": f"deck {deck_id} get_volume",
-                        "pitch": f"deck {deck_id} get_pitch"
+                        "pitch": f"deck {deck_id} get_pitch",
                     }
 
                     results = {}
@@ -196,16 +193,18 @@ def setup_deck_portmanteau(mcp: FastMCP):
                         except (ValueError, TypeError):
                             return default
 
-                    is_playing = results.get('is_playing', '0') == '1'
-                    track_title = results.get('title') or 'No Track'
-                    track_artist = results.get('artist') or 'Unknown'
-                    bpm_val = safe_float(results.get('bpm'))
-                    key_val = results.get('key') or 'N/A'
-                    vol_val = int(safe_float(results.get('volume'), 100))
-                    pitch_val = safe_float(results.get('pitch'))
+                    is_playing = results.get("is_playing", "0") == "1"
+                    track_title = results.get("title") or "No Track"
+                    track_artist = results.get("artist") or "Unknown"
+                    bpm_val = safe_float(results.get("bpm"))
+                    key_val = results.get("key") or "N/A"
+                    vol_val = int(safe_float(results.get("volume"), 100))
+                    pitch_val = safe_float(results.get("pitch"))
                     is_play_str = "▶️ Playing" if is_playing else "⏸️ Paused"
 
-                    with Card(css_class="max-w-lg border border-neutral-700 bg-neutral-900 rounded-lg shadow-lg p-4") as view:
+                    with Card(
+                        css_class="max-w-lg border border-neutral-700 bg-neutral-900 rounded-lg shadow-lg p-4"
+                    ) as view:
                         with CardHeader():
                             CardTitle(f"🎵 Deck {deck_id} Status", css_class="text-lg font-bold text-white")
                         with CardContent(css_class="mt-2 space-y-1"):
@@ -218,8 +217,7 @@ def setup_deck_portmanteau(mcp: FastMCP):
                     text_summary = f"Deck {deck_id} Status: {is_play_str} - '{track_title}' by {track_artist} (BPM: {bpm_val:.1f}, Key: {key_val}, Volume: {vol_val}%)"
 
                     return ToolResult(
-                        content=text_summary,
-                        structured_content=PrefabApp(view=view, title=f"Deck {deck_id} Status")
+                        content=text_summary, structured_content=PrefabApp(view=view, title=f"Deck {deck_id} Status")
                     )
 
             elif operation == "load_security":
@@ -254,4 +252,3 @@ def setup_deck_portmanteau(mcp: FastMCP):
         except Exception as e:
             console.print(f"[red]Error in vdj_deck: {e}[/red]")
             return {"success": False, "error": str(e)}
-

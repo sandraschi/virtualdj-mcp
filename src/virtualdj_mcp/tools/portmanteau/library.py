@@ -14,7 +14,7 @@ from prefab_ui.components import Card, CardContent, CardHeader, CardTitle, Text
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 # Global scanner and analyzer instances
 _library_scanner = None
@@ -26,6 +26,7 @@ async def get_library_scanner():
     global _library_scanner
     if _library_scanner is None:
         from ...services.library_scanner import LibraryScanner
+
         _library_scanner = LibraryScanner()
     return _library_scanner
 
@@ -35,6 +36,7 @@ async def get_audio_analyzer():
     global _audio_analyzer
     if _audio_analyzer is None:
         from ...services.audio_analysis import AudioAnalyzer
+
         _audio_analyzer = AudioAnalyzer()
     return _audio_analyzer
 
@@ -60,7 +62,7 @@ def setup_library_portmanteau(mcp: FastMCP):
         energy_min: float | None = None,
         energy_max: float | None = None,
         sort_by: str = "relevance",
-        sort_desc: bool = True
+        sort_desc: bool = True,
     ) -> Any:
         """
         VirtualDJ library management and audio analysis.
@@ -107,7 +109,7 @@ def setup_library_portmanteau(mcp: FastMCP):
                     TextColumn("[progress.description]{task.description}"),
                     TimeElapsedColumn(),
                     transient=True,
-                    console=console
+                    console=console,
                 ) as progress:
                     task = progress.add_task("Searching library...", total=None)
 
@@ -147,6 +149,7 @@ def setup_library_portmanteau(mcp: FastMCP):
 
                         # Sort results
                         if sort_by == "relevance" and query:
+
                             def relevance_score(track):
                                 score = 0
                                 if query.lower() in (track.title or "").lower():
@@ -156,6 +159,7 @@ def setup_library_portmanteau(mcp: FastMCP):
                                 if query.lower() in (track.album or "").lower():
                                     score += 1
                                 return score
+
                             filtered_tracks.sort(key=relevance_score, reverse=not sort_desc)
                         elif sort_by == "title":
                             filtered_tracks.sort(key=lambda x: (x.title or "").lower(), reverse=sort_desc)
@@ -172,9 +176,13 @@ def setup_library_portmanteau(mcp: FastMCP):
 
                         result_tracks = filtered_tracks[:limit]
 
-                        with Card(css_class="max-w-lg border border-neutral-700 bg-neutral-900 rounded-lg shadow-lg p-4") as view:
+                        with Card(
+                            css_class="max-w-lg border border-neutral-700 bg-neutral-900 rounded-lg shadow-lg p-4"
+                        ) as view:
                             with CardHeader():
-                                CardTitle(f"🔍 Search Results for: {query or 'All'}", css_class="text-lg font-bold text-white")
+                                CardTitle(
+                                    f"🔍 Search Results for: {query or 'All'}", css_class="text-lg font-bold text-white"
+                                )
                             with CardContent(css_class="mt-2 space-y-2"):
                                 Text(f"Found {len(filtered_tracks)} tracks, showing top {len(result_tracks)}:")
                                 for i, track in enumerate(result_tracks):
@@ -182,15 +190,20 @@ def setup_library_portmanteau(mcp: FastMCP):
                                     t_artist = track.artist or "Unknown Artist"
                                     t_bpm = f"{track.bpm:.1f} BPM" if track.bpm else "N/A BPM"
                                     t_key = track.key or "N/A"
-                                    Text(f"{i+1}. {t_title} - {t_artist} [{t_bpm} | {t_key}]", css_class="text-sm text-neutral-200")
+                                    Text(
+                                        f"{i + 1}. {t_title} - {t_artist} [{t_bpm} | {t_key}]",
+                                        css_class="text-sm text-neutral-200",
+                                    )
                                 if not result_tracks:
-                                    Text("No matching tracks found in library.", css_class="text-sm text-neutral-400 italic")
+                                    Text(
+                                        "No matching tracks found in library.",
+                                        css_class="text-sm text-neutral-400 italic",
+                                    )
 
                         text_summary = f"Library search completed. Found {len(filtered_tracks)} tracks (showing {len(result_tracks)})."
 
                         return ToolResult(
-                            content=text_summary,
-                            structured_content=PrefabApp(view=view, title="Library Search")
+                            content=text_summary, structured_content=PrefabApp(view=view, title="Library Search")
                         )
 
                     except Exception as e:
@@ -219,7 +232,7 @@ def setup_library_portmanteau(mcp: FastMCP):
                         "spectral_centroid": features.spectral_centroid,
                         "zero_crossing_rate": features.zero_crossing_rate,
                         "onset_strength": features.onset_strength,
-                        "beats": features.beats[:100] if features.beats else []
+                        "beats": features.beats[:100] if features.beats else [],
                     }
 
                 except Exception as e:
@@ -232,4 +245,3 @@ def setup_library_portmanteau(mcp: FastMCP):
         except Exception as e:
             console.print(f"[red]Error in vdj_library: {e}[/red]")
             return {"success": False, "error": str(e)}
-

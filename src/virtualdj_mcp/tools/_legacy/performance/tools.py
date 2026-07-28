@@ -11,7 +11,7 @@ from rich.console import Console
 from ..shared.dependencies import get_performance_monitor
 
 # Initialize console for logging
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 
 def setup_performance_tools(mcp: FastMCP):
@@ -40,15 +40,11 @@ def setup_performance_tools(mcp: FastMCP):
             return await monitor.get_current_metrics()
         except Exception as e:
             console.print(f"[red]Error getting performance metrics: {e}[/red]")
-            return {
-                "error": str(e),
-                "timestamp": datetime.utcnow().isoformat()
-            }
+            return {"error": str(e), "timestamp": datetime.utcnow().isoformat()}
 
     @mcp.tool()
     async def get_session_statistics(
-        session_start: str | None = None,
-        session_end: str | None = None
+        session_start: str | None = None, session_end: str | None = None
     ) -> dict[str, Any]:
         """
         Get DJ session statistics and analytics.
@@ -71,16 +67,10 @@ def setup_performance_tools(mcp: FastMCP):
             return await monitor.get_session_stats(session_start, session_end)
         except Exception as e:
             console.print(f"[red]Error getting session statistics: {e}[/red]")
-            return {
-                "error": str(e),
-                "timestamp": datetime.utcnow().isoformat()
-            }
+            return {"error": str(e), "timestamp": datetime.utcnow().isoformat()}
 
     @mcp.tool()
-    async def analyze_performance_trends(
-        hours: int = 24,
-        metric: str = "energy"
-    ) -> dict[str, Any]:
+    async def analyze_performance_trends(hours: int = 24, metric: str = "energy") -> dict[str, Any]:
         """
         Analyze performance trends over time.
 
@@ -101,10 +91,7 @@ def setup_performance_tools(mcp: FastMCP):
             return await monitor.analyze_trends(hours, metric)
         except Exception as e:
             console.print(f"[red]Error analyzing performance trends: {e}[/red]")
-            return {
-                "error": str(e),
-                "timestamp": datetime.utcnow().isoformat()
-            }
+            return {"error": str(e), "timestamp": datetime.utcnow().isoformat()}
 
     @mcp.tool()
     async def get_recommendations() -> dict[str, Any]:
@@ -124,16 +111,10 @@ def setup_performance_tools(mcp: FastMCP):
             return await monitor.get_recommendations()
         except Exception as e:
             console.print(f"[red]Error getting recommendations: {e}[/red]")
-            return {
-                "error": str(e),
-                "timestamp": datetime.utcnow().isoformat()
-            }
+            return {"error": str(e), "timestamp": datetime.utcnow().isoformat()}
 
     @mcp.tool()
-    async def export_performance_data(
-        format: str = "json",
-        filename: str | None = None
-    ) -> dict[str, Any]:
+    async def export_performance_data(format: str = "json", filename: str | None = None) -> dict[str, Any]:
         """
         Export performance data for analysis or backup.
 
@@ -153,7 +134,4 @@ def setup_performance_tools(mcp: FastMCP):
             return await monitor.export_data(format, filename)
         except Exception as e:
             console.print(f"[red]Error exporting performance data: {e}[/red]")
-            return {
-                "error": str(e),
-                "timestamp": datetime.utcnow().isoformat()
-            }
+            return {"error": str(e), "timestamp": datetime.utcnow().isoformat()}

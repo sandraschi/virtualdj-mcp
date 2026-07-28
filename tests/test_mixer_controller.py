@@ -44,6 +44,7 @@ async def test_eq_controls(controller: MixerController, deck_id: int = 1):
     status = controller.get_mixer_state(deck_id)
     print("\nFinal EQ status:", status["eq"])
 
+
 async def test_effects(controller: MixerController, deck_id: int = 1):
     """Test effect controls for a deck"""
     print(f"\n=== Testing Effect Controls (Deck {deck_id}) ===")
@@ -52,25 +53,20 @@ async def test_effects(controller: MixerController, deck_id: int = 1):
     effects = [
         (EffectType.FILTER, 75.0, 0.5, 0.0),  # Filter with wet/dry 75%
         (EffectType.FLANGER, 50.0, 0.3, 0.7),  # Flanger with parameters
-        (EffectType.ECHO, 60.0, 0.4, 0.0)      # Echo effect
+        (EffectType.ECHO, 60.0, 0.4, 0.0),  # Echo effect
     ]
 
     for i, (effect_type, wet_dry, p1, p2) in enumerate(effects):
         print(f"\nSetting {effect_type.name} effect...")
         result = await controller.set_effect(
-            deck_id=deck_id,
-            effect_slot=i,
-            effect_type=effect_type,
-            enabled=True,
-            wet_dry=wet_dry,
-            param1=p1,
-            param2=p2
+            deck_id=deck_id, effect_slot=i, effect_type=effect_type, enabled=True, wet_dry=wet_dry, param1=p1, param2=p2
         )
         print(f"Set effect {i}: {result}")
 
     # Get final status
     status = controller.get_mixer_state(deck_id)
     print("\nFinal effects status:", status["effects"])
+
 
 async def test_mixer_controls(controller: MixerController):
     """Test mixer controls"""
@@ -100,6 +96,7 @@ async def test_mixer_controls(controller: MixerController):
         result = await controller.set_headphone_mix(mix)
         print(f"Set headphone mix to {mix}: {result}")
 
+
 async def main():
     """Main test function"""
     try:
@@ -114,7 +111,7 @@ async def main():
             http_host="localhost",
             http_port=8080,
             music_library_path=str(Path.home() / "Music"),
-            max_decks=4
+            max_decks=4,
         )
 
         # Initialize the VirtualDJ client
@@ -133,10 +130,12 @@ async def main():
     except Exception as e:
         print(f"\nError during testing: {e}", file=sys.stderr)
         import traceback
+
         traceback.print_exc()
         return 1
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(asyncio.run(main()))

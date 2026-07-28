@@ -13,7 +13,7 @@ from rich.console import Console
 from ..shared.dependencies import get_vdj_client
 from ..shared.exceptions import VDJError
 
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 
 def setup_skin_portmanteau(mcp: FastMCP):
@@ -28,7 +28,7 @@ def setup_skin_portmanteau(mcp: FastMCP):
         group_name: str | None = None,
         window_name: str | None = None,
         visible: bool | None = None,
-        index: int | None = None
+        index: int | None = None,
     ) -> dict[str, Any]:
         """
         Skin control for VirtualDJ.
@@ -82,7 +82,7 @@ def setup_skin_portmanteau(mcp: FastMCP):
                         "skin_name": skin_result.get("result", "unknown"),
                         "width": int(width_result.get("result", 0)) if width_result.get("result") else None,
                         "height": int(height_result.get("result", 0)) if height_result.get("result") else None,
-                        "deck_count": int(decks_result.get("result", 2)) if decks_result.get("result") else 2
+                        "deck_count": int(decks_result.get("result", 2)) if decks_result.get("result") else 2,
                     }
 
             elif operation == "load":
@@ -97,13 +97,10 @@ def setup_skin_portmanteau(mcp: FastMCP):
 
                     result = await client.send_command(cmd)
                     if result["status"] == "success":
-                        console.print(f"[green]Skin loaded: {skin_name}{f' ({variation})' if variation else ''}[/green]")
-                        return {
-                            "success": True,
-                            "operation": "load",
-                            "skin_name": skin_name,
-                            "variation": variation
-                        }
+                        console.print(
+                            f"[green]Skin loaded: {skin_name}{f' ({variation})' if variation else ''}[/green]"
+                        )
+                        return {"success": True, "operation": "load", "skin_name": skin_name, "variation": variation}
                     else:
                         raise VDJError(f"Failed to load skin: {result.get('error')}")
 
@@ -154,7 +151,7 @@ def setup_skin_portmanteau(mcp: FastMCP):
                             "operation": "panel_group",
                             "group_name": group_name,
                             "panel_name": panel_name,
-                            "index": index
+                            "index": index,
                         }
                     else:
                         raise VDJError(f"Failed to switch panel group: {result.get('error')}")
@@ -184,4 +181,3 @@ def setup_skin_portmanteau(mcp: FastMCP):
         except Exception as e:
             console.print(f"[red]Error in vdj_skin: {e}[/red]")
             return {"success": False, "error": str(e)}
-

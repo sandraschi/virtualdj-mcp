@@ -3,4 +3,3 @@
 from .tools import setup_beatgrid_tools
 
 __all__ = ["setup_beatgrid_tools"]
-

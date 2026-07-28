@@ -38,7 +38,7 @@ class TestResult:
 
     def summary(self):
         total = self.passed + self.failed + self.skipped
-        print(f"\n{'='*50}")
+        print(f"\n{'=' * 50}")
         print(f"Results: {self.passed}/{total} passed, {self.failed} failed, {self.skipped} skipped")
         return self.failed == 0
 
@@ -47,10 +47,7 @@ async def execute(client: httpx.AsyncClient, script: str) -> tuple[bool, str]:
     """Execute VDJScript command"""
     try:
         response = await client.post(
-            f"{BASE_URL}/execute",
-            content=script,
-            headers={"Content-Type": "text/plain"},
-            timeout=10.0
+            f"{BASE_URL}/execute", content=script, headers={"Content-Type": "text/plain"}, timeout=10.0
         )
         result = response.text.strip()
         success = response.status_code == 200 and result.lower() == "true"
@@ -63,10 +60,7 @@ async def query(client: httpx.AsyncClient, script: str) -> tuple[bool, str]:
     """Query VirtualDJ for information"""
     try:
         response = await client.post(
-            f"{BASE_URL}/query",
-            content=script,
-            headers={"Content-Type": "text/plain"},
-            timeout=10.0
+            f"{BASE_URL}/query", content=script, headers={"Content-Type": "text/plain"}, timeout=10.0
         )
         return response.status_code == 200, response.text.strip()
     except Exception as e:
@@ -270,4 +264,3 @@ async def main():
 if __name__ == "__main__":
     exit_code = asyncio.run(main())
     sys.exit(exit_code)
-

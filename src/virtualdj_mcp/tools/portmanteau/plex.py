@@ -15,7 +15,7 @@ from rich.console import Console
 from ..shared.dependencies import get_vdj_client
 from ..shared.exceptions import VDJError
 
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 # Environment config for Plex
 PLEX_SERVER_URL = os.getenv("PLEX_SERVER_URL", "http://localhost:32400")
@@ -34,7 +34,7 @@ def setup_plex_portmanteau(mcp: FastMCP):
         library_id: str | None = None,
         media_id: str | None = None,
         deck_id: int = 1,
-        limit: int = 10
+        limit: int = 10,
     ) -> dict[str, Any]:
         """
         Plex Media Server integration for VirtualDJ.
@@ -89,23 +89,18 @@ def setup_plex_portmanteau(mcp: FastMCP):
                 return {
                     "success": False,
                     "error": "PLEX_TOKEN not configured. Set environment variable.",
-                    "hint": "Add PLEX_TOKEN to your environment or .env file"
+                    "hint": "Add PLEX_TOKEN to your environment or .env file",
                 }
 
             if operation == "list_libraries":
                 try:
                     import httpx
 
-                    headers = {
-                        "X-Plex-Token": PLEX_TOKEN,
-                        "Accept": "application/json"
-                    }
+                    headers = {"X-Plex-Token": PLEX_TOKEN, "Accept": "application/json"}
 
                     async with httpx.AsyncClient() as http_client:
                         response = await http_client.get(
-                            f"{PLEX_SERVER_URL}/library/sections",
-                            headers=headers,
-                            timeout=30.0
+                            f"{PLEX_SERVER_URL}/library/sections", headers=headers, timeout=30.0
                         )
 
                         if response.status_code != 200:
@@ -120,7 +115,7 @@ def setup_plex_portmanteau(mcp: FastMCP):
                                 "id": lib.get("key"),
                                 "title": lib.get("title"),
                                 "type": lib.get("type"),
-                                "count": lib.get("count", 0)
+                                "count": lib.get("count", 0),
                             }
                             for lib in directories
                             if lib.get("type") in ("artist", "track")
@@ -130,7 +125,7 @@ def setup_plex_portmanteau(mcp: FastMCP):
                             "success": True,
                             "operation": "list_libraries",
                             "libraries": music_libraries,
-                            "total": len(music_libraries)
+                            "total": len(music_libraries),
                         }
 
                 except ImportError:
@@ -145,10 +140,7 @@ def setup_plex_portmanteau(mcp: FastMCP):
                 try:
                     import httpx
 
-                    headers = {
-                        "X-Plex-Token": PLEX_TOKEN,
-                        "Accept": "application/json"
-                    }
+                    headers = {"X-Plex-Token": PLEX_TOKEN, "Accept": "application/json"}
 
                     # Build search query
                     search_term = query or artist or album
@@ -160,12 +152,7 @@ def setup_plex_portmanteau(mcp: FastMCP):
                         url = f"{PLEX_SERVER_URL}/search"
 
                     async with httpx.AsyncClient() as http_client:
-                        response = await http_client.get(
-                            url,
-                            headers=headers,
-                            params=params,
-                            timeout=30.0
-                        )
+                        response = await http_client.get(url, headers=headers, params=params, timeout=30.0)
 
                         if response.status_code != 200:
                             return {"success": False, "error": f"Plex API error: {response.status_code}"}
@@ -202,7 +189,7 @@ def setup_plex_portmanteau(mcp: FastMCP):
                             "operation": "search",
                             "query": search_term,
                             "tracks": tracks[:limit],
-                            "total": len(tracks)
+                            "total": len(tracks),
                         }
 
                 except ImportError:
@@ -217,16 +204,11 @@ def setup_plex_portmanteau(mcp: FastMCP):
                 try:
                     import httpx
 
-                    headers = {
-                        "X-Plex-Token": PLEX_TOKEN,
-                        "Accept": "application/json"
-                    }
+                    headers = {"X-Plex-Token": PLEX_TOKEN, "Accept": "application/json"}
 
                     async with httpx.AsyncClient() as http_client:
                         response = await http_client.get(
-                            f"{PLEX_SERVER_URL}/library/metadata/{media_id}",
-                            headers=headers,
-                            timeout=30.0
+                            f"{PLEX_SERVER_URL}/library/metadata/{media_id}", headers=headers, timeout=30.0
                         )
 
                         if response.status_code != 200:
@@ -257,7 +239,7 @@ def setup_plex_portmanteau(mcp: FastMCP):
                             "title": item.get("title"),
                             "artist": item.get("grandparentTitle") or item.get("parentTitle"),
                             "file_path": file_path,
-                            "exists": Path(file_path).exists() if file_path else False
+                            "exists": Path(file_path).exists() if file_path else False,
                         }
 
                 except ImportError:
@@ -271,12 +253,7 @@ def setup_plex_portmanteau(mcp: FastMCP):
 
                 # First search
                 search_result = await vdj_plex(
-                    operation="search",
-                    query=query,
-                    artist=artist,
-                    album=album,
-                    library_id=library_id,
-                    limit=1
+                    operation="search", query=query, artist=artist, album=album, library_id=library_id, limit=1
                 )
 
                 if not search_result.get("success"):
@@ -291,10 +268,7 @@ def setup_plex_portmanteau(mcp: FastMCP):
 
                 if not file_path:
                     # Try to get path via media_id
-                    path_result = await vdj_plex(
-                        operation="get_path",
-                        media_id=track.get("id")
-                    )
+                    path_result = await vdj_plex(operation="get_path", media_id=track.get("id"))
                     if path_result.get("success"):
                         file_path = path_result.get("file_path")
 
@@ -305,7 +279,7 @@ def setup_plex_portmanteau(mcp: FastMCP):
                     return {
                         "success": False,
                         "error": f"File not accessible: {file_path}",
-                        "hint": "Plex server may be on different machine. Ensure path is accessible."
+                        "hint": "Plex server may be on different machine. Ensure path is accessible.",
                     }
 
                 # Load to VirtualDJ
@@ -318,6 +292,7 @@ def setup_plex_portmanteau(mcp: FastMCP):
                     if status_result.get("result") in ("1", "true", "True"):
                         await vdj_client.send_command(f"deck {deck_id} stop")
                         import asyncio
+
                         await asyncio.sleep(0.2)
 
                     result = await vdj_client.send_command(f"deck {deck_id} load '{normalized_path}'")
@@ -325,7 +300,9 @@ def setup_plex_portmanteau(mcp: FastMCP):
                     if result["status"] != "success":
                         raise VDJError(f"Failed to load track: {result.get('error')}")
 
-                    console.print(f"[green]Loaded '{track.get('title')}' by {track.get('artist')} to deck {deck_id}[/green]")
+                    console.print(
+                        f"[green]Loaded '{track.get('title')}' by {track.get('artist')} to deck {deck_id}[/green]"
+                    )
 
                     return {
                         "success": True,
@@ -335,8 +312,8 @@ def setup_plex_portmanteau(mcp: FastMCP):
                             "title": track.get("title"),
                             "artist": track.get("artist"),
                             "album": track.get("album"),
-                            "file_path": file_path
-                        }
+                            "file_path": file_path,
+                        },
                     }
 
             else:
@@ -345,4 +322,3 @@ def setup_plex_portmanteau(mcp: FastMCP):
         except Exception as e:
             console.print(f"[red]Error in vdj_plex: {e}[/red]")
             return {"success": False, "error": str(e)}
-

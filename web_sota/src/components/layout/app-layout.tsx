@@ -1,53 +1,58 @@
-import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Sidebar } from './sidebar';
-import { Topbar } from './topbar';
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { useZoom } from "@/common/use-zoom";
+import { Sidebar } from "./sidebar";
+import { Topbar } from "./topbar";
+
 // import { Toaster } from '@/components/ui/toaster';
 
 interface AppLayoutProps {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-    const [collapsed, setCollapsed] = useState(false);
-    const location = useLocation();
+  const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
 
-    // Persist sidebar state
-    useEffect(() => {
-        const stored = localStorage.getItem('sidebar-collapsed');
-        if (stored !== null) setCollapsed(stored === 'true');
-    }, []);
+  // Persist sidebar state
+  useEffect(() => {
+    const stored = localStorage.getItem("sidebar-collapsed");
+    if (stored !== null) setCollapsed(stored === "true");
+  }, []);
 
-    const handleToggle = () => {
-        const newState = !collapsed;
-        setCollapsed(newState);
-        localStorage.setItem('sidebar-collapsed', String(newState));
-    };
+  // Zoom control (Ctrl+scroll) for Tauri WebView
+  useZoom();
 
-    const isOverlay = location.pathname === '/overlay';
+  const handleToggle = () => {
+    const newState = !collapsed;
+    setCollapsed(newState);
+    localStorage.setItem("sidebar-collapsed", String(newState));
+  };
 
-    if (isOverlay) {
-        return (
-            <div className="min-h-screen bg-slate-950 text-slate-50 font-sans p-4 select-none">
-                {children}
-            </div>
-        );
-    }
+  const isOverlay = location.pathname === "/overlay";
 
+  if (isOverlay) {
     return (
-        <div className="flex min-h-screen flex-col bg-slate-950 text-slate-50 font-sans selection:bg-emerald-500/30">
-            <div className="flex flex-1 overflow-hidden">
-                <Sidebar collapsed={collapsed} onToggle={handleToggle} />
-                <div className="flex flex-1 flex-col overflow-hidden">
-                    <Topbar />
-                    <main className="flex-1 overflow-y-auto p-6 scroll-smooth">
-                        <div className="mx-auto max-w-7xl animate-in fade-in duration-500">
-                            {children}
-                        </div>
-                    </main>
-                </div>
-            </div>
-            {/* <Toaster /> */}
-        </div>
+      <div className="min-h-screen bg-slate-950 text-slate-50 font-sans p-4 select-none">
+        {children}
+      </div>
     );
+  }
+
+  return (
+    <div className="flex min-h-screen flex-col bg-slate-950 text-slate-50 font-sans selection:bg-emerald-500/30">
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar collapsed={collapsed} onToggle={handleToggle} />
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <Topbar />
+          <main className="flex-1 overflow-y-auto p-6 scroll-smooth">
+            <div className="mx-auto max-w-7xl animate-in fade-in duration-500">
+              {children}
+            </div>
+          </main>
+        </div>
+      </div>
+      {/* <Toaster /> */}
+    </div>
+  );
 }

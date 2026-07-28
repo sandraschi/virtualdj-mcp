@@ -12,7 +12,7 @@ from typing import Any, Literal
 from fastmcp import FastMCP
 from rich.console import Console
 
-console = Console(file=__import__('sys').stderr)
+console = Console(file=__import__("sys").stderr)
 
 _recording_service = None
 
@@ -23,6 +23,7 @@ async def get_recording_service():
     if _recording_service is None:
         from ...config import VDJConfig
         from ...services.recording_service import RecordingService
+
         config = VDJConfig.from_env()
         output_dir = os.path.join(config.data_dir, "recordings")
         _recording_service = RecordingService(output_dir=output_dir)
@@ -41,7 +42,7 @@ def setup_recording_portmanteau(mcp: FastMCP):
         output_format: str = "json",
         include_tracklist: bool = True,
         limit: int = 10,
-        offset: int = 0
+        offset: int = 0,
     ) -> dict[str, Any]:
         """
         Recording control for VirtualDJ mixes.
@@ -86,11 +87,7 @@ def setup_recording_portmanteau(mcp: FastMCP):
                     return {"success": False, "error": result.get("message")}
 
                 console.print(f"[green]Recording started: {name or 'Untitled'}[/green]")
-                return {
-                    "success": True,
-                    "operation": "start",
-                    **result
-                }
+                return {"success": True, "operation": "start", **result}
 
             elif operation == "stop":
                 result = await service.stop_recording()
@@ -98,22 +95,14 @@ def setup_recording_portmanteau(mcp: FastMCP):
                     return {"success": False, "error": result.get("message")}
 
                 console.print("[green]Recording stopped[/green]")
-                return {
-                    "success": True,
-                    "operation": "stop",
-                    **result
-                }
+                return {"success": True, "operation": "stop", **result}
 
             elif operation == "status":
                 result = await service.get_recording_status(recording_id)
-                return {
-                    "success": True,
-                    "operation": "status",
-                    **result
-                }
+                return {"success": True, "operation": "status", **result}
 
             elif operation == "list":
-                recordings = service.recordings[offset:offset + limit]
+                recordings = service.recordings[offset : offset + limit]
 
                 if service.status == "recording" and service.current_recording:
                     current = service.current_recording.copy()
@@ -126,7 +115,7 @@ def setup_recording_portmanteau(mcp: FastMCP):
                     "recordings": recordings,
                     "total": len(service.recordings) + (1 if service.status == "recording" else 0),
                     "limit": limit,
-                    "offset": offset
+                    "offset": offset,
                 }
 
             elif operation == "export":
@@ -140,11 +129,7 @@ def setup_recording_portmanteau(mcp: FastMCP):
                     result["message"] = "Tracklist export not yet implemented"
 
                 console.print(f"[green]Mix history exported as {output_format}[/green]")
-                return {
-                    "success": True,
-                    "operation": "export",
-                    **result
-                }
+                return {"success": True, "operation": "export", **result}
 
             elif operation == "delete":
                 if not recording_id:
@@ -172,11 +157,7 @@ def setup_recording_portmanteau(mcp: FastMCP):
                 service._save_recordings()
 
                 console.print(f"[green]Recording deleted: {recording_id}[/green]")
-                return {
-                    "success": True,
-                    "operation": "delete",
-                    "recording_id": recording_id
-                }
+                return {"success": True, "operation": "delete", "recording_id": recording_id}
 
             else:
                 return {"success": False, "error": f"Unknown operation: {operation}"}
@@ -184,4 +165,3 @@ def setup_recording_portmanteau(mcp: FastMCP):
         except Exception as e:
             console.print(f"[red]Error in vdj_recording: {e}[/red]")
             return {"success": False, "error": str(e)}
-
