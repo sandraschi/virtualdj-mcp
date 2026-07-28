@@ -3002,7 +3002,7 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "python-osc", specifier = ">=1.8.0" },
     { name = "rich", specifier = ">=13.0.0" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.15.2" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.16.0,<0.17" },
     { name = "scipy", marker = "extra == 'dev'", specifier = ">=1.10.0" },
     { name = "soundfile", specifier = ">=0.12.0" },
     { name = "typing-extensions", specifier = ">=4.5.0" },
@@ -3014,7 +3014,7 @@ provides-extras = ["dev", "docs"]
 dev = [
     { name = "pre-commit", specifier = ">=4.6.1" },
     { name = "pyinstaller", specifier = ">=6.21.0" },
-    { name = "ruff", specifier = ">=0.15.2" },
+    { name = "ruff", specifier = ">=0.16.0,<0.17" },
 ]
 
 [[package]]

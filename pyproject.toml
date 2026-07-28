@@ -71,7 +71,7 @@ dev = [
     "black>=23.7.0",
     "isort>=5.12.0",
     "mypy>=1.4.0",
-    "ruff>=0.15.2",
+    "ruff>=0.16.0,<0.17",
     
     # Audio analysis (optional, for advanced features)
     "pyaudio>=0.2.11; platform_system=='Windows'",
@@ -134,6 +134,6 @@ addopts = "--ignore=tests/local/test_http_api.py --ignore=tests/test_mixer_contr
 dev = [
     "pre-commit>=4.6.1",
     "pyinstaller>=6.21.0",
-    "ruff>=0.15.2",
+    "ruff>=0.16.0,<0.17",
 ]
 
