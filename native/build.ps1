@@ -55,7 +55,7 @@ Write-Host "-> [2/4] PyInstaller backend..." -ForegroundColor Yellow
 $specFile = "$Root\${RepoName}-backend.spec"
 $entryFile = "$Root\run_server.py"
 if (-not (Test-Path $entryFile)) {
-    Write-Host "  WARNING: run_server.py not found — PyInstaller step skipped, using existing binary if present" -ForegroundColor DarkYellow
+    Write-Host "  WARNING: run_server.py not found - PyInstaller step skipped, using existing binary if present" -ForegroundColor DarkYellow
 } elseif (Test-Path $specFile) {
     Push-Location $Root
     # Patch fastmcp metadata fallback
@@ -82,23 +82,23 @@ if (-not (Test-Path $entryFile)) {
     if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed with exit code $LASTEXITCODE" }
     Pop-Location
 } else {
-    Write-Host "  WARNING: spec file not found at $specFile — using existing backend exe if present" -ForegroundColor DarkYellow
+    Write-Host "  WARNING: spec file not found at $specFile - using existing backend exe if present" -ForegroundColor DarkYellow
 }
 
 # Step 3: Embed in Tauri resources (+ dev fallback) with size gate
 Write-Host "-> [3/4] Embedding backend..." -ForegroundColor Yellow
 $src = "$Root\dist\${RepoName}-backend.exe"
-if (-not (Test-Path $src)) { throw "Backend exe not found at $src — build cannot proceed" }
+if (-not (Test-Path $src)) { throw "Backend exe not found at $src - build cannot proceed" }
 
 $sizeMB = (Get-Item $src).Length / 1MB
 if ($sizeMB -lt 5) {
-    throw "Backend exe is only $([math]::Round($sizeMB, 1)) MB at $src — likely a broken PyInstaller binary"
+    throw "Backend exe is only $([math]::Round($sizeMB, 1)) MB at $src - likely a broken PyInstaller binary"
 }
 Copy-Item $src "$ResourceDir\${RepoName}-backend.exe" -Force
 Copy-Item $src "$DevDir\${RepoName}-backend-$Triple.exe" -Force
 Write-Host "  Backend exe: $([math]::Round($sizeMB, 1)) MB" -ForegroundColor Green
 
-# Bundle .env.example (NOT .env — dev .env has personal API keys)
+# Bundle .env.example (NOT .env - dev .env has personal API keys)
 $envExample = "$Root\.env.example"
 if (Test-Path $envExample) {
     Copy-Item $envExample "$ResourceDir\.env.example" -Force
