@@ -1,4 +1,5 @@
-﻿Param([switch]$Headless)
+Param([switch]$Headless)
+$SkipFrontend = $Headless
 
 # --- SOTA Headless Standard ---
 if ($Headless -and ($Host.UI.RawUI.WindowTitle -notmatch 'Hidden')) {
@@ -9,9 +10,15 @@ $WindowStyle = if ($Headless) { 'Hidden' } else { 'Normal' }
 # ------------------------------
 
 # Webapp Start - Standardized SOTA (Auto-Repaired V2.5)
+$ProjectRoot = Split-Path -Parent $PSScriptRoot
 $WebPort = 10876
 $BackendPort = 10877
-$ProjectRoot = Split-Path -Parent $PSScriptRoot
+$FleetStartPath = Join-Path $ProjectRoot "scripts\FleetStartMode.ps1"
+if (-not (Test-Path -LiteralPath $FleetStartPath)) {
+    Write-Host "ERROR: Missing vendored launcher helper: $FleetStartPath" -ForegroundColor Red
+    exit 1
+}
+. $FleetStartPath
 
 # 1. Kill any process squatting on the ports
 Write-Host "Checking for port squatters on $WebPort and $BackendPort..." -ForegroundColor Yellow
@@ -30,17 +37,24 @@ foreach ($pidKey in $pidSet.Keys) {
 
 # 2. Setup
 Set-Location $PSScriptRoot
-if (-not (Test-Path "node_modules")) { npm install }
+$PkgManager = "npm"
+if (Get-Command bun -ErrorAction SilentlyContinue) {
+    $PkgManager = "bun"
+}
+Write-Host "Using package manager: $PkgManager" -ForegroundColor Gray
+if (-not (Test-Path "node_modules")) {
+    if ($PkgManager -eq "bun") { bun install } else { npm install }
+}
 
 # 3. Start the Python backend (Background)
 Write-Host "Starting Python backend on port $BackendPort ..." -ForegroundColor Cyan
 
-# VDJ_OSC_PORT is required by the server (config.from_env). Must match VirtualDJ Settings â†’ OSC or control breaks.
+# VDJ_OSC_PORT is required by the server (config.from_env). Must match VirtualDJ Settings ├óÔÇáÔÇÖ OSC or control breaks.
 $OscPort = if ($env:VDJ_OSC_PORT -and $env:VDJ_OSC_PORT.Trim()) { $env:VDJ_OSC_PORT.Trim() } else { "40100" }
 Write-Host "VDJ_OSC_PORT=$OscPort (set env VDJ_OSC_PORT to match VirtualDJ; required)" -ForegroundColor DarkGray
 
 # Backend (virtualdj_mcp) lives in repo root src/virtualdj_mcp; run from ProjectRoot so uv + imports match pyproject/lock
-# (running from web_sota alone can bind the wrong env or an older install â€” uvicorn then fails: Attribute "app" not found)
+# (running from web_sota alone can bind the wrong env or an older install ├óÔé¼ÔÇØ uvicorn then fails: Attribute "app" not found)
 $backendCmd = "`$env:VDJ_OSC_PORT = '$OscPort'; `$env:PYTHONPATH = '$ProjectRoot;$ProjectRoot\src'; Set-Location '$ProjectRoot'; uv run --project '$ProjectRoot' uvicorn virtualdj_mcp.server:app --host 127.0.0.1 --port $BackendPort --log-level info"
 
 Start-Process powershell -ArgumentList "-NoExit", "-Command", $backendCmd -WindowStyle Normal
@@ -92,8 +106,9 @@ $pollAndOpen = "for (`$i = 0; `$i -lt 60; `$i++) { try { `$null = Invoke-WebRequ
 Start-Process powershell -ArgumentList "-NoProfile", "-WindowStyle", "Hidden", "-Command", $pollAndOpen
 
 Write-Host "Browser will open automatically when Vite is ready." -ForegroundColor Gray
-npm run dev -- --port $WebPort --host
-
-
-
-
+if ($SkipFrontend) { return }
+if ($PkgManager -eq "bun") {
+    bun run dev -- --port $WebPort --host
+} else {
+    npm run dev -- --port $WebPort --host
+}
