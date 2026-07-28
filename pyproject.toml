@@ -1,4 +1,4 @@
-[build-system]
+﻿[build-system]
 requires = ["setuptools>=42.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
@@ -8,7 +8,7 @@ version = "2.0.0b1"
 description = "FastMCP server for VirtualDJ automation - Professional DJ control with Austrian efficiency"
 readme = "README.md"
 authors = [
-    {name = "Sandra Schilling (sandraschi)", email = "sandra@example.com"},
+    {name = "Sandra Schilling (sandraschi)", email = "sandraschipal@gmail.com"},
 ]
 requires-python = ">=3.12"
 classifiers = [
@@ -45,7 +45,6 @@ dependencies = [
     "typing-extensions>=4.5.0",
     "python-dateutil>=2.8.2",
     "rich>=13.0.0",
-    "pathlib>=1.0.0",
     "psutil>=5.9.0",
     "ruff>=0.14.6",
     "prefab-ui>=0.14.0",
@@ -127,3 +126,10 @@ indent-style = "space"
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 addopts = "--ignore=tests/local/test_http_api.py --ignore=tests/test_mixer_controller.py"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.6.1",
+    "pyinstaller>=6.21.0",
+]
+
