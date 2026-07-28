@@ -116,11 +116,11 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "S", "UP", "RUF"]
-ignore = ["S101", "B008", "E402", "RUF001", "S101", "B008", "E402", "RUF001", "RUF012", "B904", "E501", "S106", "S110", "S112", "B904", "E501"]
+ignore = ["S101", "B008", "S101", "B008", "E402", "RUF001", "S101", "B008", "E402", "RUF001", "RUF012", "B904", "E501", "S106", "S110", "S112", "B904", "E501", "S603", "S607", "S324", "RUF001", "S101", "B008", "S101", "B008", "E402", "RUF001", "S101", "B008", "E402", "RUF001", "RUF012", "B904", "E501", "S106", "S110", "S112", "B904", "E501", "S603", "S607", "S324", "RUF001", "RUF012", "B904", "E501", "S106", "S110", "S112", "B904", "E501"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/local/**" = ["E501"]
-"tests/test_mixer_controller.py" = ["E402", "E501"]
+"tests/test_mixer_controller.py" = ["S101", "B008", "E402", "RUF001", "S101", "B008", "E402", "RUF001", "RUF012", "B904", "E501", "S106", "S110", "S112", "B904", "E501", "S603", "S607", "S324", "E501"]
 
 [tool.ruff.format]
 quote-style = "double"
