@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "virtualdj-mcp"
-version = "2.0.0b1"
+version = "2.0.0b2"
 description = "FastMCP server for VirtualDJ automation - Professional DJ control with Austrian efficiency"
 readme = "README.md"
 authors = [
