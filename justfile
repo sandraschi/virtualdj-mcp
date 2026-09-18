@@ -18,18 +18,11 @@ bootstrap:
 
 # Execute Ruff linting
 lint:
-    Set-Location '{{justfile_directory()}}'
-    uv run ruff check src/
-    Set-Location '{{justfile_directory()}}\web_sota'
-    npx @biomejs/biome ci .
+    Set-Location '{{justfile_directory()}}'; uv run ruff check src/; Set-Location '{{justfile_directory()}}\web_sota'; npx @biomejs/biome ci .
 
 # Execute Ruff fix and formatting
 fix:
-    Set-Location '{{justfile_directory()}}'
-    uv run ruff check src/ --fix --unsafe-fixes
-    uv run ruff format src/
-    Set-Location '{{justfile_directory()}}\web_sota'
-    npx @biomejs/biome check --write .
+    Set-Location '{{justfile_directory()}}'; uv run ruff check src/ --fix --unsafe-fixes; uv run ruff format src/; Set-Location '{{justfile_directory()}}\web_sota'; npx @biomejs/biome check --write .
 
 # --- Serve ---
 
@@ -40,8 +33,7 @@ serve:
 
 # Start the frontend dev server
 dev:
-    Set-Location '{{justfile_directory()}}\web_sota'
-    npm run dev
+    Set-Location '{{justfile_directory()}}\web_sota'; npm run dev
 
 # --- Test ---
 
@@ -66,9 +58,7 @@ audit-deps:
 
 # Build Tauri native desktop app (full pipeline: frontend + backend)
 build-native:
-    Set-Location '{{justfile_directory()}}\native'
-    $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"
-    pwsh -NoProfile -File '{{justfile_directory()}}\native\build.ps1'
+    Set-Location '{{justfile_directory()}}\native'; $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"; pwsh -NoProfile -File '{{justfile_directory()}}\native\build.ps1'
 
 
 # Bootstrap: install dev deps + pre-commit hook
