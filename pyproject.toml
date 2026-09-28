@@ -122,6 +122,7 @@ ignore = ["S101", "B008", "S101", "B008", "E402", "RUF001", "S101", "B008", "E40
 "tests/local/**" = ["E501"]
   "tests/test_mixer_controller.py" = ["S101", "B008", "E402", "RUF001", "S101", "B008", "E402", "RUF001", "RUF012", "B904", "E501", "S106", "S110", "S112", "B904", "E501", "S603", "S607", "S324", "E501"]
   "scripts/cua-webapp-test.py" = ["B007", "S310", "S603", "S607"]
+  "scripts/cua-smoke.py" = ["S310"]
 
 [tool.ruff.format]
 quote-style = "double"
