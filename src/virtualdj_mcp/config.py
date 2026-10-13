@@ -24,12 +24,12 @@ class VDJConfig(BaseModel):
     http_password: str | None = Field(default=None, description="Network Control Plugin password")
     http_timeout: float = Field(default=10.0, description="HTTP request timeout in seconds")
 
-    # OSC (OS2V) — must match VirtualDJ exactly; from_env() requires VDJ_OSC_PORT (see from_env)
+    # OSC (OS2V) - must match VirtualDJ exactly; from_env() requires VDJ_OSC_PORT (see from_env)
     osc_port: int = Field(
         default=40100,
         ge=1,
         le=65535,
-        description="OSC (OS2V) UDP port — must match VirtualDJ Settings → OSC; wrong port breaks control",
+        description="OSC (OS2V) UDP port - must match VirtualDJ Settings → OSC; wrong port breaks control",
     )
 
     # Legacy CLI Settings (deprecated - use HTTP instead)
@@ -70,13 +70,13 @@ class VDJConfig(BaseModel):
         """
         raw_osc = os.getenv("VDJ_OSC_PORT")
         if raw_osc is None or not str(raw_osc).strip():
-            # Factory default; still must match VirtualDJ — set VDJ_OSC_PORT if yours differs.
+            # Factory default; still must match VirtualDJ - set VDJ_OSC_PORT if yours differs.
             raw_osc = "40100"
             os.environ["VDJ_OSC_PORT"] = raw_osc
         try:
             osc_port = int(str(raw_osc).strip(), 10)
         except ValueError as e:
-            raise ValueError("VDJ_OSC_PORT must be an integer UDP port in the range 1–65535.") from e
+            raise ValueError("VDJ_OSC_PORT must be an integer UDP port in the range 1-65535.") from e
 
         return cls(
             virtualdj_path=os.getenv("VDJ_PATH", cls.model_fields["virtualdj_path"].default),

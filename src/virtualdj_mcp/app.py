@@ -242,7 +242,7 @@ async def show_help() -> str:
    • export_mix_history(format, include_tracklist) - Export mix history
    • delete_recording(recording_id) - Delete a recording
 
-5. ℹ️ SYSTEM TOOLS:
+5. i️ SYSTEM TOOLS:
    • show_help() - This help system
    • search_tracks(query, filters) - Search music library
    • analyze_track_audio(track_path) - Analyze track audio features

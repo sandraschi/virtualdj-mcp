@@ -33,7 +33,7 @@ class SettingsResponse(BaseModel):
         default=40100,
         ge=1,
         le=65535,
-        description="OSC (OS2V) UDP port — must match VirtualDJ Settings → OSC (env VDJ_OSC_PORT)",
+        description="OSC (OS2V) UDP port - must match VirtualDJ Settings → OSC (env VDJ_OSC_PORT)",
     )
     http_host: str = "127.0.0.1"
     http_port: int = 80
