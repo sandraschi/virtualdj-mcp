@@ -1,105 +1,22 @@
 # Security Policy
 
-## Supported Versions
+## Reporting a vulnerability
 
-VirtualDJ-MCP follows semantic versioning and maintains security updates for the following versions:
+Please report security problems **privately** through GitHub's private vulnerability reporting:
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.0.x   | :white_check_mark: |
-| < 1.0   | :x:                |
+1. Open the repository's **Security** tab.
+2. Click **Report a vulnerability**.
 
-## Reporting a Vulnerability
+Direct link: https://github.com/sandraschi/virtualdj-mcp/security/advisories/new
 
-If you discover a security vulnerability in VirtualDJ-MCP, please report it responsibly.
+Please do **not** open a public issue, discussion or pull request for a security problem, and do not include working exploits or real secrets in anything public.
 
-### Contact
-- **Email**: security@sandraschi.dev (create this email alias)
-- **GitHub Security Advisories**: Use [GitHub's security advisory feature](https://github.com/sandraschi/virtualdj-mcp/security/advisories)
+## What happens next
 
-### What to Include
-When reporting a vulnerability, please include:
-- Description of the vulnerability
-- Steps to reproduce
-- Potential impact
-- Suggested fix (if known)
-- Your contact information for follow-up
+- You will get an acknowledgement in the private advisory thread.
+- Confirmed issues are fixed and published as a GitHub Security Advisory (with a CVE where appropriate), crediting you unless you prefer otherwise.
+- We follow coordinated disclosure and are happy to agree on a timeline with you.
 
-### Our Process
-1. **Acknowledgment**: We'll acknowledge receipt within 48 hours
-2. **Investigation**: We'll investigate and validate the report
-3. **Fix Development**: We'll develop and test a fix
-4. **Disclosure**: We'll coordinate disclosure with you
-5. **Release**: We'll release the fix with appropriate documentation
+## Scope
 
-## Security Considerations
-
-### Network Security
-- VirtualDJ-MCP communicates with VirtualDJ via localhost only
-- No external network connections required
-- FastAPI server binds to localhost by default
-
-### Data Protection
-- No user data is transmitted externally
-- Audio files and metadata remain local
-- Configuration files may contain paths but no sensitive credentials
-
-### Dependencies
-- All dependencies are monitored for security vulnerabilities
-- Regular dependency updates via Dependabot
-- Security audits performed before major releases
-
-## Known Security Considerations
-
-### VirtualDJ Integration
-- Requires local VirtualDJ installation
-- VirtualDJ network settings must be properly configured
-- API access should be restricted to localhost
-
-### File System Access
-- Reads audio files from configured library paths
-- Writes recordings to configured output directories
-- Respects file system permissions
-
-### Environment Variables
-- Sensitive configuration via environment variables
-- No hardcoded credentials
-- `.env` files should not be committed
-
-## Best Practices for Users
-
-### Installation
-- Install in virtual environment
-- Verify package signatures when available
-- Keep dependencies updated
-
-### Configuration
-- Use strong, unique environment variable names
-- Restrict file system access to necessary directories
-- Regularly backup configuration files
-
-### Operation
-- Run with minimal required permissions
-- Monitor logs for unusual activity
-- Keep VirtualDJ and system updated
-
-## Security Updates
-
-Security updates will be:
-- Released as patch versions (1.0.x)
-- Documented in CHANGELOG.md
-- Announced via GitHub releases
-- Backported to supported versions when applicable
-
-## Contact
-
-For security-related questions or concerns:
-- **Maintainer**: Sandra Schilling
-- **Email**: sandra@sandraschi.dev
-- **Response Time**: Within 48 hours for security issues
-
----
-
-**Security is our priority. Thank you for helping keep VirtualDJ-MCP safe! 🔒**
-
-
+These projects are mostly MCP servers and tools that run locally with the privileges of the user who starts them. Issues that let a client, an agent or prompt-injected content reach beyond a tool's intended scope (for example file access outside a configured directory, command execution, or credential exposure) are in scope.
